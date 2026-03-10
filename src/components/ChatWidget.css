@@ -1,0 +1,78 @@
+.chat-widget-container {
+  width: 100%;
+  max-width: 500px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  padding: 32px 24px;
+  /* Simulating the slight light-purple backdrop effect from the image edge */
+  position: relative;
+  z-index: 1;
+}
+
+.chat-widget-container::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: 10px;
+  bottom: 10px;
+  background: linear-gradient(135deg, #eaddff, #f3e8ff);
+  border-radius: 20px;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.chat-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chat-message {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  padding: 12px 20px;
+  max-width: 85%;
+  animation: messageAppear 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.chat-message.received {
+  align-self: flex-start;
+  background-color: #f5f5f5;
+  color: #333333;
+  border-radius: 20px 20px 20px 6px;
+  transform-origin: bottom left;
+}
+
+.chat-message.sent {
+  align-self: flex-end;
+  /* Sky blue and white gradient */
+  background: linear-gradient(90deg, #87CEEB 0%, #E0F2FE 100%);
+  color: #000000;
+  border-radius: 20px 20px 6px 20px;
+  transform-origin: bottom right;
+  animation-delay: 0.8s;
+}
+
+.chat-message.received.delay {
+  animation-delay: 1.6s;
+}
+
+.chat-message p {
+  margin: 0;
+}
+
+@keyframes messageAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

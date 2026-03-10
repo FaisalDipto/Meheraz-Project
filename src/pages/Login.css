@@ -1,0 +1,235 @@
+.login-page-container {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-primary); /* Sky Blue */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+}
+
+/* --- Decorative Background Shapes --- */
+.bg-shape {
+  position: absolute;
+  filter: blur(80px);
+  z-index: 0;
+  opacity: 0.6;
+}
+
+.bg-shape-1 {
+  width: 400px;
+  height: 400px;
+  background-color: rgba(255, 255, 255, 0.4);
+  top: -100px;
+  left: -100px;
+  border-radius: 50%;
+}
+
+.bg-shape-2 {
+  width: 500px;
+  height: 500px;
+  background-color: rgba(14, 165, 233, 0.2); /* Darker blue tint */
+  bottom: -150px;
+  right: -50px;
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+}
+
+.bg-shape-3 {
+  width: 300px;
+  height: 300px;
+  background-color: rgba(255, 255, 255, 0.3);
+  top: 40%;
+  left: 60%;
+  border-radius: 50%;
+}
+
+/* --- Login Card Main --- */
+.login-card-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08); /* Soft shadow */
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  padding: 48px;
+  position: relative;
+  z-index: 1; /* Above background shapes */
+}
+
+/* Header & Logo */
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.login-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  margin-bottom: 30px;
+}
+
+.login-logo-q {
+  color: #0ea5e9;
+  font-size: 48px;
+  font-weight: 800;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-logo-bubble {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  border-bottom-left-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5px;
+}
+
+.login-logo-dot {
+  width: 2.5px;
+  height: 2.5px;
+  background-color: #0ea5e9;
+  border-radius: 50%;
+}
+
+.login-logo-text {
+  color: var(--text-primary); /* Dark text instead of white because of white card bg */
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.login-title {
+  color: var(--text-primary);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  color: #666;
+  font-size: 15px;
+}
+
+/* Form Styles */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+label {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.forgot-password {
+  color: #0ea5e9;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.forgot-password:hover {
+  opacity: 0.8;
+}
+
+input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background-color: #f8fafc;
+  transition: all 0.2s;
+  outline: none;
+}
+
+input::placeholder {
+  color: #94a3b8;
+}
+
+input:focus {
+  border-color: #0ea5e9;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.btn-login-submit {
+  background-color: var(--text-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-login-submit:hover {
+  background-color: #1a1a1a;
+}
+
+.btn-login-submit:active {
+  transform: scale(0.98);
+}
+
+/* Footer Section */
+.login-footer {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.signup-link {
+  color: #0ea5e9;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsiveness */
+@media (max-width: 480px) {
+  .login-card-wrapper {
+    padding: 32px 24px;
+  }
+}

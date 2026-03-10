@@ -1,0 +1,288 @@
+.get-started-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* --- Left Panel (Sky Blue) --- */
+.left-panel {
+  width: 40%;
+  background-color: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.left-panel-header {
+  margin-bottom: auto;
+}
+
+.gs-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.gs-logo-q {
+  color: #0ea5e9; /* Brighter blue logo on sky blue bg */
+  font-size: 48px;
+  font-weight: 800;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gs-logo-bubble {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  border-bottom-left-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.gs-logo-dot {
+  width: 2.5px;
+  height: 2.5px;
+  background-color: #0ea5e9;
+  border-radius: 50%;
+}
+
+.gs-logo-text {
+  color: var(--text-light);
+  font-size: 36px;
+}
+
+.left-panel-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 60px;
+  margin-bottom: auto;
+  margin-left: 10%; /* Move slightly right towards center */
+  max-width: 80%; /* Constrain width so it looks centered */
+}
+
+.graphic-placeholder {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.colorful-shapes {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.shape {
+  position: absolute;
+}
+
+.shape-circle {
+  width: 120px;
+  height: 120px;
+  background: #ffb703; /* Fun yellow */
+  border-radius: 50%;
+  top: 20%;
+  left: 20%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.shape-blob {
+  width: 140px;
+  height: 120px;
+  background: #fb8500;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  top: 40%;
+  left: -10%;
+  z-index: -1;
+  opacity: 0.8;
+}
+
+.shape-star {
+  width: 0;
+  height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 60px solid #e01e37;
+  top: 10%;
+  right: 10%;
+  transform: rotate(35deg);
+}
+
+.left-title {
+  color: var(--text-primary);
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  line-height: 1.1;
+}
+
+.left-desc {
+  color: var(--text-primary);
+  font-size: 16px;
+  opacity: 0.8;
+  max-width: 80%;
+}
+
+.left-panel-footer {
+  margin-top: 40px;
+  margin-left: 10%; /* Match the content indentation */
+}
+
+.back-link {
+  color: #0284c7; /* Darker blue for contrast on sky blue */
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.back-link:hover {
+  opacity: 0.7;
+}
+
+/* --- Right Panel (White) --- */
+.right-panel {
+  width: 60%;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.right-content {
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.right-desc {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 30px;
+}
+
+.btn-connect-meta {
+  background-color: #1877F2; /* Meta Blue */
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.2);
+}
+
+.btn-connect-meta:hover {
+  background-color: #166fe5;
+}
+
+.trust-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 30px;
+}
+
+.trust-text {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.meta-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.meta-logo span {
+  font-weight: 800;
+  font-size: 18px;
+  color: #1C2B33;
+  line-height: 1;
+  margin-top: 4px;
+}
+
+.meta-logo .partner-text {
+  font-size: 10px;
+  font-weight: 500;
+  color: #666;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.more-options-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0ea5e9;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.chevron-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsiveness */
+@media (max-width: 991px) {
+  .get-started-container {
+    flex-direction: column;
+  }
+  
+  .left-panel {
+    width: 100%;
+    padding: 30px 20px;
+    align-items: center; /* Center content on mobile */
+    min-height: 50vh;
+  }
+
+  .left-panel-content {
+    align-items: center;
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .left-title {
+    font-size: 28px;
+  }
+
+  .right-panel {
+    width: 100%;
+    padding: 40px 20px;
+    min-height: 50vh;
+  }
+}
