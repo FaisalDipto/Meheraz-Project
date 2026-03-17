@@ -1,6 +1,7 @@
 :root {
   --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   --bg-primary: #87CEEB; /* Sky blue */
+  --accent: #0f172a; /* Slate navy */
   --text-primary: #000000;
   --text-light: #ffffff;
   --nav-height: 80px;

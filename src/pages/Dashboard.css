@@ -9,7 +9,7 @@
 /* --- Sidebar --- */
 .dashboard-sidebar {
   width: 260px;
-  background-color: #0f172a; /* Deep elegant slate/navy to differentiate from white content */
+  background-color: var(--accent); /* Differentiate from white content */
   color: white;
   display: flex;
   flex-direction: column;
@@ -25,10 +25,12 @@
   padding: 0 12px;
   margin-bottom: 40px;
   text-decoration: none;
+  position: relative;
+  z-index: 2;
 }
 
 .sidebar-logo-q {
-  color: #0ea5e9;
+  color: #fff;
   font-size: 28px;
   font-weight: 800;
   position: relative;
@@ -42,7 +44,7 @@
   width: 10px;
   height: 10px;
   background-color: #ffffff;
-  border: 2px solid #0ea5e9;
+  border: 2px solid var(--accent);
   border-radius: 50%;
   border-bottom-left-radius: 2px;
 }
@@ -57,6 +59,8 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
+  z-index: 2;
 }
 
 .secondary-nav {
@@ -72,12 +76,14 @@
   background: transparent;
   border: none;
   border-radius: 8px;
-  color: #94a3b8; /* Muted text on dark background */
+  color: #ffffff;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
+  opacity: 1 !important; /* Override Navbar.css mobile animation hiding */
+  visibility: visible !important;
 }
 
 .sidebar-nav .nav-item:hover {
@@ -86,9 +92,19 @@
 }
 
 .sidebar-nav .nav-item.active {
-  background-color: rgba(14, 165, 233, 0.15); /* Sky blue tint for active */
-  color: #38bdf8; /* Bright text */
+  background-color: rgba(255, 255, 255, 0.2); 
+  color: #fff; /* Bright text */
   font-weight: 600;
+}
+
+/* Ensure mobile overrides from Navbar.css don't bleed into Dashboard */
+@media (max-width: 991px) {
+  .sidebar-nav .nav-item {
+    border-bottom: none !important;
+    padding: 12px 14px !important;
+    text-align: left !important;
+    font-size: 15px !important;
+  }
 }
 
 /* --- Main Content Area --- */
@@ -396,7 +412,7 @@
 
 .contact-item.active {
   background-color: #f1f5f9;
-  border-left: 3px solid #0ea5e9;
+  border-left: 3px solid var(--accent);
 }
 
 .contact-avatar {
@@ -510,10 +526,10 @@
 }
 
 .chat-message-row.sent .chat-bubble {
-  background-color: #0ea5e9;
+  background-color: var(--accent);
   color: #ffffff;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 2px 5px rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 5px rgba(0,0,0, 0.1);
 }
 
 .chat-input-area {
@@ -536,23 +552,23 @@
 
 .chat-input:focus {
   background-color: #ffffff;
-  border-color: #0ea5e9;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 .btn-send {
-  background-color: #0ea5e9;
+  background-color: var(--accent);
   color: white;
   border: none;
   border-radius: 24px;
   padding: 0 24px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: opacity 0.2s;
 }
 
 .btn-send:hover {
-  background-color: #0284c7;
+  opacity: 0.8;
 }
 
 /* Right Pane */
@@ -754,15 +770,156 @@
 }
 
 .btn-submit {
-  background-color: #0ea5e9;
+  background-color: var(--accent);
   color: white;
   border: none;
   padding: 10px 24px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+  transition: opacity 0.2s;
 }
 
 .btn-submit:hover {
-  background-color: #0284c7;
+  opacity: 0.8;
+}
+
+/* --- Mobile Responsive Additions --- */
+.mobile-sidebar-open,
+.mobile-sidebar-close {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--text-primary);
+}
+
+.mobile-sidebar-close {
+  color: white;
+  margin-left: auto;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-content-area.conversation-layout {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  
+  .conv-contacts-pane {
+    width: 100%;
+    height: 300px; /* Fixed height for contacts on tablet/mobile */
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+    flex-shrink: 0;
+  }
+
+  .conv-chat-pane {
+    height: 500px;
+    flex-shrink: 0;
+  }
+
+  .conv-analytics-pane {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #e2e8f0;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Top Navbar */
+  .dashboard-top-navbar {
+    padding: 0 20px;
+  }
+
+  /* Content padding */
+  .dashboard-content-area {
+    padding: 20px;
+  }
+
+  /* Sidebar Drawer */
+  .dashboard-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000; /* Must be higher than overlay's 90 */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    background-color: var(--accent, #0f172a); 
+    width: 280px; /* Slightly wider on mobile for tap targets */
+    overflow-y: auto; /* Allow scrolling if content is too tall */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboard-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .mobile-sidebar-open,
+  .mobile-sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dashboard-sidebar .sidebar-logo {
+    margin-bottom: 24px; /* Reduce from 40px to ensure nav fits */
+  }
+
+  /* Prevent auto margins from pushing content offscreen on short mobile devices */
+  .secondary-nav {
+    margin-top: 20px; 
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 90;
+    animation: fadeIn 0.2s ease;
+  }
+
+  /* Adjust grid spaces */
+  .pages-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .giant-page-btn {
+    gap: 10px;
+  }
+
+  .page-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .page-name {
+    font-size: 14px;
+  }
+
+  /* Specific panel overrides */
+  .dashboard-content-area > div > div[style*="gap: 40px"] {
+    flex-direction: column;
+    gap: 24px !important;
+  }
+  
+  /* Widget Preview box width override on mobile */
+  .dashboard-content-area > div > div[style*="width: 280px"] {
+    width: 100% !important;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
