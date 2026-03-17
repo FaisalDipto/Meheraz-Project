@@ -1,0 +1,207 @@
+/* =============================================
+   Feedback Page
+   ============================================= */
+
+.feedback-page-container {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-primary); /* Sky Blue – matches rest of the app */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 20px;
+}
+
+/* ---------- Decorative background blobs ---------- */
+.fb-bg-shape {
+  position: absolute;
+  filter: blur(80px);
+  z-index: 0;
+  opacity: 0.55;
+}
+
+.fb-bg-shape-1 {
+  width: 420px;
+  height: 420px;
+  background-color: rgba(255, 255, 255, 0.4);
+  top: -120px;
+  left: -120px;
+  border-radius: 50%;
+}
+
+.fb-bg-shape-2 {
+  width: 500px;
+  height: 500px;
+  background-color: rgba(14, 165, 233, 0.2);
+  bottom: -160px;
+  right: -60px;
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+}
+
+.fb-bg-shape-3 {
+  width: 280px;
+  height: 280px;
+  background-color: rgba(255, 255, 255, 0.3);
+  top: 45%;
+  left: 60%;
+  border-radius: 50%;
+}
+
+/* ---------- Card ---------- */
+.feedback-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 460px;
+  padding: 48px 44px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- Heading ---------- */
+.feedback-heading {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.3px;
+}
+
+/* ---------- Sub-text ---------- */
+.feedback-subtext {
+  font-size: 14.5px;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.55;
+  margin: 0 0 32px 0;
+}
+
+/* ---------- Form ---------- */
+.feedback-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.fb-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.fb-form-group label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Single-line input */
+.fb-input {
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background-color: #f8fafc;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.fb-input::placeholder {
+  color: #94a3b8;
+}
+
+.fb-input:focus {
+  border-color: #0ea5e9;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12);
+}
+
+/* Textarea – double the height of the input */
+.fb-textarea {
+  width: 100%;
+  /* input is ~46px tall (13+13 padding + 20px line-height); double ≈ 120px */
+  height: 120px;
+  padding: 13px 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background-color: #f8fafc;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  outline: none;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.fb-textarea::placeholder {
+  color: #94a3b8;
+}
+
+.fb-textarea:focus {
+  border-color: #0ea5e9;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12);
+}
+
+/* ---------- Submit Button ---------- */
+.fb-submit-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--text-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15.5px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  letter-spacing: 0.2px;
+  transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.fb-submit-btn:hover {
+  background-color: #1a1a1a;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.fb-submit-btn:active {
+  transform: scale(0.98);
+}
+
+.fb-submit-btn--success {
+  background-color: #22c55e;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+}
+
+.fb-submit-btn--success:hover {
+  background-color: #16a34a;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .feedback-card {
+    padding: 36px 24px;
+  }
+
+  .feedback-heading {
+    font-size: 22px;
+  }
+}

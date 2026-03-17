@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, MessageSquare, Book, Bot, MessageCircleWarning, Settings, Plus, User, LogOut, ChevronDown } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Book, Bot, MessageCircleWarning, Settings, Plus, User, LogOut, ChevronDown, TrendingUp, Headphones, HelpCircle } from 'lucide-react';
 import './Dashboard.css';
 
 // Placeholder sub-components
@@ -228,6 +228,94 @@ const ConversationList = () => {
   );
 };
 
+const FeedbackPanel = () => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (title.trim() || description.trim()) {
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setTitle('');
+        setDescription('');
+      }, 3000);
+    }
+  };
+
+  return (
+    <div className="dashboard-content-area animate-fade-in-up">
+      <div className="dashboard-header" style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>Feedback</h3>
+        <p style={{ color: '#64748b', fontSize: '14px' }}>
+          Give us Feedback, Report a Bug or Tell us how we can improve.
+        </p>
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        style={{ maxWidth: '480px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}
+      >
+        <div className="form-group">
+          <label>Feedback Title</label>
+          <input
+            type="text"
+            placeholder="Enter a short title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Feedback Description</label>
+          <textarea
+            placeholder="Describe your feedback in detail..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '12px 14px',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              resize: 'vertical',
+              outline: 'none',
+              height: '120px',
+              boxSizing: 'border-box',
+              backgroundColor: '#f8fafc',
+              color: 'var(--text-primary)',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
+            }}
+            onFocus={(e) => { e.target.style.borderColor = '#0ea5e9'; e.target.style.boxShadow = '0 0 0 3px rgba(14,165,233,0.12)'; }}
+            onBlur={(e)  => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="btn-submit"
+          style={{
+            backgroundColor: submitted ? '#22c55e' : 'var(--text-primary)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '14px',
+            fontSize: '15px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            transition: 'background-color 0.25s',
+          }}
+        >
+          {submitted ? '✓ Submitted!' : 'Submit'}
+        </button>
+      </form>
+    </div>
+  );
+};
+
 const Knowledge = () => {
   const [showModal, setShowModal] = useState(false);
 
@@ -290,6 +378,148 @@ const Knowledge = () => {
   );
 };
 
+const PERSONAS = [
+  {
+    id: 'sales',
+    icon: TrendingUp,
+    iconColor: '#8b5cf6',
+    iconBg: 'rgba(139,92,246,0.1)',
+    title: 'Sales Assistant',
+    desc: 'Helps with product recommendations and sales inquiries.',
+  },
+  {
+    id: 'support',
+    icon: Headphones,
+    iconColor: '#0ea5e9',
+    iconBg: 'rgba(14,165,233,0.1)',
+    title: 'Support Agent',
+    desc: 'Provides customer support and troubleshooting.',
+  },
+  {
+    id: 'qa',
+    icon: HelpCircle,
+    iconColor: '#10b981',
+    iconBg: 'rgba(16,185,129,0.1)',
+    title: 'Q&A Bot',
+    desc: 'Answers questions based on your knowledge base.',
+  },
+];
+
+const AgentPanel = () => {
+  const [agentName, setAgentName] = useState('');
+  const [selectedPersona, setSelectedPersona] = useState(null);
+  const [created, setCreated] = useState(false);
+
+  const handleCreate = (e) => {
+    e.preventDefault();
+    if (!agentName.trim() || !selectedPersona) return;
+    setCreated(true);
+    setTimeout(() => {
+      setCreated(false);
+      setAgentName('');
+      setSelectedPersona(null);
+    }, 3000);
+  };
+
+  return (
+    <div className="dashboard-content-area animate-fade-in-up">
+      <div className="dashboard-header" style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>Create Your Agent</h3>
+        <p style={{ color: '#64748b', fontSize: '14px' }}>
+          Configure your AI agent&apos;s personality and behavior
+        </p>
+      </div>
+
+      <form
+        onSubmit={handleCreate}
+        style={{ maxWidth: '520px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '22px' }}
+      >
+        {/* Agent Name */}
+        <div className="form-group">
+          <label>Agent Name</label>
+          <input
+            type="text"
+            placeholder="e.g. My Sales Bot"
+            value={agentName}
+            onChange={(e) => setAgentName(e.target.value)}
+          />
+        </div>
+
+        {/* Persona Selector */}
+        <div className="form-group">
+          <label style={{ marginBottom: '10px', display: 'block' }}>Select Persona</label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {PERSONAS.map((p) => {
+              const Icon = p.icon;
+              const isSelected = selectedPersona === p.id;
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => setSelectedPersona(p.id)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px',
+                    padding: '14px 16px',
+                    borderRadius: '10px',
+                    border: isSelected ? '2px solid #0ea5e9' : '2px solid #e2e8f0',
+                    backgroundColor: isSelected ? 'rgba(14,165,233,0.05)' : '#f8fafc',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.2s, background-color 0.2s',
+                  }}
+                >
+                  <div style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '10px',
+                    backgroundColor: p.iconBg,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    <Icon size={20} color={p.iconColor} />
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text-primary)', marginBottom: '2px' }}>
+                      {p.title}
+                    </div>
+                    <div style={{ fontSize: '13px', color: '#64748b' }}>{p.desc}</div>
+                  </div>
+                  {isSelected && (
+                    <div style={{ marginLeft: 'auto', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#0ea5e9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Submit */}
+        <button
+          type="submit"
+          className="btn-submit"
+          style={{
+            backgroundColor: created ? '#22c55e' : 'var(--text-primary)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '14px',
+            fontSize: '15px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            transition: 'background-color 0.25s',
+          }}
+        >
+          {created ? '✓ Agent Created!' : 'Create Agent'}
+        </button>
+      </form>
+    </div>
+  );
+};
+
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -299,6 +529,8 @@ export default function Dashboard() {
       case 'overview': return <Overview />;
       case 'conversation': return <ConversationList />;
       case 'knowledge': return <Knowledge />;
+      case 'agent': return <AgentPanel />;
+      case 'feedback': return <FeedbackPanel />;
       default: return <div className="dashboard-content-area"><h2>Coming Soon</h2></div>;
     }
   };
