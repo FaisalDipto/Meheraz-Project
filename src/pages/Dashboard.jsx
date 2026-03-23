@@ -1,22 +1,82 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { LayoutDashboard, MessageSquare, Book, Bot, MessageCircleWarning, Settings, Plus, User, LogOut, ChevronDown, TrendingUp, Headphones, HelpCircle, Palette, Monitor, Users, Trash2, Mail, Menu, X } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Book, UserRound, MessageCircleWarning, Settings, Plus, User, LogOut, ChevronDown, TrendingUp, Headphones, HelpCircle, Palette, Monitor, Users, Trash2, Mail, Menu, X, Edit2 } from 'lucide-react';
 import { useWidget } from '../context/WidgetContext';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/api';
 import './Dashboard.css';
 
 // Sub-components
-const Overview = ({ user, pages }) => {
+const Overview = ({ user, pages, onNavigate }) => {
   const [assigning, setAssigning] = useState({}); // {pageId: boolean}
   const [success, setSuccess] = useState({}); // {pageId: boolean}
+  const [selectedAgents, setSelectedAgents] = useState(() => {
+    try {
+      const cached = localStorage.getItem('qchat_assigned_agents');
+      return cached ? JSON.parse(cached) : {};
+    } catch (e) {
+      return {};
+    }
+  });
 
   const agents = user?.agents || [];
+
+  useEffect(() => {
+    if (!Array.isArray(pages) || pages.length === 0) return;
+    
+    setSelectedAgents(prev => {
+      const nextAgents = { ...prev };
+      let changed = false;
+      
+      pages.forEach(p => {
+        let backendAgentId = null;
+        if (p.agent_name) {
+          const matched = agents.find(a => a.name === p.agent_name);
+          if (matched) {
+            backendAgentId = matched.agent_id;
+          } else {
+            // It's assigned by someone else, so we use a fallback placeholder ID
+            backendAgentId = `foreign_agent_${p.agent_name}`;
+          }
+        }
+        
+        const agId = backendAgentId || p.agent_id || p.agent?.agent_id || p.agent?.id || p.assigned_agent_id;
+        
+        if (p.agent_name === null || p.agent_name === '') {
+          if (nextAgents[p.page_id]) {
+            delete nextAgents[p.page_id];
+            changed = true;
+          }
+        } else if (agId) {
+          if (nextAgents[p.page_id] !== agId) {
+            nextAgents[p.page_id] = agId;
+            changed = true;
+          }
+        }
+      });
+      
+      if (changed) {
+        try {
+          localStorage.setItem('qchat_assigned_agents', JSON.stringify(nextAgents));
+        } catch (e) {}
+        return nextAgents;
+      }
+      return prev;
+    });
+  }, [pages, agents]);
 
   const handleAssign = async (pageId, agentId) => {
     if (!agentId) return;
     setAssigning(prev => ({ ...prev, [pageId]: true }));
     try {
-      await apiService.assignAgentToPage(pageId, agentId);
+      const response = await apiService.assignAgentToPage(pageId, agentId);
+      console.log('Assign Agent API Response:', response);
+      setSelectedAgents(prev => {
+        const nextState = { ...prev, [pageId]: agentId };
+        try {
+          localStorage.setItem('qchat_assigned_agents', JSON.stringify(nextState));
+        } catch (e) {}
+        return nextState;
+      });
       setSuccess(prev => ({ ...prev, [pageId]: true }));
       setTimeout(() => {
         setSuccess(prev => ({ ...prev, [pageId]: false }));
@@ -33,26 +93,33 @@ const Overview = ({ user, pages }) => {
     <div className="dashboard-content-area animate-fade-in-up">
       <div className="dashboard-header">
         <h2>Overview</h2>
-        <p>Welcome back{user?.first_name ? `, ${user.first_name}` : ''}! Manage your pages and assign AI agents.</p>
+        <p>Welcome back{user?.name || user?.username || user?.first_name ? `, ${user.name || user.username || user.first_name}` : ''}! Manage your pages and assign AI agents.</p>
       </div>
       
-      <div className="pages-grid">
+      <div className="pages-grid" style={{ paddingBottom: '40px' }}>
         {Array.isArray(pages) && pages.map(page => (
           <div key={page.page_id} className="page-card-container">
             <div className="giant-page-btn btn-blue">
-              <Bot size={48} className="page-icon" />
+              <UserRound size={48} className="page-icon" />
               <span className="page-name">{page.name}</span>
             </div>
             
             <div className="agent-assign-box">
               <label>Assigned Agent</label>
               <select 
-                defaultValue="" 
+                value={selectedAgents[page.page_id] || ""} 
                 onChange={(e) => handleAssign(page.page_id, e.target.value)}
                 disabled={assigning[page.page_id]}
                 className={success[page.page_id] ? 'success-pulse' : ''}
               >
                 <option value="" disabled>Select an Agent...</option>
+                
+                {selectedAgents[page.page_id] && String(selectedAgents[page.page_id]).startsWith('foreign_agent_') && (
+                  <option value={selectedAgents[page.page_id]} disabled>
+                    {String(selectedAgents[page.page_id]).replace('foreign_agent_', '')} (Assigned by teammate)
+                  </option>
+                )}
+
                 {agents.length === 0 ? (
                   <option disabled>No agents created yet</option>
                 ) : (
@@ -416,11 +483,69 @@ const Knowledge = ({ pages }) => {
   
   // Modal state
   const [name, setName] = useState('');
-  const [textMode, setTextMode] = useState(false); // toggle between file and text/url
-  const [file, setFile] = useState(null);
-  const [textContent, setTextContent] = useState('');
-  const [urlContent, setUrlContent] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [editingItemId, setEditingItemId] = useState(null);
+  const [viewingItem, setViewingItem] = useState(null);
+  const [fetchingDetails, setFetchingDetails] = useState(false);
+
+  const handleViewClick = async (item) => {
+    const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
+    if (!actualId || String(actualId).startsWith('temp_')) {
+      return alert('Wait for the item to be fully saved in the database before viewing');
+    }
+    
+    setFetchingDetails(true);
+    try {
+      const details = await apiService.getKnowledgeItem(selectedPageId, actualId);
+      setViewingItem(details);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to fetch details: ' + err.message);
+    } finally {
+      setFetchingDetails(false);
+    }
+  };
+
+  const handleEditClick = async (item) => {
+    const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
+    if (String(actualId).startsWith('temp_')) return alert('Wait for the item to be fully saved before editing');
+    
+    setName(item.name || item.data_source?.name || '');
+    setTitle(item.title || '');
+    setDescription(item.description || item.data_source?.text || '');
+    setEditingItemId(actualId);
+    setShowModal(true);
+
+    // Fetch the full detailed item just in case the list view omitted the heavy description field
+    if (!item.description && !item.data_source?.text) {
+      try {
+        const details = await apiService.getKnowledgeItem(selectedPageId, actualId);
+        if (details.description) setDescription(details.description);
+        if (details.title && !item.title) setTitle(details.title);
+      } catch (err) {
+        console.warn('Failed to fetch full item details for edit modal', err);
+      }
+    }
+  };
+
+  const handleDelete = async (item) => {
+    const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
+    if (!actualId || String(actualId).startsWith('temp_')) {
+       return alert('Cannot delete item without a valid ID. Wait for save to complete.');
+    }
+    
+    if (!window.confirm(`Are you sure you want to delete "${item.name || item.title || 'this document'}"?`)) return;
+    
+    try {
+      await apiService.deleteKnowledge(selectedPageId, actualId);
+      setKnowledgeList(prev => prev.filter(k => (k.id || k.knowledge_id || k.knowledgeId || k.uuid) !== actualId));
+    } catch (error) {
+      console.error(error);
+      alert('Failed to delete knowledge: ' + error.message);
+    }
+  };
 
   useEffect(() => {
     if (pages && pages.length > 0 && !selectedPageId) {
@@ -443,37 +568,51 @@ const Knowledge = ({ pages }) => {
   const handleAddKnowledge = async (e) => {
     e.preventDefault();
     if (!selectedPageId) return alert('Please select a page first');
-    if (!name.trim()) return alert('Name is required');
+    if (!name.trim() || !title.trim() || !description.trim()) return alert('Name, Title, and Description are required');
 
     setUploading(true);
     try {
-      const formData = new FormData();
-      if (!textMode && file) {
-        formData.append('file', file);
+      if (editingItemId) {
+        const updateData = {
+          name: name.trim(),
+          title: title.trim(),
+          description: description.trim()
+        };
+        const editResponse = await apiService.editKnowledge(selectedPageId, editingItemId, updateData);
+        console.log("Edit Knowledge API Response:", editResponse);
+      } else {
+        const payload = {
+          documents: [
+            {
+              name: name.trim(),
+              title: title.trim(),
+              description: description.trim()
+            }
+          ]
+        };
+        await apiService.createKnowledge(selectedPageId, payload);
+        
+        // Optimistically show the item instantly
+        setKnowledgeList(prev => [...prev, {
+          id: 'temp_' + Date.now(),
+          name: name.trim(),
+          title: title.trim(),
+          description: description.trim()
+        }]);
       }
       
-      const dataSource = {
-        name: name.trim(),
-        text: textMode ? (textContent.trim() || null) : null,
-        url: textMode ? (urlContent.trim() || null) : null
-      };
-
-      formData.append('data_source', JSON.stringify(dataSource));
-
-      await apiService.createKnowledge(selectedPageId, formData);
-      
-      // refresh list
+      // Refresh list from the server to get actual database IDs
       const updatedList = await apiService.getKnowledge(selectedPageId);
       setKnowledgeList(Array.isArray(updatedList) ? updatedList : (updatedList.results || updatedList.items || []));
       
       setShowModal(false);
       setName('');
-      setFile(null);
-      setTextContent('');
-      setUrlContent('');
+      setTitle('');
+      setDescription('');
+      setEditingItemId(null);
     } catch (error) {
       console.error(error);
-      alert('Failed to upload knowledge: ' + error.message);
+      alert('Failed to add knowledge: ' + error.message);
     } finally {
       setUploading(false);
     }
@@ -507,7 +646,13 @@ const Knowledge = ({ pages }) => {
             {pages.map(p => <option key={p.page_id} value={p.page_id}>{p.name}</option>)}
           </select>
 
-          <button className="btn-add-knowledge" onClick={() => setShowModal(true)}>
+          <button className="btn-add-knowledge" onClick={() => {
+            setName('');
+            setTitle('');
+            setDescription('');
+            setEditingItemId(null);
+            setShowModal(true);
+          }}>
             <Plus size={18} /> Add Knowledge
           </button>
         </div>
@@ -517,6 +662,7 @@ const Knowledge = ({ pages }) => {
         <div className="knowledge-header-row">
           <div className="k-col k-name">Name</div>
           <div className="k-col k-desc">Type</div>
+          <div className="k-col k-actions" style={{ width: '80px', textAlign: 'right' }}>Actions</div>
         </div>
         
         {loading ? (
@@ -526,64 +672,123 @@ const Knowledge = ({ pages }) => {
         ) : (
           knowledgeList.map((item, i) => (
             <div key={item.id || i} className="knowledge-item">
-              <div className="k-col k-name">{item.data_source?.name || item.name || 'Unnamed Document'}</div>
+              <div className="k-col k-name">{item.name || item.title || item.data_source?.name || 'Unnamed Document'}</div>
               <div className="k-col k-desc">
-                {item.file_name ? 'File' : (item.data_source?.url ? 'URL Link' : 'Raw Text')}
+                {item.description ? 'Product Details' : (item.file_name ? 'File' : (item.data_source?.url ? 'URL Link' : 'Raw Text'))}
+              </div>
+              <div className="k-col k-actions" style={{ width: '100px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <button 
+                  onClick={() => handleViewClick(item)} 
+                  style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
+                  title="View Details"
+                  disabled={fetchingDetails}
+                >
+                  <Book size={16} />
+                </button>
+                <button 
+                  onClick={() => handleEditClick(item)} 
+                  style={{ background: 'transparent', border: 'none', color: '#0ea5e9', cursor: 'pointer', padding: '4px' }}
+                  title="Edit element"
+                >
+                  <Edit2 size={16} />
+                </button>
+                <button 
+                  onClick={() => handleDelete(item)} 
+                  style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                  title="Delete element"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
             </div>
           ))
         )}
       </div>
 
+      {viewingItem && (
+        <div className="modal-overlay" onClick={() => setViewingItem(null)}>
+          <div className="modal-content animate-fade-in-up" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h3 style={{ margin: 0, fontSize: '20px', color: '#0f172a' }}>Knowledge Details</h3>
+              <button type="button" onClick={() => setViewingItem(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}>
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div style={{ maxHeight: '600px', overflowY: 'auto', paddingRight: '4px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <h4 style={{ margin: '0 0 6px 0', fontSize: '12px', textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>Name</h4>
+                  <div style={{ fontSize: '18px', fontWeight: 600, color: '#0f172a' }}>{viewingItem.name || 'N/A'}</div>
+                </div>
+                
+                <div>
+                  <h4 style={{ margin: '0 0 6px 0', fontSize: '12px', textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>Title</h4>
+                  <div style={{ fontSize: '16px', color: '#334155' }}>{viewingItem.title || 'N/A'}</div>
+                </div>
+
+                <div>
+                  <h4 style={{ margin: '0 0 6px 0', fontSize: '12px', textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>Description</h4>
+                  <div style={{ fontSize: '15px', color: '#475569', lineHeight: '1.6', whiteSpace: 'pre-wrap', backgroundColor: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>{viewingItem.description || 'N/A'}</div>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '32px', borderTop: '1px solid #e2e8f0', paddingTop: '20px' }}>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '11px', textTransform: 'uppercase', color: '#94a3b8' }}>Knowledge ID</h4>
+                    <div style={{ fontSize: '13px', color: '#64748b', fontFamily: 'monospace', background: '#f1f5f9', padding: '4px 8px', borderRadius: '4px' }}>{viewingItem.knowledge_id || viewingItem.id || viewingItem.uuid || 'N/A'}</div>
+                  </div>
+                  {viewingItem.created_at && (
+                    <div>
+                      <h4 style={{ margin: '0 0 4px 0', fontSize: '11px', textTransform: 'uppercase', color: '#94a3b8' }}>Created</h4>
+                      <div style={{ fontSize: '13px', color: '#64748b' }}>{new Date(viewingItem.created_at).toLocaleString()}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-actions" style={{ marginTop: '24px' }}>
+              <button type="button" className="btn-cancel" onClick={() => setViewingItem(null)} style={{ background: '#0ea5e9', color: 'white', border: 'none' }}>Close Details</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content animate-fade-in-up">
-            <h3>Add New Knowledge</h3>
+            <h3>{editingItemId ? 'Edit Knowledge' : 'Add New Knowledge'}</h3>
             
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
-              <button 
-                type="button" 
-                onClick={() => setTextMode(false)}
-                style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: !textMode ? '#e0f2fe' : '#f1f5f9', color: !textMode ? '#0369a1' : '#64748b', fontWeight: 600, cursor: 'pointer' }}
-              >
-                File Upload
-              </button>
-              <button 
-                type="button" 
-                onClick={() => setTextMode(true)}
-                style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: textMode ? '#e0f2fe' : '#f1f5f9', color: textMode ? '#0369a1' : '#64748b', fontWeight: 600, cursor: 'pointer' }}
-              >
-                Text / Link
-              </button>
-            </div>
-
             <form className="modal-form" onSubmit={handleAddKnowledge}>
               <div className="form-group">
-                <label>Document Name *</label>
-                <input type="text" placeholder="e.g. Return_Policy" value={name} onChange={e => setName(e.target.value)} required />
+                <label>Name *</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Product_Specs" 
+                  value={name} 
+                  onChange={e => {
+                    const val = e.target.value.replace(/[^a-zA-Z0-9 _-]/g, '');
+                    if (val.length <= 50) setName(val);
+                  }} 
+                  maxLength={50}
+                  required 
+                />
+                <small style={{ color: '#64748b', marginTop: '6px', fontSize: '12px', display: 'block' }}>Max 50 characters. Letters, numbers, spaces, _, and - only.</small>
+              </div>
+              
+              <div className="form-group">
+                <label>Title *</label>
+                <input type="text" placeholder="e.g. Premium Plan Features" value={title} onChange={e => setTitle(e.target.value)} required />
               </div>
 
-              {!textMode ? (
-                <div className="form-group">
-                  <label>Upload File</label>
-                  <input type="file" onChange={e => setFile(e.target.files[0])} style={{ padding: '8px' }} required />
-                </div>
-              ) : (
-                <>
-                  <div className="form-group">
-                    <label>Website URL (Optional)</label>
-                    <input type="url" placeholder="https://example.com/pricing" value={urlContent} onChange={e => setUrlContent(e.target.value)} />
-                  </div>
-                  <div className="form-group">
-                    <label>Raw Text (Optional)</label>
-                    <textarea placeholder="Paste plain text content here..." value={textContent} onChange={e => setTextContent(e.target.value)} rows="4"></textarea>
-                  </div>
-                </>
-              )}
+              <div className="form-group">
+                <label>Description *</label>
+                <textarea placeholder="Provide detailed product description or information..." value={description} onChange={e => setDescription(e.target.value)} rows="4" required></textarea>
+              </div>
 
               <div className="modal-actions" style={{ marginTop: '24px' }}>
                 <button type="button" className="btn-cancel" onClick={() => setShowModal(false)} disabled={uploading}>Cancel</button>
-                <button type="submit" className="btn-submit" disabled={uploading}>{uploading ? 'Processing...' : 'Upload'}</button>
+                <button type="submit" className="btn-submit" disabled={uploading}>{uploading ? 'Processing...' : (editingItemId ? 'Save Changes' : 'Upload')}</button>
               </div>
             </form>
           </div>
@@ -620,7 +825,12 @@ const PERSONAS = [
   },
 ];
 
-const AgentPanel = ({ user, onUpdate }) => {
+const AgentPanel = ({ user, onUpdate, onAgentCreated, onAgentEdited }) => {
+  const agents = user?.agents || [];
+  const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingAgentId, setEditingAgentId] = useState(null);
+
   const [agentName, setAgentName] = useState('');
   const [selectedPersona, setSelectedPersona] = useState(null);
   const [tone, setTone] = useState('Professional');
@@ -628,12 +838,30 @@ const AgentPanel = ({ user, onUpdate }) => {
   const [businessName, setBusinessName] = useState('');
   const [businessDesc, setBusinessDesc] = useState('');
   const [instructions, setInstructions] = useState('');
+  const [fallbackMessage, setFallbackMessage] = useState('');
   
   const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState(false);
 
   const TONES = ["Professional", "Friendly", "Formal", "Casual", "Persuasive", "Empathetic", "Confident"];
   const LANGUAGES = ["Mimic User Language", "English", "Arabic", "Spanish", "French", "German", "Portuguese", "Hindi", "Bengali"];
+
+  const REVERSE_ROLE_MAP = { 'Sales Agent': 'sales', 'Support Agent': 'support', 'Q&A Agent': 'qa' };
+
+  const handleEditClick = (agent) => {
+    setIsEditing(true);
+    setIsCreating(false);
+    setEditingAgentId(agent.agent_id);
+    
+    setAgentName(agent.name || '');
+    setBusinessName(agent.business_name || '');
+    setBusinessDesc(agent.business_description || '');
+    setInstructions(agent.instructions || '');
+    setFallbackMessage(agent.fallback_message || '');
+    setSelectedPersona(REVERSE_ROLE_MAP[agent.role] || 'sales');
+    setTone(agent.tone || 'Professional');
+    setLanguage(agent.language || 'English');
+  };
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -649,13 +877,18 @@ const AgentPanel = ({ user, onUpdate }) => {
         language,
         business_name: businessName,
         business_description: businessDesc,
-        instructions: instructions.trim() || null
+        instructions: instructions.trim() || null,
+        fallback_message: fallbackMessage.trim() || null
       };
 
-      const userId = user?.email || 'default_user_session';
-      await apiService.createAgent(userId, payload);
-      
-      if (onUpdate) await onUpdate(); // Refresh user data to get the new agent list
+      if (isEditing) {
+        await apiService.updateAgent(editingAgentId, payload);
+        if (onAgentEdited) onAgentEdited(editingAgentId, payload);
+      } else {
+        const userId = user?.email || 'default_user_session';
+        const newAgent = await apiService.createAgent(userId, payload);
+        if (onAgentCreated) onAgentCreated(newAgent);
+      }
       
       setCreated(true);
       setTimeout(() => {
@@ -665,6 +898,10 @@ const AgentPanel = ({ user, onUpdate }) => {
         setBusinessName('');
         setBusinessDesc('');
         setInstructions('');
+        setFallbackMessage('');
+        setIsCreating(false);
+        setIsEditing(false);
+        setEditingAgentId(null);
       }, 3000);
     } catch (error) {
       console.error('Failed to create agent:', error);
@@ -674,10 +911,64 @@ const AgentPanel = ({ user, onUpdate }) => {
     }
   };
 
+  if (!isCreating && !isEditing) {
+    return (
+      <div className="dashboard-content-area animate-fade-in-up">
+        <div className="dashboard-header">
+          <h2>Your Agents</h2>
+          <p>Manage your AI agents or create a new one.</p>
+        </div>
+        
+        <div className="pages-grid" style={{ paddingBottom: '40px' }}>
+          {agents.map(agent => (
+            <div key={agent.agent_id} className="page-card-container" style={{ position: 'relative' }}>
+              <button 
+                onClick={() => handleEditClick(agent)}
+                style={{ position: 'absolute', top: '12px', right: '12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '6px', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}
+                title="Edit Agent"
+                onMouseEnter={(e) => e.currentTarget.style.color = '#0ea5e9'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#64748b'}
+              >
+                <Edit2 size={16} />
+              </button>
+              <div className="giant-page-btn btn-blue" style={{ cursor: 'default' }}>
+                <UserRound size={48} className="page-icon" />
+                <span className="page-name">{agent.name}</span>
+              </div>
+              
+              <div className="agent-assign-box" style={{ textAlign: 'center', paddingTop: '16px' }}>
+                <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>Role: <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{agent.role}</span></div>
+                <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>Tone: <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{agent.tone}</span></div>
+                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '12px', wordBreak: 'break-all', padding: '6px', backgroundColor: '#f1f5f9', borderRadius: '6px' }}>
+                  <span style={{ fontWeight: 600, color: '#64748b', display: 'block', marginBottom: '2px' }}>Agent ID</span>
+                  {agent.agent_id}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Create Agent Placeholder */}
+          <div className="page-card-container">
+            <button className="giant-page-btn btn-add-dashed" onClick={() => setIsCreating(true)}>
+              <UserRound size={48} className="page-icon" />
+              <span className="page-name">Create Agent</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard-content-area animate-fade-in-up">
-      <div className="dashboard-header" style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>Create Your Agent</h3>
+      <div className="dashboard-header flex-between" style={{ alignItems: 'center', marginBottom: '32px', maxWidth: '600px', margin: '0 auto' }}>
+        <button onClick={() => { setIsCreating(false); setIsEditing(false); setEditingAgentId(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: 600, padding: '0' }}>
+          <ChevronDown size={18} style={{ transform: 'rotate(90deg)' }} /> Back to Agents
+        </button>
+      </div>
+
+      <div className="dashboard-header" style={{ textAlign: 'center', marginBottom: '32px', maxWidth: '600px', margin: '0 auto 32px auto' }}>
+        <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>{isEditing ? 'Edit Your Agent' : 'Create Your Agent'}</h3>
         <p style={{ color: '#64748b', fontSize: '14px' }}>
           Configure your AI agent&apos;s personality, behavior, and business context.
         </p>
@@ -741,8 +1032,13 @@ const AgentPanel = ({ user, onUpdate }) => {
           <textarea placeholder="e.g. Always end conversations with 'Have a great day!'" value={instructions} onChange={(e) => setInstructions(e.target.value)} rows="2" style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', fontFamily: 'inherit', resize: 'vertical' }} />
         </div>
 
+        <div className="form-group">
+          <label>Fallback Message (Optional)</label>
+          <textarea placeholder="e.g. I'm not sure about that, let me connect you with someone who can help." value={fallbackMessage} onChange={(e) => setFallbackMessage(e.target.value)} rows="2" style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', fontFamily: 'inherit', resize: 'vertical' }} />
+        </div>
+
         <button type="submit" className="btn-submit" disabled={loading} style={{ backgroundColor: created ? '#22c55e' : (loading ? '#94a3b8' : 'var(--text-primary)'), color: '#fff', border: 'none', borderRadius: '8px', padding: '14px', fontSize: '15px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background-color 0.25s' }}>
-          {loading ? 'Creating...' : (created ? '✓ Agent Created!' : 'Create Agent')}
+          {loading ? (isEditing ? 'Saving...' : 'Creating...') : (created ? (isEditing ? '✓ Settings Saved!' : '✓ Agent Created!') : (isEditing ? 'Save Changes' : 'Create Agent'))}
         </button>
       </form>
     </div>
@@ -1129,10 +1425,14 @@ export default function Dashboard() {
     try {
       const userData = await apiService.getUserProfile();
       const pagesData = await apiService.getPages();
+      console.log("API Pages Response:", pagesData);
+      const agentsData = await apiService.getAgents();
       
       const parsedUser = userData?.user || userData || null;
       const parsedPages = Array.isArray(pagesData) ? pagesData : (pagesData?.pages || pagesData?.data || []);
+      const parsedAgents = Array.isArray(agentsData) ? agentsData : (agentsData?.agents || agentsData?.data || []);
 
+      if (parsedUser) parsedUser.agents = parsedAgents;
       setUser(parsedUser);
       setPages(parsedPages);
     } catch (err) {
@@ -1155,10 +1455,10 @@ export default function Dashboard() {
     }
 
     switch(activeTab) {
-      case 'overview': return <Overview user={user} pages={pages} />;
+      case 'overview': return <Overview user={user} pages={pages} onNavigate={setActiveTab} />;
       case 'conversation': return <ConversationList pages={pages} />;
       case 'knowledge': return <Knowledge pages={pages} />;
-      case 'agent': return <AgentPanel user={user} onUpdate={fetchData} />;
+      case 'agent': return <AgentPanel user={user} onUpdate={fetchData} onAgentCreated={(newAgent) => setUser(prev => prev ? { ...prev, agents: [...(prev.agents || []), newAgent] } : prev)} onAgentEdited={(id, payload) => setUser(prev => prev ? { ...prev, agents: (prev.agents || []).map(a => a.agent_id === id ? { ...a, ...payload } : a) } : prev)} />;
       case 'feedback': return <FeedbackPanel />;
       case 'settings': return <SettingsPanel />;
       default: return <div className="dashboard-content-area"><h2>Coming Soon</h2></div>;
@@ -1217,7 +1517,7 @@ export default function Dashboard() {
             className={`nav-item ${activeTab === 'agent' ? 'active' : ''}`}
             onClick={() => { setActiveTab('agent'); setIsSidebarOpen(false); }}
           >
-            <Bot size={20} />
+            <UserRound size={20} />
             <span>Agent</span>
           </button>
           
@@ -1260,10 +1560,10 @@ export default function Dashboard() {
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
               <div className="contact-avatar very-small" style={{ backgroundColor: '#0ea5e9', color: 'white' }}>
-                {user?.first_name ? user.first_name.charAt(0) : 'U'}
-                {user?.last_name ? user.last_name.charAt(0) : ''}
+                {(user?.name || user?.username || user?.first_name || 'U').charAt(0).toUpperCase()}
+                {user?.last_name ? user.last_name.charAt(0).toUpperCase() : ''}
               </div>
-              <span className="profile-name">{user?.first_name ? `${user.first_name} ${user?.last_name || ''}` : 'Workspace User'}</span>
+              <span className="profile-name">{user?.username || user?.name || (user?.first_name ? `${user.first_name} ${user?.last_name || ''}` : '') || user?.email || 'User'}</span>
               <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotated' : ''}`} />
             </button>
           </div>
@@ -1280,10 +1580,10 @@ export default function Dashboard() {
              <div className="drawer-content">
                <div className="drawer-user-info">
                  <div className="contact-avatar large" style={{ backgroundColor: '#0ea5e9', color: 'white' }}>
-                   {user?.first_name ? user.first_name.charAt(0) : 'U'}
-                   {user?.last_name ? user.last_name.charAt(0) : ''}
+                   {(user?.name || user?.username || user?.first_name || 'U').charAt(0).toUpperCase()}
+                   {user?.last_name ? user.last_name.charAt(0).toUpperCase() : ''}
                  </div>
-                 <h4>{user?.first_name ? `${user.first_name} ${user?.last_name || ''}` : 'Workspace User'}</h4>
+                 <h4>{user?.username || user?.name || (user?.first_name ? `${user.first_name} ${user?.last_name || ''}` : '') || user?.email || 'User'}</h4>
                  <p>{user?.email || 'No email provided'}</p>
                </div>
                

@@ -65,9 +65,9 @@ export const apiService = {
   
   getKnowledgeItem: (pageId, knowledgeId) => apiFetch(`/api/knowledge/${pageId}/${knowledgeId}`),
   
-  createKnowledge: (pageId, formData) => apiFetch(`/api/knowledge/${pageId}/create`, {
+  createKnowledge: (pageId, payload) => apiFetch(`/api/knowledge/${pageId}/create`, {
     method: 'POST',
-    body: formData,
+    body: JSON.stringify(payload),
   }),
   
   editKnowledge: (pageId, knowledgeId, updateData) => apiFetch(`/api/knowledge/${pageId}/${knowledgeId}`, {
@@ -80,8 +80,15 @@ export const apiService = {
   }),
 
   // Agent Management
+  getAgents: () => apiFetch('/api/agents'),
+  
   createAgent: (userId, agentData) => apiFetch(`/api/agent/create?user_id=${encodeURIComponent(userId)}`, {
     method: 'POST',
+    body: JSON.stringify(agentData),
+  }),
+  
+  updateAgent: (agentId, agentData) => apiFetch(`/api/agent/update/${agentId}`, {
+    method: 'PATCH',
     body: JSON.stringify(agentData),
   }),
   
