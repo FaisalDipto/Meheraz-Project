@@ -1,118 +1,191 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LayoutDashboard, MessageSquare, Book, Bot, MessageCircleWarning, Settings, Plus, User, LogOut, ChevronDown, TrendingUp, Headphones, HelpCircle, Palette, Monitor, Users, Trash2, Mail, Menu, X } from 'lucide-react';
 import { useWidget } from '../context/WidgetContext';
+import { useNavigate } from 'react-router-dom';
+import { apiService } from '../services/api';
 import './Dashboard.css';
 
-// Placeholder sub-components
-const Overview = () => (
-  <div className="dashboard-content-area animate-fade-in-up">
-    <div className="dashboard-header">
-      <h2>Overview</h2>
-      <p>Welcome back! Select a demo page to view or add a new one.</p>
+// Sub-components
+const Overview = ({ user, pages }) => {
+  const [assigning, setAssigning] = useState({}); // {pageId: boolean}
+  const [success, setSuccess] = useState({}); // {pageId: boolean}
+
+  const agents = user?.agents || [];
+
+  const handleAssign = async (pageId, agentId) => {
+    if (!agentId) return;
+    setAssigning(prev => ({ ...prev, [pageId]: true }));
+    try {
+      await apiService.assignAgentToPage(pageId, agentId);
+      setSuccess(prev => ({ ...prev, [pageId]: true }));
+      setTimeout(() => {
+        setSuccess(prev => ({ ...prev, [pageId]: false }));
+      }, 3000);
+    } catch (error) {
+      console.error("Failed to assign agent:", error);
+      alert("Failed to assign agent: " + error.message);
+    } finally {
+      setAssigning(prev => ({ ...prev, [pageId]: false }));
+    }
+  };
+
+  return (
+    <div className="dashboard-content-area animate-fade-in-up">
+      <div className="dashboard-header">
+        <h2>Overview</h2>
+        <p>Welcome back{user?.first_name ? `, ${user.first_name}` : ''}! Manage your pages and assign AI agents.</p>
+      </div>
+      
+      <div className="pages-grid">
+        {Array.isArray(pages) && pages.map(page => (
+          <div key={page.page_id} className="page-card-container">
+            <div className="giant-page-btn btn-blue">
+              <Bot size={48} className="page-icon" />
+              <span className="page-name">{page.name}</span>
+            </div>
+            
+            <div className="agent-assign-box">
+              <label>Assigned Agent</label>
+              <select 
+                defaultValue="" 
+                onChange={(e) => handleAssign(page.page_id, e.target.value)}
+                disabled={assigning[page.page_id]}
+                className={success[page.page_id] ? 'success-pulse' : ''}
+              >
+                <option value="" disabled>Select an Agent...</option>
+                {agents.length === 0 ? (
+                  <option disabled>No agents created yet</option>
+                ) : (
+                  agents.map(agent => (
+                    <option key={agent.agent_id} value={agent.agent_id}>
+                      {agent.name} ({agent.role || 'Agent'})
+                    </option>
+                  ))
+                )}
+              </select>
+              {success[page.page_id] && <span className="assign-success-text">✓ Assigned!</span>}
+            </div>
+          </div>
+        ))}
+
+        {/* Add Page Placeholder */}
+        <div className="page-card-container">
+          <button className="giant-page-btn btn-add-dashed">
+            <Plus size={48} className="page-icon" />
+            <span className="page-name">Add Page</span>
+          </button>
+        </div>
+      </div>
     </div>
-    
-    <div className="pages-grid">
-      {/* Demo Page 1 */}
-      <button className="giant-page-btn btn-blue">
-        <Bot size={48} className="page-icon" />
-        <span className="page-name">Support Bot</span>
-      </button>
+  );
+};
 
-      {/* Demo Page 2 */}
-      <button className="giant-page-btn btn-purple">
-        <MessageSquare size={48} className="page-icon" />
-        <span className="page-name">Sales Chat</span>
-      </button>
-
-      {/* Demo Page 3 */}
-      <button className="giant-page-btn btn-green">
-        <Book size={48} className="page-icon" />
-        <span className="page-name">Docs Assistant</span>
-      </button>
-
-      {/* Add Page */}
-      <button className="giant-page-btn btn-add-dashed">
-        <Plus size={48} className="page-icon" />
-        <span className="page-name">Add Page</span>
-      </button>
-    </div>
-  </div>
-);
-
-const mockContacts = [
-  {
-    id: 1,
-    name: 'Sarah Jenkins',
-    avatar: 'SJ',
-    color: '#8b5cf6',
-    times: '10:42 AM',
-    messages: [
-      { id: 1, text: 'Hi, I need help resetting my password.', sender: 'them' },
-      { id: 2, text: 'Hello Sarah! I can certainly help you with that. Are you locked out of your current account?', sender: 'me' },
-      { id: 3, text: 'Yes, I tried logging in from a new device.', sender: 'them' }
-    ],
-    analytics: { response: '1m 12s', resolution: 'In Progress' }
-  },
-  {
-    id: 2,
-    name: 'Michael Chen',
-    avatar: 'MC',
-    color: '#0ea5e9',
-    times: 'Yesterday',
-    messages: [
-      { id: 1, text: 'Does the enterprise plan include API access?', sender: 'them' },
-      { id: 2, text: 'Hi Michael, yes, the Enterprise plan includes full access to our GraphQL API and dedicated support.', sender: 'me' },
-      { id: 3, text: 'Perfect, thank you.', sender: 'them' }
-    ],
-    analytics: { response: '45s', resolution: 'Resolved' }
-  },
-  {
-    id: 3,
-    name: 'Emma Watson',
-    avatar: 'EW',
-    color: '#10b981',
-    times: 'Yesterday',
-    messages: [
-      { id: 1, text: 'How do I add a new agent to my team?', sender: 'them' },
-      { id: 2, text: 'You can add a new agent by going to Settings > Team > Invite Members.', sender: 'me' }
-    ],
-    analytics: { response: '2m 05s', resolution: 'Resolved' }
-  },
-  {
-    id: 4,
-    name: 'David Rodriguez',
-    avatar: 'DR',
-    color: '#f59e0b',
-    times: 'Monday',
-    messages: [
-      { id: 1, text: 'I am seeing an error when trying to deploy the chat widget on my WordPress site.', sender: 'them' },
-      { id: 2, text: 'Hi David, could you provide the specific error message you are seeing in your browser console?', sender: 'me' }
-    ],
-    analytics: { response: '3m 40s', resolution: 'In Progress' }
-  }
-];
-
-const ConversationList = () => {
-  const [activeContact, setActiveContact] = useState(mockContacts[0]);
+const ConversationList = ({ pages }) => {
+  const [selectedPageId, setSelectedPageId] = useState('');
+  const [contacts, setContacts] = useState([]);
+  const [activeContact, setActiveContact] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
-  const [contacts, setContacts] = useState(mockContacts);
+  const [loading, setLoading] = useState(false);
+  const [loadingMsgs, setLoadingMsgs] = useState(false);
+
+  useEffect(() => {
+    if (pages && pages.length > 0 && !selectedPageId) {
+      setSelectedPageId(pages[0].page_id);
+    }
+  }, [pages]);
+
+  useEffect(() => {
+    if (!selectedPageId) return;
+    setLoading(true);
+    apiService.getPageDetails(selectedPageId)
+      .then(data => {
+        // Handle FB Graph variations
+        const convs = data?.conversations?.data || data?.conversations || data?.data || [];
+        setContacts(Array.isArray(convs) ? convs : []);
+        if (convs.length > 0) setActiveContact(convs[0]);
+        else setActiveContact(null);
+      })
+      .catch(err => console.error("Failed to fetch conversations", err))
+      .finally(() => setLoading(false));
+  }, [selectedPageId]);
+
+  useEffect(() => {
+    if (!selectedPageId || !activeContact) return;
+    setLoadingMsgs(true);
+    const convId = activeContact.id || activeContact.conversation_id || activeContact.id;
+    apiService.getConversationDetails(selectedPageId, convId)
+      .then(data => {
+         const msgs = data?.messages?.data || data?.messages || data?.data || [];
+         // Typically Facebook returns newest first, reverse for chat UI
+         setMessages(Array.isArray(msgs) ? msgs.reverse() : []);
+      })
+      .catch(err => console.error("Failed to fetch messages", err))
+      .finally(() => setLoadingMsgs(false));
+  }, [selectedPageId, activeContact]);
+
+  const handleSend = () => {
+    if (!inputText.trim()) return;
+    alert("Sending custom messages is disabled or restricted in the current open API phase. The AI Agent will handle replies automatically.");
+    setInputText('');
+  };
+
+  const renderAvatar = (contactObj, extraClass = "") => {
+    // Facebook Graph API usually returns profile pictures in one of these structures depending on your query
+    // Adding more variations like "profile_picture", "picture.url", etc.
+    const url = 
+      contactObj?.senders?.data?.[0]?.profile_pic || 
+      contactObj?.participants?.data?.[0]?.profile_pic ||
+      contactObj?.profile_pic || 
+      contactObj?.picture?.data?.url || 
+      contactObj?.picture?.url || 
+      contactObj?.picture ||
+      contactObj?.profile_picture;
+    
+    const name = contactObj?.senders?.data?.[0]?.name || contactObj?.participants?.data?.[0]?.name || contactObj?.name || 'U';
+    
+    if (url && typeof url === 'string') {
+      return (
+        <div 
+          className={`contact-avatar ${extraClass}`} 
+          style={{ backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#e2e8f0' }} 
+        />
+      );
+    }
+    return (
+      <div className={`contact-avatar ${extraClass}`} style={{ backgroundColor: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+        {name.charAt(0)}
+      </div>
+    );
+  };
 
   const renderChatMessage = (msg) => {
-    // Mock bot avatar
-    const botAvatarColor = '#cbd5e1';
+    // The debug info shows msg has a "role" field ("user") and "is_ai_msg" boolean.
+    // If "role" is "user" -> it's the customer (isMe = false).
+    // If "is_ai_msg" is true -> it's the bot (isMe = true).
+    
+    let isMe = true; 
+    if (msg.role === 'user') {
+      isMe = false;
+    } else if (msg.is_ai_msg === true) {
+      isMe = true;
+    } else {
+      // Fallback: search for ID comparison or name matching
+      const customerId = activeContact?.senders?.data?.[0]?.id || activeContact?.participants?.data?.[0]?.id || activeContact?.id;
+      const fromId = msg?.from?.id;
+      if (fromId && customerId) {
+        isMe = fromId !== customerId;
+      }
+    }
     
     return (
-      <div key={msg.id} className={`chat-message-row ${msg.sender === 'me' ? 'sent' : 'received'}`}>
-        {msg.sender !== 'me' && (
-          <div className="contact-avatar very-small" style={{ backgroundColor: activeContact.color }}>
-            {activeContact.avatar}
-          </div>
-        )}
+      <div key={msg.id || msg.message_id || Math.random()} className={`chat-message-row ${isMe ? 'sent' : 'received'}`}>
+        {!isMe && renderAvatar(activeContact, "very-small")}
         <div className="chat-bubble">
-            {msg.text}
+            {msg.message || msg.text || ''}
         </div>
-        {msg.sender === 'me' && (
-          <div className="contact-avatar very-small" style={{ backgroundColor: botAvatarColor, color: '#333' }}>
+        {isMe && (
+          <div className="contact-avatar very-small" style={{ backgroundColor: '#cbd5e1', color: '#333' }}>
             QB
           </div>
         )}
@@ -120,96 +193,114 @@ const ConversationList = () => {
     );
   };
 
-  const handleSend = () => {
-    if (!inputText.trim()) return;
-    
-    const updatedContacts = contacts.map(contact => {
-      if (contact.id === activeContact.id) {
-        const newMessage = { id: Date.now(), text: inputText, sender: 'me' };
-        return { ...contact, messages: [...contact.messages, newMessage] };
-      }
-      return contact;
-    });
-
-    setContacts(updatedContacts);
-    setActiveContact(updatedContacts.find(c => c.id === activeContact.id));
-    setInputText('');
-  };
+  if (!pages || pages.length === 0) {
+    return (
+      <div className="dashboard-content-area conversation-layout animate-fade-in-up">
+        <div style={{ padding: '40px' }}>
+          <h2>Conversations</h2>
+          <p>Please connect a Facebook page to view your Messenger/Instagram inboxes here.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-content-area conversation-layout animate-fade-in-up">
       {/* Left Pane: Contacts */}
       <div className="conv-contacts-pane">
-        <div className="pane-header">
-          <h3>Conversations</h3>
+        <div className="pane-header" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <h3 style={{ margin: 0 }}>Inbox</h3>
+          <select 
+            value={selectedPageId} 
+            onChange={e => setSelectedPageId(e.target.value)}
+            style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: '#f8fafc', outline: 'none' }}
+          >
+            {pages.map(p => <option key={p.page_id} value={p.page_id}>{p.name}</option>)}
+          </select>
         </div>
         <div className="contact-list">
-          {contacts.map(contact => (
-            <div 
-              key={contact.id} 
-              className={`contact-item ${activeContact.id === contact.id ? 'active' : ''}`}
-              onClick={() => setActiveContact(contact)}
-            >
-              <div className="contact-avatar" style={{ backgroundColor: contact.color }}>
-                {contact.avatar}
+          {loading ? (
+            <div style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>Loading channels...</div>
+          ) : contacts.length === 0 ? (
+            <div style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>No ongoing conversations.</div>
+          ) : contacts.map((contact, i) => {
+            const contactName = contact.name || contact.senders?.data?.[0]?.name || contact.participants?.data?.[0]?.name || `User ${i}`;
+            const snippet = contact.snippet || contact.last_message || contact.messages?.data?.[0]?.message || contact.messages?.[0]?.message || 'No messages';
+            const updated = new Date(contact.updated_time || contact.last_message_at || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const id = contact.conversation_id || contact.id || i;
+
+            return (
+              <div 
+                key={id} 
+                className={`contact-item ${(activeContact?.id || activeContact?.conversation_id) === id ? 'active' : ''}`}
+                onClick={() => setActiveContact(contact)}
+              >
+                {renderAvatar(contact)}
+                <div className="contact-info">
+                  <h4>{contactName}</h4>
+                  <p>{snippet}</p>
+                </div>
+                <span className="contact-time">{updated}</span>
               </div>
-              <div className="contact-info">
-                <h4>{contact.name}</h4>
-                <p>{contact.messages[contact.messages.length - 1]?.text || 'No messages yet'}</p>
-              </div>
-              <span className="contact-time">{contact.times}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
       {/* Middle Pane: Active Chat */}
       <div className="conv-chat-pane">
-        <div className="pane-header border-bottom">
-          <div className="active-chat-header">
-            <div className="contact-avatar small" style={{ backgroundColor: activeContact.color }}>
-              {activeContact.avatar}
+        {activeContact ? (
+          <>
+            <div className="pane-header border-bottom">
+              <div className="active-chat-header">
+                {renderAvatar(activeContact, "small")}
+                <h3>{activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}</h3>
+              </div>
             </div>
-            <h3>{activeContact.name}</h3>
+            
+
+            <div className="chat-history">
+              {loadingMsgs ? (
+                <div style={{ textAlign: 'center', color: '#64748b', marginTop: '20px' }}>Loading messages...</div>
+              ) : messages.length === 0 ? (
+                <div style={{ textAlign: 'center', color: '#64748b', marginTop: '20px' }}>No messages available in this thread.</div>
+              ) : (
+                messages.map(msg => renderChatMessage(msg))
+              )}
+            </div>
+            
+            <div className="chat-input-area">
+              <input 
+                type="text" 
+                placeholder="Type a message (Read-Only Preview)" 
+                className="chat-input"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              />
+              <button className="btn-send" onClick={handleSend}>Send</button>
+            </div>
+          </>
+        ) : (
+          <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+            Select a conversation to view chat history
           </div>
-        </div>
-        
-        <div className="chat-history">
-          {activeContact.messages.map(msg => renderChatMessage(msg))}
-        </div>
-        
-        <div className="chat-input-area">
-          <input 
-            type="text" 
-            placeholder="Type a message..." 
-            className="chat-input"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          />
-          <button className="btn-send" onClick={handleSend}>Send</button>
-        </div>
+        )}
       </div>
 
-      {/* Right Pane: Analytics */}
+      {/* Right Pane: Analytics (Stateless Mock Panel) */}
       <div className="conv-analytics-pane">
         <div className="pane-header">
-          <h3>Chat Details</h3>
+          <h3>Chat Context</h3>
         </div>
         <div className="analytics-content">
           <div className="stat-box">
-            <span className="stat-label">Current Status</span>
-            <span className={`stat-value ${activeContact.analytics.resolution === 'Resolved' ? 'resolved-status' : 'progress-status'}`}>
-              {activeContact.analytics.resolution}
-            </span>
+            <span className="stat-label">AI Agent Handling</span>
+            <span className="stat-value progress-status">Active</span>
           </div>
           <div className="stat-box">
-            <span className="stat-label">Average Response Time</span>
-            <span className="stat-value">{activeContact.analytics.response}</span>
-          </div>
-          <div className="stat-box">
-            <span className="stat-label">Total Messages</span>
-            <span className="stat-value">{activeContact.messages.length}</span>
+            <span className="stat-label">Message Count</span>
+            <span className="stat-value">{messages.length}</span>
           </div>
           
           <div className="dummy-graph-box">
@@ -317,59 +408,182 @@ const FeedbackPanel = () => {
   );
 };
 
-const Knowledge = () => {
+const Knowledge = ({ pages }) => {
   const [showModal, setShowModal] = useState(false);
+  const [selectedPageId, setSelectedPageId] = useState('');
+  const [knowledgeList, setKnowledgeList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  
+  // Modal state
+  const [name, setName] = useState('');
+  const [textMode, setTextMode] = useState(false); // toggle between file and text/url
+  const [file, setFile] = useState(null);
+  const [textContent, setTextContent] = useState('');
+  const [urlContent, setUrlContent] = useState('');
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if (pages && pages.length > 0 && !selectedPageId) {
+      setSelectedPageId(pages[0].page_id);
+    }
+  }, [pages]);
+
+  useEffect(() => {
+    if (!selectedPageId) return;
+    setLoading(true);
+    apiService.getKnowledge(selectedPageId)
+      .then(data => {
+        // Assume data is an array or { results: [] }
+        setKnowledgeList(Array.isArray(data) ? data : (data.results || data.items || []));
+      })
+      .catch(err => console.error("Failed to load knowledge", err))
+      .finally(() => setLoading(false));
+  }, [selectedPageId]);
+
+  const handleAddKnowledge = async (e) => {
+    e.preventDefault();
+    if (!selectedPageId) return alert('Please select a page first');
+    if (!name.trim()) return alert('Name is required');
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      if (!textMode && file) {
+        formData.append('file', file);
+      }
+      
+      const dataSource = {
+        name: name.trim(),
+        text: textMode ? (textContent.trim() || null) : null,
+        url: textMode ? (urlContent.trim() || null) : null
+      };
+
+      formData.append('data_source', JSON.stringify(dataSource));
+
+      await apiService.createKnowledge(selectedPageId, formData);
+      
+      // refresh list
+      const updatedList = await apiService.getKnowledge(selectedPageId);
+      setKnowledgeList(Array.isArray(updatedList) ? updatedList : (updatedList.results || updatedList.items || []));
+      
+      setShowModal(false);
+      setName('');
+      setFile(null);
+      setTextContent('');
+      setUrlContent('');
+    } catch (error) {
+      console.error(error);
+      alert('Failed to upload knowledge: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (!pages || pages.length === 0) {
+    return (
+      <div className="dashboard-content-area animate-fade-in-up">
+        <div className="dashboard-header">
+          <h2>Knowledge Base</h2>
+          <p>Please connect a Facebook page before adding knowledge. The API requires a linked page context.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-content-area animate-fade-in-up">
-       <div className="dashboard-header flex-between">
+       <div className="dashboard-header flex-between" style={{ flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h2>Knowledge Base</h2>
           <p>Manage the documents and context your AI uses.</p>
         </div>
-        <button className="btn-add-knowledge" onClick={() => setShowModal(true)}>
-          <Plus size={18} /> Add Knowledge
-        </button>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <select 
+            value={selectedPageId} 
+            onChange={e => setSelectedPageId(e.target.value)}
+            style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: '#fff', outline: 'none', fontWeight: 500 }}
+          >
+            {pages.map(p => <option key={p.page_id} value={p.page_id}>{p.name}</option>)}
+          </select>
+
+          <button className="btn-add-knowledge" onClick={() => setShowModal(true)}>
+            <Plus size={18} /> Add Knowledge
+          </button>
+        </div>
       </div>
 
       <div className="knowledge-list">
         <div className="knowledge-header-row">
           <div className="k-col k-name">Name</div>
-          <div className="k-col k-title">Title</div>
-          <div className="k-col k-desc">Description</div>
+          <div className="k-col k-desc">Type</div>
         </div>
         
-        {/* Dummy Items */}
-        {[1, 2].map(i => (
-          <div key={i} className="knowledge-item">
-            <div className="k-col k-name">Company_Policy_v{i}</div>
-            <div className="k-col k-title">Handbook {i}</div>
-            <div className="k-col k-desc">Internal rules and regulations document serving as context.</div>
-          </div>
-        ))}
+        {loading ? (
+          <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>Loading documents...</div>
+        ) : knowledgeList.length === 0 ? (
+          <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>No documents found for this page.</div>
+        ) : (
+          knowledgeList.map((item, i) => (
+            <div key={item.id || i} className="knowledge-item">
+              <div className="k-col k-name">{item.data_source?.name || item.name || 'Unnamed Document'}</div>
+              <div className="k-col k-desc">
+                {item.file_name ? 'File' : (item.data_source?.url ? 'URL Link' : 'Raw Text')}
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
-      {/* Add Knowledge Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content animate-fade-in-up">
             <h3>Add New Knowledge</h3>
-            <form className="modal-form" onSubmit={(e) => { e.preventDefault(); setShowModal(false); }}>
+            
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+              <button 
+                type="button" 
+                onClick={() => setTextMode(false)}
+                style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: !textMode ? '#e0f2fe' : '#f1f5f9', color: !textMode ? '#0369a1' : '#64748b', fontWeight: 600, cursor: 'pointer' }}
+              >
+                File Upload
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setTextMode(true)}
+                style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: textMode ? '#e0f2fe' : '#f1f5f9', color: textMode ? '#0369a1' : '#64748b', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Text / Link
+              </button>
+            </div>
+
+            <form className="modal-form" onSubmit={handleAddKnowledge}>
               <div className="form-group">
-                <label>Name</label>
-                <input type="text" placeholder="e.g. Return_Policy" required />
+                <label>Document Name *</label>
+                <input type="text" placeholder="e.g. Return_Policy" value={name} onChange={e => setName(e.target.value)} required />
               </div>
-              <div className="form-group">
-                <label>Title</label>
-                <input type="text" placeholder="e.g. 30-Day Returns" required />
-              </div>
-              <div className="form-group">
-                <label>Description</label>
-                <textarea placeholder="Brief description of this knowledge source..." rows="3" required></textarea>
-              </div>
-              <div className="modal-actions">
-                <button type="button" className="btn-cancel" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn-submit">Submit</button>
+
+              {!textMode ? (
+                <div className="form-group">
+                  <label>Upload File</label>
+                  <input type="file" onChange={e => setFile(e.target.files[0])} style={{ padding: '8px' }} required />
+                </div>
+              ) : (
+                <>
+                  <div className="form-group">
+                    <label>Website URL (Optional)</label>
+                    <input type="url" placeholder="https://example.com/pricing" value={urlContent} onChange={e => setUrlContent(e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label>Raw Text (Optional)</label>
+                    <textarea placeholder="Paste plain text content here..." value={textContent} onChange={e => setTextContent(e.target.value)} rows="4"></textarea>
+                  </div>
+                </>
+              )}
+
+              <div className="modal-actions" style={{ marginTop: '24px' }}>
+                <button type="button" className="btn-cancel" onClick={() => setShowModal(false)} disabled={uploading}>Cancel</button>
+                <button type="submit" className="btn-submit" disabled={uploading}>{uploading ? 'Processing...' : 'Upload'}</button>
               </div>
             </form>
           </div>
@@ -406,20 +620,58 @@ const PERSONAS = [
   },
 ];
 
-const AgentPanel = () => {
+const AgentPanel = ({ user, onUpdate }) => {
   const [agentName, setAgentName] = useState('');
   const [selectedPersona, setSelectedPersona] = useState(null);
+  const [tone, setTone] = useState('Professional');
+  const [language, setLanguage] = useState('English');
+  const [businessName, setBusinessName] = useState('');
+  const [businessDesc, setBusinessDesc] = useState('');
+  const [instructions, setInstructions] = useState('');
+  
+  const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState(false);
 
-  const handleCreate = (e) => {
+  const TONES = ["Professional", "Friendly", "Formal", "Casual", "Persuasive", "Empathetic", "Confident"];
+  const LANGUAGES = ["Mimic User Language", "English", "Arabic", "Spanish", "French", "German", "Portuguese", "Hindi", "Bengali"];
+
+  const handleCreate = async (e) => {
     e.preventDefault();
-    if (!agentName.trim() || !selectedPersona) return;
-    setCreated(true);
-    setTimeout(() => {
-      setCreated(false);
-      setAgentName('');
-      setSelectedPersona(null);
-    }, 3000);
+    if (!agentName.trim() || !selectedPersona || !businessName.trim() || !businessDesc.trim()) return;
+    
+    setLoading(true);
+    try {
+      const roleMap = { 'sales': 'Sales Agent', 'support': 'Support Agent', 'qa': 'Q&A Agent' };
+      const payload = {
+        name: agentName,
+        role: roleMap[selectedPersona],
+        tone,
+        language,
+        business_name: businessName,
+        business_description: businessDesc,
+        instructions: instructions.trim() || null
+      };
+
+      const userId = user?.email || 'default_user_session';
+      await apiService.createAgent(userId, payload);
+      
+      if (onUpdate) await onUpdate(); // Refresh user data to get the new agent list
+      
+      setCreated(true);
+      setTimeout(() => {
+        setCreated(false);
+        setAgentName('');
+        setSelectedPersona(null);
+        setBusinessName('');
+        setBusinessDesc('');
+        setInstructions('');
+      }, 3000);
+    } catch (error) {
+      console.error('Failed to create agent:', error);
+      alert('Failed to create agent: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -427,94 +679,70 @@ const AgentPanel = () => {
       <div className="dashboard-header" style={{ textAlign: 'center', marginBottom: '32px' }}>
         <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>Create Your Agent</h3>
         <p style={{ color: '#64748b', fontSize: '14px' }}>
-          Configure your AI agent&apos;s personality and behavior
+          Configure your AI agent&apos;s personality, behavior, and business context.
         </p>
       </div>
 
       <form
         onSubmit={handleCreate}
-        style={{ maxWidth: '520px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '22px' }}
+        style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '22px' }}
       >
-        {/* Agent Name */}
-        <div className="form-group">
-          <label>Agent Name</label>
-          <input
-            type="text"
-            placeholder="e.g. My Sales Bot"
-            value={agentName}
-            onChange={(e) => setAgentName(e.target.value)}
-          />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="form-group">
+            <label>Agent Name *</label>
+            <input type="text" placeholder="e.g. Sales Bot" value={agentName} onChange={(e) => setAgentName(e.target.value)} required />
+          </div>
+          <div className="form-group">
+            <label>Business Name *</label>
+            <input type="text" placeholder="Your Company Ltd" value={businessName} onChange={(e) => setBusinessName(e.target.value)} required />
+          </div>
         </div>
 
-        {/* Persona Selector */}
         <div className="form-group">
-          <label style={{ marginBottom: '10px', display: 'block' }}>Select Persona</label>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <label style={{ marginBottom: '10px', display: 'block' }}>Select Persona *</label>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
             {PERSONAS.map((p) => {
               const Icon = p.icon;
               const isSelected = selectedPersona === p.id;
               return (
-                <div
-                  key={p.id}
-                  onClick={() => setSelectedPersona(p.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '14px',
-                    padding: '14px 16px',
-                    borderRadius: '10px',
-                    border: isSelected ? '2px solid #0ea5e9' : '2px solid #e2e8f0',
-                    backgroundColor: isSelected ? 'rgba(14,165,233,0.05)' : '#f8fafc',
-                    cursor: 'pointer',
-                    transition: 'border-color 0.2s, background-color 0.2s',
-                  }}
-                >
-                  <div style={{
-                    width: '42px',
-                    height: '42px',
-                    borderRadius: '10px',
-                    backgroundColor: p.iconBg,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}>
+                <div key={p.id} onClick={() => setSelectedPersona(p.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '14px 12px', borderRadius: '10px', border: isSelected ? '2px solid #0ea5e9' : '2px solid #e2e8f0', backgroundColor: isSelected ? 'rgba(14,165,233,0.05)' : '#f8fafc', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '10px', backgroundColor: p.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Icon size={20} color={p.iconColor} />
                   </div>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text-primary)', marginBottom: '2px' }}>
-                      {p.title}
-                    </div>
-                    <div style={{ fontSize: '13px', color: '#64748b' }}>{p.desc}</div>
-                  </div>
-                  {isSelected && (
-                    <div style={{ marginLeft: 'auto', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#0ea5e9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </div>
-                  )}
+                  <div style={{ fontWeight: 600, fontSize: '13px', color: 'var(--text-primary)' }}>{p.title}</div>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          className="btn-submit"
-          style={{
-            backgroundColor: created ? '#22c55e' : 'var(--text-primary)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '14px',
-            fontSize: '15px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            transition: 'background-color 0.25s',
-          }}
-        >
-          {created ? '✓ Agent Created!' : 'Create Agent'}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="form-group">
+            <label>Tone *</label>
+            <select value={tone} onChange={e => setTone(e.target.value)} style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', backgroundColor: '#fff', fontSize: '14px' }}>
+              {TONES.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Language *</label>
+            <select value={language} onChange={e => setLanguage(e.target.value)} style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', backgroundColor: '#fff', fontSize: '14px' }}>
+              {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>Business Description *</label>
+          <textarea placeholder="What does your business do? How should the agent ground its suggestions?" value={businessDesc} onChange={(e) => setBusinessDesc(e.target.value)} rows="3" style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', fontFamily: 'inherit', resize: 'vertical' }} required />
+        </div>
+
+        <div className="form-group">
+          <label>Custom Instructions (Optional)</label>
+          <textarea placeholder="e.g. Always end conversations with 'Have a great day!'" value={instructions} onChange={(e) => setInstructions(e.target.value)} rows="2" style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', fontFamily: 'inherit', resize: 'vertical' }} />
+        </div>
+
+        <button type="submit" className="btn-submit" disabled={loading} style={{ backgroundColor: created ? '#22c55e' : (loading ? '#94a3b8' : 'var(--text-primary)'), color: '#fff', border: 'none', borderRadius: '8px', padding: '14px', fontSize: '15px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background-color 0.25s' }}>
+          {loading ? 'Creating...' : (created ? '✓ Agent Created!' : 'Create Agent')}
         </button>
       </form>
     </div>
@@ -891,13 +1119,46 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+  
+  const [user, setUser] = useState(null);
+  const [pages, setPages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const userData = await apiService.getUserProfile();
+      const pagesData = await apiService.getPages();
+      
+      const parsedUser = userData?.user || userData || null;
+      const parsedPages = Array.isArray(pagesData) ? pagesData : (pagesData?.pages || pagesData?.data || []);
+
+      setUser(parsedUser);
+      setPages(parsedPages);
+    } catch (err) {
+      console.error("Failed to fetch user data:", err);
+      if (err.status === 401) {
+        navigate('/app/login');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const renderContent = () => {
+    if (loading) {
+      return <div className="dashboard-content-area"><h2>Loading workspace...</h2></div>;
+    }
+
     switch(activeTab) {
-      case 'overview': return <Overview />;
-      case 'conversation': return <ConversationList />;
-      case 'knowledge': return <Knowledge />;
-      case 'agent': return <AgentPanel />;
+      case 'overview': return <Overview user={user} pages={pages} />;
+      case 'conversation': return <ConversationList pages={pages} />;
+      case 'knowledge': return <Knowledge pages={pages} />;
+      case 'agent': return <AgentPanel user={user} onUpdate={fetchData} />;
       case 'feedback': return <FeedbackPanel />;
       case 'settings': return <SettingsPanel />;
       default: return <div className="dashboard-content-area"><h2>Coming Soon</h2></div>;
@@ -998,8 +1259,11 @@ export default function Dashboard() {
               className="profile-toggle-btn" 
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
-              <div className="contact-avatar very-small" style={{ backgroundColor: '#0ea5e9', color: 'white' }}>JS</div>
-              <span className="profile-name">John Smith</span>
+              <div className="contact-avatar very-small" style={{ backgroundColor: '#0ea5e9', color: 'white' }}>
+                {user?.first_name ? user.first_name.charAt(0) : 'U'}
+                {user?.last_name ? user.last_name.charAt(0) : ''}
+              </div>
+              <span className="profile-name">{user?.first_name ? `${user.first_name} ${user?.last_name || ''}` : 'Workspace User'}</span>
               <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotated' : ''}`} />
             </button>
           </div>
@@ -1015,16 +1279,22 @@ export default function Dashboard() {
              </div>
              <div className="drawer-content">
                <div className="drawer-user-info">
-                 <div className="contact-avatar large" style={{ backgroundColor: '#0ea5e9', color: 'white' }}>JS</div>
-                 <h4>John Smith</h4>
-                 <p>john.smith@company.com</p>
+                 <div className="contact-avatar large" style={{ backgroundColor: '#0ea5e9', color: 'white' }}>
+                   {user?.first_name ? user.first_name.charAt(0) : 'U'}
+                   {user?.last_name ? user.last_name.charAt(0) : ''}
+                 </div>
+                 <h4>{user?.first_name ? `${user.first_name} ${user?.last_name || ''}` : 'Workspace User'}</h4>
+                 <p>{user?.email || 'No email provided'}</p>
                </div>
                
                <div className="drawer-menu">
                  <button className="drawer-menu-item">
                    <User size={18} /> Account Settings
                  </button>
-                 <button className="drawer-menu-item" onClick={() => window.location.href = '/login'}>
+                 <button className="drawer-menu-item" onClick={async () => {
+                   await apiService.logout().catch(() => {});
+                   window.location.href = '/app/login';
+                 }}>
                    <LogOut size={18} /> Log Out
                  </button>
                </div>

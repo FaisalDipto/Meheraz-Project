@@ -303,28 +303,111 @@
 /* --- Overview Tab --- */
 .pages-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 32px;
+}
+
+.page-card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.page-card-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.05);
+  border-color: #0ea5e9;
 }
 
 .giant-page-btn {
-  aspect-ratio: 1; /* Makes it a perfect square before rounding */
+  width: 140px;
+  height: 140px;
   border-radius: 50%; /* Giant circle */
   border: none;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   cursor: pointer;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
   color: white;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
-.giant-page-btn:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+.giant-page-btn .page-name {
+  font-size: 14px;
+  max-width: 100px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agent-assign-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agent-assign-box label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.agent-assign-box select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.agent-assign-box select:focus {
+  border-color: #0ea5e9;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
+}
+
+.assign-success-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #10b981;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.success-pulse {
+  border-color: #10b981 !important;
+  background-color: #f0fdf4 !important;
+  animation: successPulse 0.5s ease;
+}
+
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .btn-blue {

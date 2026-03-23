@@ -3,12 +3,17 @@ import { Link } from 'react-router-dom';
 import './GetStarted.css';
 
 export default function GetStarted() {
+  const handleConnectMeta = () => {
+    const redirectUrl = encodeURIComponent(window.location.origin + '/app/dashboard');
+    window.location.href = `http://www.meharaz733.com/api/auth/facebook/login?redirect_uri=${redirectUrl}&next=/app/dashboard`;
+  };
+
   return (
     <div className="get-started-container">
       {/* Left Panel - Sky Blue */}
       <div className="left-panel">
         <div className="left-panel-header">
-          <Link to="/" className="gs-logo-container">
+          <Link to="/app" className="gs-logo-container">
             <div className="gs-logo-q">
               Q
               <div className="gs-logo-bubble"><div className="gs-logo-dot"></div><div className="gs-logo-dot"></div><div className="gs-logo-dot"></div></div>
@@ -31,7 +36,7 @@ export default function GetStarted() {
         </div>
 
         <div className="left-panel-footer">
-          <Link to="/" className="back-link">&lt; Choose Another Channel</Link>
+          <Link to="/app" className="back-link">&lt; Choose Another Channel</Link>
         </div>
       </div>
 
@@ -43,7 +48,7 @@ export default function GetStarted() {
             We'll take you to Meta to connect. Just set your permissions, and your Instagram account will be linked to Qchat.
           </p>
           
-          <button className="btn-connect-meta">
+          <button className="btn-connect-meta" onClick={handleConnectMeta}>
             Connect Via Meta
           </button>
 

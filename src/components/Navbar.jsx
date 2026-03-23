@@ -156,8 +156,8 @@ export default function Navbar() {
 
         {/* Action Section */}
         <div className="nav-actions">
-          <Link to="/login" className="btn-signin">Sign In</Link>
-          <Link to="/get-started" className="btn-get-started">Get Started</Link>
+          <Link to="/app/login" className="btn-signin">Sign In</Link>
+          <Link to="/app/get-started" className="btn-get-started">Get Started</Link>
         </div>
         </div>
       </nav>

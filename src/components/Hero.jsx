@@ -20,7 +20,7 @@ export default function Hero() {
             Instantly reply to customers, capture leads, and grow sales automatically using smart chat automation built for modern businesses.
           </p>
           <div className="hero-action animate-fade-in-up delay-2">
-            <Link to="/get-started" className="btn-hero-started">Get Started</Link>
+            <Link to="/app/get-started" className="btn-hero-started">Get Started</Link>
           </div>
         </div>
 

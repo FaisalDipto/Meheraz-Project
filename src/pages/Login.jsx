@@ -10,7 +10,7 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Dummy login logic: redirect to dashboard
-    navigate('/dashboard');
+    navigate('/app/dashboard');
   };
 
   return (
@@ -23,7 +23,7 @@ export default function Login() {
       <div className="login-card-wrapper animate-fade-in-up">
         {/* Header / Logo */}
         <div className="login-header">
-          <Link to="/" className="login-logo-container">
+          <Link to="/app" className="login-logo-container">
             <div className="login-logo-q">
               Q
               <div className="login-logo-bubble">
@@ -73,7 +73,7 @@ export default function Login() {
         {/* Footer Links */}
         <div className="login-footer">
           <p>Don't have an account?</p>
-          <Link to="/get-started" className="signup-link">Get Started</Link>
+          <Link to="/app/get-started" className="signup-link">Get Started</Link>
         </div>
       </div>
     </div>
