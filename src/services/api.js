@@ -108,4 +108,10 @@ export const apiService = {
   aiChat: (prompt) => apiFetch(`/api/chat?prompt=${encodeURIComponent(prompt)}`, {
     method: 'POST',
   }),
+
+  // Feedback
+  submitFeedback: (feedbackData) => apiFetch('/api/feedback', {
+    method: 'POST',
+    body: JSON.stringify(feedbackData),
+  }),
 };

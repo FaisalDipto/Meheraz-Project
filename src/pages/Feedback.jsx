@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { apiService } from '../services/api';
 import './Feedback.css';
 
 export default function Feedback() {
@@ -7,15 +8,25 @@ export default function Feedback() {
   const [description, setDescription] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (title.trim() || description.trim()) {
-      setSubmitted(true);
-      setTimeout(() => {
-        setSubmitted(false);
-        setTitle('');
-        setDescription('');
-      }, 3000);
+      try {
+        await apiService.submitFeedback({
+          type: feedbackType,
+          title: title,
+          details: description
+        });
+        setSubmitted(true);
+        setTimeout(() => {
+          setSubmitted(false);
+          setTitle('');
+          setDescription('');
+        }, 3000);
+      } catch (err) {
+        console.error('Feedback submit error:', err);
+        alert('Failed to submit feedback. Please try again later.');
+      }
     }
   };
 
@@ -53,11 +64,12 @@ export default function Feedback() {
                 transition: 'border-color 0.2s, box-shadow 0.2s',
               }}
               onFocus={(e) => { e.target.style.borderColor = '#0ea5e9'; e.target.style.boxShadow = '0 0 0 3px rgba(14,165,233,0.12)'; }}
-              onBlur={(e)  => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
             >
-              <option value="Feedback">Feedback</option>
+              <option value="General">General</option>
               <option value="Report a bug">Report a bug</option>
               <option value="Suggest Improvement">Suggest Improvement</option>
+              <option value="Feature Request">Feature Request</option>
             </select>
             <div style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#cbd5e1' }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -67,7 +79,7 @@ export default function Feedback() {
           <div className="fb-form-group" style={{ margin: 0 }}>
             <input
               type="text"
-              placeholder="Feedback Title *"
+              placeholder="Title *"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               style={{
@@ -84,13 +96,13 @@ export default function Feedback() {
                 transition: 'border-color 0.2s, box-shadow 0.2s',
               }}
               onFocus={(e) => { e.target.style.borderColor = '#0ea5e9'; e.target.style.boxShadow = '0 0 0 3px rgba(14,165,233,0.12)'; }}
-              onBlur={(e)  => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
             />
           </div>
 
           <div className="fb-form-group" style={{ margin: 0 }}>
             <textarea
-              placeholder="Feedback Description *"
+              placeholder="Details *"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               style={{
@@ -109,7 +121,7 @@ export default function Feedback() {
                 transition: 'border-color 0.2s, box-shadow 0.2s',
               }}
               onFocus={(e) => { e.target.style.borderColor = '#0ea5e9'; e.target.style.boxShadow = '0 0 0 3px rgba(14,165,233,0.12)'; }}
-              onBlur={(e)  => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
             />
           </div>
 
