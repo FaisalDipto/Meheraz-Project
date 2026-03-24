@@ -103,6 +103,10 @@ export const apiService = {
   // Conversations
   getPageDetails: (pageId) => apiFetch(`/api/page/${pageId}`),
   getConversationDetails: (pageId, conversationId) => apiFetch(`/api/page/${pageId}/conversation/${conversationId}`),
+  replyToConversation: (pageId, conversationId, message) => apiFetch(`/api/facebook/${pageId}/messenger/${conversationId}/reply`, {
+    method: 'POST',
+    body: JSON.stringify({ message }),
+  }),
   
   // General AI Chat
   aiChat: (prompt) => apiFetch(`/api/chat?prompt=${encodeURIComponent(prompt)}`, {
