@@ -12,7 +12,9 @@ const THEMES = {
 };
 
 export function WidgetProvider({ children }) {
-  const [themeId, setThemeId] = useState('sky');
+  const [themeId, setThemeId] = useState(() => {
+    return localStorage.getItem('qchat_theme_id') || 'sky';
+  });
   const [widgetColor, setWidgetColor] = useState('#0ea5e9');
   const [widgetGreeting, setWidgetGreeting] = useState('Hi there 👋 How can we help you?');
   const [widgetPosition, setWidgetPosition] = useState('bottom-right');
@@ -23,6 +25,7 @@ export function WidgetProvider({ children }) {
     if (t) {
       document.documentElement.style.setProperty('--bg-primary', t.primary);
       document.documentElement.style.setProperty('--accent', t.accent); // Just in case it's used elsewhere
+      localStorage.setItem('qchat_theme_id', themeId);
     }
   }, [themeId]);
 

@@ -388,6 +388,7 @@ const ConversationList = ({ pages }) => {
 };
 
 const FeedbackPanel = () => {
+  const [feedbackType, setFeedbackType] = useState('Suggest Improvement');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -406,45 +407,89 @@ const FeedbackPanel = () => {
 
   return (
     <div className="dashboard-content-area animate-fade-in-up">
-      <div className="dashboard-header" style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>Feedback</h3>
-        <p style={{ color: '#64748b', fontSize: '14px' }}>
-          Give us Feedback, Report a Bug or Tell us how we can improve.
+      <div className="dashboard-header" style={{ textAlign: 'center', marginBottom: '32px', paddingTop: '20px' }}>
+        <h3 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '12px' }}>Feedback</h3>
+        <p style={{ color: '#334155', fontSize: '15px' }}>
+          Give us Feedback, Report a Bug, or Tell us how we can improve.
         </p>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        style={{ maxWidth: '480px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}
+        style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}
       >
+        <div className="form-group" style={{ position: 'relative' }}>
+          <select
+            value={feedbackType}
+            onChange={(e) => setFeedbackType(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '14px 16px',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+              fontSize: '15px',
+              fontFamily: 'inherit',
+              outline: 'none',
+              boxSizing: 'border-box',
+              backgroundColor: '#fff',
+              color: 'var(--text-primary)',
+              appearance: 'none',
+              cursor: 'pointer',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
+            }}
+            onFocus={(e) => { e.target.style.borderColor = '#0ea5e9'; e.target.style.boxShadow = '0 0 0 3px rgba(14,165,233,0.12)'; }}
+            onBlur={(e)  => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+          >
+            <option value="Feedback">Feedback</option>
+            <option value="Report a bug">Report a bug</option>
+            <option value="Suggest Improvement">Suggest Improvement</option>
+          </select>
+          <div style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#cbd5e1' }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+
         <div className="form-group">
-          <label>Feedback Title</label>
           <input
             type="text"
-            placeholder="Enter a short title..."
+            placeholder="Feedback Title *"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '14px 16px',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+              fontSize: '15px',
+              fontFamily: 'inherit',
+              outline: 'none',
+              boxSizing: 'border-box',
+              backgroundColor: '#fff',
+              color: 'var(--text-primary)',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
+            }}
+            onFocus={(e) => { e.target.style.borderColor = '#0ea5e9'; e.target.style.boxShadow = '0 0 0 3px rgba(14,165,233,0.12)'; }}
+            onBlur={(e)  => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
           />
         </div>
 
         <div className="form-group">
-          <label>Feedback Description</label>
           <textarea
-            placeholder="Describe your feedback in detail..."
+            placeholder="Feedback Description *"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             style={{
               width: '100%',
-              padding: '12px 14px',
+              padding: '14px 16px',
               border: '1px solid #e2e8f0',
               borderRadius: '8px',
-              fontSize: '14px',
+              fontSize: '15px',
               fontFamily: 'inherit',
               resize: 'vertical',
               outline: 'none',
-              height: '120px',
+              height: '140px',
               boxSizing: 'border-box',
-              backgroundColor: '#f8fafc',
+              backgroundColor: '#fff',
               color: 'var(--text-primary)',
               transition: 'border-color 0.2s, box-shadow 0.2s',
             }}
@@ -457,16 +502,20 @@ const FeedbackPanel = () => {
           type="submit"
           className="btn-submit"
           style={{
-            backgroundColor: submitted ? '#22c55e' : 'var(--text-primary)',
+            backgroundColor: submitted ? '#22c55e' : 'var(--bg-primary)',
             color: '#fff',
             border: 'none',
             borderRadius: '8px',
-            padding: '14px',
-            fontSize: '15px',
+            padding: '16px',
+            fontSize: '16px',
             fontWeight: 700,
             cursor: 'pointer',
-            transition: 'background-color 0.25s',
+            transition: 'background-color 0.25s, transform 0.1s',
+            marginTop: '8px',
           }}
+          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
         >
           {submitted ? '✓ Submitted!' : 'Submit'}
         </button>
