@@ -576,6 +576,8 @@ const Knowledge = ({ pages }) => {
   const [name, setName] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [knowledgeType, setKnowledgeType] = useState('text');
+  const [selectedFiles, setSelectedFiles] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [editingItemId, setEditingItemId] = useState(null);
   const [viewingItem, setViewingItem] = useState(null);
@@ -606,6 +608,7 @@ const Knowledge = ({ pages }) => {
     setName(item.name || item.data_source?.name || '');
     setTitle(item.title || '');
     setDescription(item.description || item.data_source?.text || '');
+    setKnowledgeType('text');
     setEditingItemId(actualId);
     setShowModal(true);
 
@@ -629,8 +632,10 @@ const Knowledge = ({ pages }) => {
 
     if (!window.confirm(`Are you sure you want to delete "${item.name || item.title || 'this document'}"?`)) return;
 
+    const type = (item.knowledge_type === 'file' || item.file_name) ? 'file' : 'text';
+
     try {
-      await apiService.deleteKnowledge(selectedPageId, actualId);
+      await apiService.deleteKnowledge(selectedPageId, actualId, type);
       setKnowledgeList(prev => prev.filter(k => (k.id || k.knowledge_id || k.knowledgeId || k.uuid) !== actualId));
     } catch (error) {
       console.error(error);
@@ -659,54 +664,102 @@ const Knowledge = ({ pages }) => {
   const handleAddKnowledge = async (e) => {
     e.preventDefault();
     if (!selectedPageId) return alert('Please select a page first');
-    if (!name.trim() || !title.trim() || !description.trim()) return alert('Name, Title, and Description are required');
 
-    setUploading(true);
-    try {
-      if (editingItemId) {
+    // For edits, we keep it blocking since it's fast
+    if (editingItemId) {
+      setUploading(true);
+      try {
+        if (!name.trim() || !title.trim() || !description.trim()) {
+           setUploading(false);
+           return alert('Name, Title, and Description are required');
+        }
         const updateData = {
           name: name.trim(),
           title: title.trim(),
           description: description.trim()
         };
-        const editResponse = await apiService.editKnowledge(selectedPageId, editingItemId, updateData);
-        console.log("Edit Knowledge API Response:", editResponse);
-      } else {
-        const payload = {
-          documents: [
-            {
-              name: name.trim(),
-              title: title.trim(),
-              description: description.trim()
-            }
-          ]
-        };
-        await apiService.createKnowledge(selectedPageId, payload);
-
-        // Optimistically show the item instantly
-        setKnowledgeList(prev => [...prev, {
-          id: 'temp_' + Date.now(),
-          name: name.trim(),
-          title: title.trim(),
-          description: description.trim()
-        }]);
+        await apiService.editKnowledge(selectedPageId, editingItemId, updateData);
+        // Refresh list
+        const updatedList = await apiService.getKnowledge(selectedPageId);
+        setKnowledgeList(Array.isArray(updatedList) ? updatedList : (updatedList.results || updatedList.items || []));
+        
+        setShowModal(false);
+        setName('');
+        setTitle('');
+        setDescription('');
+        setSelectedFiles(null);
+        setKnowledgeType('text');
+        setEditingItemId(null);
+      } catch (error) {
+        console.error(error);
+        alert('Failed to edit knowledge: ' + error.message);
+      } finally {
+        setUploading(false);
       }
-
-      // Refresh list from the server to get actual database IDs
-      const updatedList = await apiService.getKnowledge(selectedPageId);
-      setKnowledgeList(Array.isArray(updatedList) ? updatedList : (updatedList.results || updatedList.items || []));
-
-      setShowModal(false);
-      setName('');
-      setTitle('');
-      setDescription('');
-      setEditingItemId(null);
-    } catch (error) {
-      console.error(error);
-      alert('Failed to add knowledge: ' + error.message);
-    } finally {
-      setUploading(false);
+      return;
     }
+
+    // For Add Knowledge, we can run it optimistically and close the modal instantly!
+    if (knowledgeType === 'text') {
+        if (!name.trim() || !title.trim() || !description.trim()) {
+            return alert('Name, Title, and Description are required');
+        }
+        const payload = {
+          documents: [{ name: name.trim(), title: title.trim(), description: description.trim() }]
+        };
+        
+        const optimisticId = 'temp_' + Date.now();
+        setKnowledgeList(prev => [...prev, {
+          id: optimisticId, name: name.trim(), title: title.trim(), description: description.trim(), knowledge_type: 'text'
+        }]);
+
+        // Background process
+        apiService.createKnowledge(selectedPageId, payload)
+          .then(() => apiService.getKnowledge(selectedPageId))
+          .then(updatedList => setKnowledgeList(Array.isArray(updatedList) ? updatedList : (updatedList.results || updatedList.items || [])))
+          .catch(error => {
+            console.error(error);
+            alert('Failed to add text knowledge: ' + error.message);
+            setKnowledgeList(prev => prev.filter(k => k.id !== optimisticId));
+          });
+    } else {
+        if (!selectedFiles || selectedFiles.length === 0) {
+            return alert('Please select at least one file to upload');
+        }
+        const formData = new FormData();
+        const tempItems = [];
+        for (let i = 0; i < selectedFiles.length; i++) {
+            formData.append('files', selectedFiles[i]);
+            tempItems.push({
+              id: 'temp_file_' + Date.now() + '_' + i,
+              name: selectedFiles[i].name,
+              knowledge_type: 'file',
+              file_name: selectedFiles[i].name
+            });
+        }
+        
+        setKnowledgeList(prev => [...prev, ...tempItems]);
+        
+        // Background process
+        apiService.uploadKnowledgeFiles(selectedPageId, formData)
+          .then(() => apiService.getKnowledge(selectedPageId))
+          .then(updatedList => setKnowledgeList(Array.isArray(updatedList) ? updatedList : (updatedList.results || updatedList.items || [])))
+          .catch(error => {
+            console.error(error);
+            alert('Failed to upload files: ' + error.message);
+            const tempIds = tempItems.map(t => t.id);
+            setKnowledgeList(prev => prev.filter(k => !tempIds.includes(k.id)));
+          });
+    }
+
+    // Instantly close modal regardless of background processing
+    setShowModal(false);
+    setName('');
+    setTitle('');
+    setDescription('');
+    setSelectedFiles(null);
+    setKnowledgeType('text');
+    setEditingItemId(null);
   };
 
   if (!pages || pages.length === 0) {
@@ -741,6 +794,8 @@ const Knowledge = ({ pages }) => {
             setName('');
             setTitle('');
             setDescription('');
+            setSelectedFiles(null);
+            setKnowledgeType('text');
             setEditingItemId(null);
             setShowModal(true);
           }}>
@@ -765,24 +820,28 @@ const Knowledge = ({ pages }) => {
             <div key={item.id || i} className="knowledge-item">
               <div className="k-col k-name">{item.name || item.title || item.data_source?.name || 'Unnamed Document'}</div>
               <div className="k-col k-desc">
-                {item.description ? 'Product Details' : (item.file_name ? 'File' : (item.data_source?.url ? 'URL Link' : 'Raw Text'))}
+                {item.knowledge_type === 'file' || item.file_name ? 'File' : item.knowledge_type === 'text' ? 'Raw Text' : (item.description ? 'Product Details' : (item.data_source?.url ? 'URL Link' : 'Raw Text'))}
               </div>
               <div className="k-col k-actions" style={{ width: '100px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                <button
-                  onClick={() => handleViewClick(item)}
-                  style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
-                  title="View Details"
-                  disabled={fetchingDetails}
-                >
-                  <Book size={16} />
-                </button>
-                <button
-                  onClick={() => handleEditClick(item)}
-                  style={{ background: 'transparent', border: 'none', color: '#0ea5e9', cursor: 'pointer', padding: '4px' }}
-                  title="Edit element"
-                >
-                  <Edit2 size={16} />
-                </button>
+                {!(item.knowledge_type === 'file' || item.file_name) && (
+                  <>
+                    <button
+                      onClick={() => handleViewClick(item)}
+                      style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
+                      title="View Details"
+                      disabled={fetchingDetails}
+                    >
+                      <Book size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleEditClick(item)}
+                      style={{ background: 'transparent', border: 'none', color: '#0ea5e9', cursor: 'pointer', padding: '4px' }}
+                      title="Edit element"
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                  </>
+                )}
                 <button
                   onClick={() => handleDelete(item)}
                   style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
@@ -847,37 +906,89 @@ const Knowledge = ({ pages }) => {
 
       {showModal && (
         <div className="modal-overlay">
-          <div className="modal-content animate-fade-in-up">
+          <div className="modal-content animate-fade-in-up" style={{ maxWidth: '600px' }}>
             <h3>{editingItemId ? 'Edit Knowledge' : 'Add New Knowledge'}</h3>
 
             <form className="modal-form" onSubmit={handleAddKnowledge}>
-              <div className="form-group">
-                <label>Name *</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Product_Specs"
-                  value={name}
-                  onChange={e => {
-                    const val = e.target.value.replace(/[^a-zA-Z0-9 _-]/g, '');
-                    if (val.length <= 50) setName(val);
-                  }}
-                  maxLength={50}
-                  required
-                />
-                <small style={{ color: '#64748b', marginTop: '6px', fontSize: '12px', display: 'block' }}>Max 50 characters. Letters, numbers, spaces, _, and - only.</small>
-              </div>
+              {!editingItemId && (
+                <div className="form-group" style={{ marginBottom: '20px' }}>
+                  <label>Knowledge Type</label>
+                  <div style={{ display: 'flex', background: '#f1f5f9', borderRadius: '8px', padding: '4px', marginTop: '10px' }}>
+                    <div 
+                      onClick={() => setKnowledgeType('text')}
+                      style={{ flex: 1, textAlign: 'center', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: knowledgeType === 'text' ? '#0f172a' : '#64748b', background: knowledgeType === 'text' ? '#ffffff' : 'transparent', boxShadow: knowledgeType === 'text' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.2s' }}
+                    >
+                      Raw Text
+                    </div>
+                    <div 
+                      onClick={() => setKnowledgeType('file')}
+                      style={{ flex: 1, textAlign: 'center', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: knowledgeType === 'file' ? '#0f172a' : '#64748b', background: knowledgeType === 'file' ? '#ffffff' : 'transparent', boxShadow: knowledgeType === 'file' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.2s' }}
+                    >
+                      File Upload
+                    </div>
+                  </div>
+                </div>
+              )}
 
-              <div className="form-group">
-                <label>Title *</label>
-                <input type="text" placeholder="e.g. Premium Plan Features" value={title} onChange={e => setTitle(e.target.value)} required />
-              </div>
+              {knowledgeType === 'text' || editingItemId ? (
+                <>
+                  <div className="form-group">
+                    <label>Name *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Product_Specs"
+                      value={name}
+                      onChange={e => {
+                        const val = e.target.value.replace(/[^a-zA-Z0-9 _-]/g, '');
+                        if (val.length <= 50) setName(val);
+                      }}
+                      maxLength={50}
+                      required={knowledgeType === 'text'}
+                    />
+                    <small style={{ color: '#64748b', marginTop: '6px', fontSize: '12px', display: 'block' }}>Max 50 characters. Letters, numbers, spaces, _, and - only.</small>
+                  </div>
 
-              <div className="form-group">
-                <label>Description *</label>
-                <textarea placeholder="Provide detailed product description or information..." value={description} onChange={e => setDescription(e.target.value)} rows="4" required></textarea>
-              </div>
+                  <div className="form-group">
+                    <label>Title *</label>
+                    <input type="text" placeholder="e.g. Premium Plan Features" value={title} onChange={e => setTitle(e.target.value)} required={knowledgeType === 'text'} />
+                  </div>
 
-              <div className="modal-actions" style={{ marginTop: '24px' }}>
+                  <div className="form-group">
+                    <label>Description *</label>
+                    <textarea placeholder="Provide detailed product description or information..." value={description} onChange={e => setDescription(e.target.value)} rows="4" required={knowledgeType === 'text'}></textarea>
+                  </div>
+                </>
+              ) : (
+                <div className="form-group">
+                  <label>Upload Files *</label>
+                  <div style={{ border: '2px dashed #cbd5e1', borderRadius: '8px', padding: '40px', textAlign: 'center', marginTop: '12px', background: '#f8fafc', position: 'relative' }}>
+                    <input 
+                      type="file" 
+                      multiple 
+                      onChange={e => setSelectedFiles(e.target.files)} 
+                      style={{ 
+                        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' 
+                      }}
+                      required={knowledgeType === 'file'}
+                    />
+                    <p style={{ margin: 0, color: '#0ea5e9', fontWeight: 500, fontSize: '15px' }}>
+                      {selectedFiles && selectedFiles.length > 0 ? `${selectedFiles.length} file(s) selected` : 'Click to Browse Files or Drag & Drop'}
+                    </p>
+                    <p style={{ color: '#64748b', margin: '8px 0 0 0', fontSize: '13px' }}>Supported formats: PDF, TXT, DOCX, CSV</p>
+                    {selectedFiles && selectedFiles.length > 0 && (
+                      <div style={{ marginTop: '16px', textAlign: 'left', background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #e2e8f0', maxHeight: '100px', overflowY: 'auto' }}>
+                        {Array.from(selectedFiles).map((file, idx) => (
+                          <div key={idx} style={{ fontSize: '13px', color: '#334155', padding: '4px 0', borderBottom: idx < selectedFiles.length - 1 ? '1px solid #f1f5f9' : 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            ✓ {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="modal-actions" style={{ marginTop: '32px' }}>
                 <button type="button" className="btn-cancel" onClick={() => setShowModal(false)} disabled={uploading}>Cancel</button>
                 <button type="submit" className="btn-submit" disabled={uploading}>{uploading ? 'Processing...' : (editingItemId ? 'Save Changes' : 'Upload')}</button>
               </div>
