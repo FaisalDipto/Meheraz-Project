@@ -397,7 +397,7 @@ export default function Hero() {
       <section className="py-40 bg-primary relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-8 relative">
           <div className="mb-24">
-            <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-tertiary mb-4 block">The Brains Behind the Bot</label>
+            <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-tertiary mb-4 block">The Brains Behind the Solution</label>
             <h2 className="font-headline text-5xl font-black tracking-tight text-white">Our Expertise</h2>
           </div>
           <div className="relative space-y-0">
