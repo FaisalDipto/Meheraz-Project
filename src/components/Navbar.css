@@ -41,7 +41,7 @@
   gap: 10px;
   font-size: 36px;
   font-weight: 700;
-  color: var(--text-light);
+  color: var(--text-primary);
   transition: color var(--transition-medium);
 }
 
@@ -104,7 +104,7 @@
 
 .nav-item {
   position: relative;
-  color: var(--text-light);
+  color: var(--text-primary);
   font-weight: 600; /* Increased from 500 */
   font-size: 20px;  /* Increased from 18px */
   padding: 10px 0;
@@ -120,6 +120,8 @@
 .nav-link-text {
   position: relative;
   display: inline-block;
+  color: inherit;
+  text-decoration: none;
 }
 
 .nav-link-text::after {
@@ -145,7 +147,7 @@
 }
 
 .btn-signin {
-  color: var(--text-light);
+  color: var(--text-primary);
   font-weight: 700; /* Increased from 600 */
   font-size: 20px;  /* Increased from 18px */
   transition: color var(--transition-medium);
@@ -159,9 +161,9 @@
 .btn-get-started {
   position: relative;
   padding: 16px 32px; /* Slightly increased padding to match larger text */
-  border: 1px solid var(--text-light);
+  border: 1px solid var(--text-primary);
   border-radius: 8px;
-  color: var(--text-light);
+  color: var(--text-primary);
   font-size: 20px;  /* Increased from 18px */
   font-weight: 700; /* Increased from 600 */
   overflow: hidden;
@@ -306,7 +308,7 @@
 .hamburger .bar {
   width: 100%;
   height: 3px;
-  background-color: var(--text-light);
+  background-color: var(--text-primary);
   border-radius: 10px;
   transition: all 0.3s linear;
   position: relative;

@@ -1,65 +1,29 @@
-import './Footer.css';
-
 export default function Footer() {
   return (
-    <footer className="footer-section">
-      <div className="footer-container">
-        <div className="footer-brand">
-          <div className="footer-logo">
-            <div className="logo-q-footer">
-              Q
-              <div className="logo-bubble-footer">
-                <div className="logo-dot-footer"></div>
-                <div className="logo-dot-footer"></div>
-                <div className="logo-dot-footer"></div>
+    <footer className="bg-white py-20 px-8">
+      <div className="w-full flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto border-t border-slate-100 pt-16">
+        <div className="mb-10 md:mb-0 text-center md:text-left">
+          <div className="text-2xl font-black text-primary mb-3 tracking-tighter flex items-center justify-center md:justify-start gap-1">
+            <div className="nav-logo" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div className="logo-q" style={{ position: 'relative', display: 'flex', alignItems: 'center', fontWeight: '900', color: '#0ea5e9', fontSize: '28px', lineHeight: '1' }}>
+                Q
+                <div className="logo-bubble" style={{ position: 'absolute', top: '-4px', right: '-12px', background: '#cbd5e1', padding: '4px', borderRadius: '8px', borderRadiusBottomLeft: '2px', display: 'flex', gap: '2px' }}>
+                  <div className="logo-dot" style={{ width: '3px', height: '3px', background: '#fff', borderRadius: '50%' }}></div>
+                  <div className="logo-dot" style={{ width: '3px', height: '3px', background: '#fff', borderRadius: '50%' }}></div>
+                  <div className="logo-dot" style={{ width: '3px', height: '3px', background: '#fff', borderRadius: '50%' }}></div>
+                </div>
               </div>
+              <span className="logo-text" style={{ fontWeight: '700', fontSize: '24px', color: '#0f172a', marginLeft: '10px' }}>chat</span>
             </div>
-            <span>chat</span>
           </div>
-          <p className="footer-slogan">
-            Smart chat automation built for modern businesses.
-          </p>
+          <p className="font-['Inter'] text-slate-500 text-sm">© {new Date().getFullYear()} Qchat, Inc. All rights reserved.</p>
         </div>
-        
-        <div className="footer-links-grid">
-          <div className="footer-column">
-            <h4 className="footer-title">Product</h4>
-            <ul className="footer-list">
-              <li><a href="#">Instagram</a></li>
-              <li><a href="#">WhatsApp</a></li>
-              <li><a href="#">Messenger</a></li>
-              <li><a href="#">Qchat Web</a></li>
-            </ul>
-          </div>
-          <div className="footer-column">
-            <h4 className="footer-title">Resources</h4>
-            <ul className="footer-list">
-              <li><a href="#">Help Center</a></li>
-              <li><a href="#">Contact Us</a></li>
-              <li><a href="#">Status</a></li>
-              <li><a href="#">Services</a></li>
-            </ul>
-          </div>
-          <div className="footer-column">
-            <h4 className="footer-title">Company</h4>
-            <ul className="footer-list">
-              <li><a href="#">About</a></li>
-              <li><a href="#">Pricing</a></li>
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">Blog</a></li>
-            </ul>
-          </div>
-          <div className="footer-column">
-            <h4 className="footer-title">Legal</h4>
-            <ul className="footer-list">
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-            </ul>
-          </div>
+        <div className="flex flex-wrap justify-center gap-10">
+          <a className="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+          <a className="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Terms of Service</a>
+          <a className="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Contact Support</a>
+          <a className="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">API Docs</a>
         </div>
-      </div>
-      <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} Qchat, Inc. All rights reserved.</p>
       </div>
     </footer>
   );

@@ -147,7 +147,7 @@ export default function Navbar() {
           </li>
           
           <li className="nav-item">
-            <span className="nav-link-text">About</span>
+            <a href="#about" className="nav-link-text" onClick={() => isMobileMenuOpen && setIsMobileMenuOpen(false)}>About</a>
           </li>
           <li className="nav-item">
             <span className="nav-link-text">Pricing</span>

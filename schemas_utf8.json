@@ -1,0 +1,672 @@
+﻿{
+    "AddDocReqDto":  {
+                         "properties":  {
+                                            "documents":  {
+                                                              "items":  "@{$ref=#/components/schemas/DocInfo}",
+                                                              "type":  "array",
+                                                              "title":  "Documents",
+                                                              "description":  "List of documents that will use as AI knowledge"
+                                                          }
+                                        },
+                         "type":  "object",
+                         "required":  [
+                                          "documents"
+                                      ],
+                         "title":  "AddDocReqDto",
+                         "description":  "List of documents"
+                     },
+    "AddDocResDto":  {
+                         "properties":  {
+                                            "status":  {
+                                                           "type":  "boolean",
+                                                           "title":  "Status",
+                                                           "description":  "Status of the request in boolean. True for success and False for Fail."
+                                                       }
+                                        },
+                         "type":  "object",
+                         "required":  [
+                                          "status"
+                                      ],
+                         "title":  "AddDocResDto",
+                         "description":  "pydantic model for document endpoint\u0027s response..."
+                     },
+    "AgentBuildRequest":  {
+                              "properties":  {
+                                                 "name":  {
+                                                              "type":  "string",
+                                                              "maxLength":  30,
+                                                              "title":  "Name",
+                                                              "description":  "Name of the agent"
+                                                          },
+                                                 "role":  {
+                                                              "$ref":  "#/components/schemas/AgentRole",
+                                                              "description":  "Role of the agent"
+                                                          },
+                                                 "tone":  {
+                                                              "$ref":  "#/components/schemas/AgentTone",
+                                                              "description":  "Tone that your AI agent will follow"
+                                                          },
+                                                 "language":  {
+                                                                  "$ref":  "#/components/schemas/AgentLanguage",
+                                                                  "description":  "Language the agent will reply in"
+                                                              },
+                                                 "business_name":  {
+                                                                       "type":  "string",
+                                                                       "maxLength":  50,
+                                                                       "title":  "Business Name",
+                                                                       "description":  "Name of the business the agent represents"
+                                                                   },
+                                                 "business_description":  {
+                                                                              "type":  "string",
+                                                                              "maxLength":  500,
+                                                                              "title":  "Business Description",
+                                                                              "description":  "What the business does, used to ground the agent"
+                                                                          },
+                                                 "instructions":  {
+                                                                      "anyOf":  " ",
+                                                                      "title":  "Instructions",
+                                                                      "description":  "Specific rules the agent must follow"
+                                                                  },
+                                                 "fallback_message":  {
+                                                                          "anyOf":  " ",
+                                                                          "title":  "Fallback Message",
+                                                                          "description":  "Message to send when the agent doesn\u0027t know the answer",
+                                                                          "default":  "I\u0027m not sure about that, let me connect you with someone who can help."
+                                                                      }
+                                             },
+                              "type":  "object",
+                              "required":  [
+                                               "name",
+                                               "role",
+                                               "tone",
+                                               "language",
+                                               "business_name",
+                                               "business_description"
+                                           ],
+                              "title":  "AgentBuildRequest",
+                              "description":  "Pydantic model for agent building API\u0027s request..."
+                          },
+    "AgentBuildResponse":  {
+                               "properties":  {
+                                                  "agent_id":  {
+                                                                   "type":  "string",
+                                                                   "format":  "uuid",
+                                                                   "title":  "Agent Id",
+                                                                   "description":  "A unique id for agent identification"
+                                                               },
+                                                  "name":  {
+                                                               "type":  "string",
+                                                               "title":  "Name",
+                                                               "description":  "Name of the agent"
+                                                           },
+                                                  "role":  {
+                                                               "$ref":  "#/components/schemas/AgentRole",
+                                                               "description":  "Role of the agent"
+                                                           },
+                                                  "tone":  {
+                                                               "$ref":  "#/components/schemas/AgentTone",
+                                                               "description":  "Tone that your AI agent will follow"
+                                                           },
+                                                  "language":  {
+                                                                   "$ref":  "#/components/schemas/AgentLanguage",
+                                                                   "description":  "Language the agent will reply in"
+                                                               },
+                                                  "business_name":  {
+                                                                        "type":  "string",
+                                                                        "title":  "Business Name",
+                                                                        "description":  "Name of the business the agent represents"
+                                                                    },
+                                                  "business_description":  {
+                                                                               "type":  "string",
+                                                                               "title":  "Business Description",
+                                                                               "description":  "What the business does"
+                                                                           },
+                                                  "instructions":  {
+                                                                       "anyOf":  " ",
+                                                                       "title":  "Instructions",
+                                                                       "description":  "Specific rules the agent must follow"
+                                                                   },
+                                                  "fallback_message":  {
+                                                                           "anyOf":  " ",
+                                                                           "title":  "Fallback Message",
+                                                                           "description":  "Fallback message when agent doesn\u0027t know the answer"
+                                                                       }
+                                              },
+                               "type":  "object",
+                               "required":  [
+                                                "agent_id",
+                                                "name",
+                                                "role",
+                                                "tone",
+                                                "language",
+                                                "business_name",
+                                                "business_description"
+                                            ],
+                               "title":  "AgentBuildResponse",
+                               "description":  "Pydantic model for agent building API\u0027s response"
+                           },
+    "AgentLanguage":  {
+                          "type":  "string",
+                          "enum":  [
+                                       "Mimic User Language",
+                                       "English",
+                                       "Arabic",
+                                       "Spanish",
+                                       "French",
+                                       "German",
+                                       "Portuguese",
+                                       "Hindi",
+                                       "Bengali"
+                                   ],
+                          "title":  "AgentLanguage",
+                          "description":  "Agent language..."
+                      },
+    "AgentRole":  {
+                      "type":  "string",
+                      "enum":  [
+                                   "Sales Agent",
+                                   "Support Agent",
+                                   "Q\u0026A Agent"
+                               ],
+                      "title":  "AgentRole",
+                      "description":  "Agent role..."
+                  },
+    "AgentTone":  {
+                      "type":  "string",
+                      "enum":  [
+                                   "Professional",
+                                   "Friendly",
+                                   "Formal",
+                                   "Casual",
+                                   "Persuasive",
+                                   "Empathetic",
+                                   "Confident"
+                               ],
+                      "title":  "AgentTone",
+                      "description":  "Agent tone..."
+                  },
+    "AgentUpdateRequest":  {
+                               "properties":  {
+                                                  "name":  {
+                                                               "anyOf":  " ",
+                                                               "title":  "Name",
+                                                               "description":  "Name of the agent"
+                                                           },
+                                                  "role":  {
+                                                               "anyOf":  " ",
+                                                               "description":  "Role of the agent"
+                                                           },
+                                                  "tone":  {
+                                                               "anyOf":  " ",
+                                                               "description":  "Tone that your AI agent will follow"
+                                                           },
+                                                  "language":  {
+                                                                   "anyOf":  " ",
+                                                                   "description":  "Language the agent will reply in"
+                                                               },
+                                                  "business_name":  {
+                                                                        "anyOf":  " ",
+                                                                        "title":  "Business Name",
+                                                                        "description":  "Name of the business the agent represents"
+                                                                    },
+                                                  "business_description":  {
+                                                                               "anyOf":  " ",
+                                                                               "title":  "Business Description",
+                                                                               "description":  "What the business does"
+                                                                           },
+                                                  "instructions":  {
+                                                                       "anyOf":  " ",
+                                                                       "title":  "Instructions",
+                                                                       "description":  "Specific rules the agent must follow"
+                                                                   },
+                                                  "fallback_message":  {
+                                                                           "anyOf":  " ",
+                                                                           "title":  "Fallback Message",
+                                                                           "description":  "Fallback message when agent doesn\u0027t know the answer"
+                                                                       }
+                                              },
+                               "type":  "object",
+                               "title":  "AgentUpdateRequest",
+                               "description":  "Pydantic model for agent update API\u0027s request"
+                           },
+    "AssignAgentRequest":  {
+                               "properties":  {
+                                                  "agent_id":  {
+                                                                   "type":  "string",
+                                                                   "format":  "uuid",
+                                                                   "title":  "Agent Id"
+                                                               }
+                                              },
+                               "type":  "object",
+                               "required":  [
+                                                "agent_id"
+                                            ],
+                               "title":  "AssignAgentRequest"
+                           },
+    "Body_upload_knowledge_files_api_knowledge__page_id__upload_post":  {
+                                                                            "properties":  {
+                                                                                               "files":  {
+                                                                                                             "items":  "@{type=string; format=binary}",
+                                                                                                             "type":  "array",
+                                                                                                             "title":  "Files"
+                                                                                                         }
+                                                                                           },
+                                                                            "type":  "object",
+                                                                            "required":  [
+                                                                                             "files"
+                                                                                         ],
+                                                                            "title":  "Body_upload_knowledge_files_api_knowledge__page_id__upload_post"
+                                                                        },
+    "ConversationInfo":  {
+                             "properties":  {
+                                                "conversation_id":  {
+                                                                        "type":  "string",
+                                                                        "format":  "uuid",
+                                                                        "title":  "Conversation Id",
+                                                                        "description":  "Conversation id.."
+                                                                    },
+                                                "name":  {
+                                                             "type":  "string",
+                                                             "title":  "Name",
+                                                             "description":  "name of the conversation"
+                                                         }
+                                            },
+                             "type":  "object",
+                             "required":  [
+                                              "conversation_id",
+                                              "name"
+                                          ],
+                             "title":  "ConversationInfo",
+                             "description":  "List of conversations with list of messages of it\u0027s own conversation.."
+                         },
+    "ConversationResponse":  {
+                                 "properties":  {
+                                                    "conversations":  {
+                                                                          "items":  "@{$ref=#/components/schemas/ConversationInfo}",
+                                                                          "type":  "array",
+                                                                          "title":  "Conversations",
+                                                                          "description":  "List of conversations"
+                                                                      }
+                                                },
+                                 "type":  "object",
+                                 "required":  [
+                                                  "conversations"
+                                              ],
+                                 "title":  "ConversationResponse",
+                                 "description":  "List of conversatin with messages..."
+                             },
+    "DocInfo":  {
+                    "properties":  {
+                                       "name":  {
+                                                    "type":  "string",
+                                                    "title":  "Name",
+                                                    "description":  "Name of the product."
+                                                },
+                                       "title":  {
+                                                     "type":  "string",
+                                                     "title":  "Title",
+                                                     "description":  "title of the document."
+                                                 },
+                                       "description":  {
+                                                           "type":  "string",
+                                                           "title":  "Description",
+                                                           "description":  "Detail about the documents"
+                                                       }
+                                   },
+                    "type":  "object",
+                    "required":  [
+                                     "name",
+                                     "title",
+                                     "description"
+                                 ],
+                    "title":  "DocInfo",
+                    "description":  "doc info:\n    name: Name of the document...\n    title: title of the document...\n    description: Details about the document..."
+                },
+    "FeedbackRequest":  {
+                            "properties":  {
+                                               "type":  {
+                                                            "$ref":  "#/components/schemas/FeedbackType",
+                                                            "description":  "Type of feedback"
+                                                        },
+                                               "title":  {
+                                                             "type":  "string",
+                                                             "maxLength":  100,
+                                                             "title":  "Title",
+                                                             "description":  "Title of the feedback"
+                                                         },
+                                               "details":  {
+                                                               "type":  "string",
+                                                               "maxLength":  1000,
+                                                               "title":  "Details",
+                                                               "description":  "Details of the feedback"
+                                                           }
+                                           },
+                            "type":  "object",
+                            "required":  [
+                                             "type",
+                                             "title",
+                                             "details"
+                                         ],
+                            "title":  "FeedbackRequest"
+                        },
+    "FeedbackResponse":  {
+                             "properties":  {
+                                                "status":  {
+                                                               "type":  "boolean",
+                                                               "title":  "Status"
+                                                           }
+                                            },
+                             "type":  "object",
+                             "required":  [
+                                              "status"
+                                          ],
+                             "title":  "FeedbackResponse"
+                         },
+    "FeedbackType":  {
+                         "type":  "string",
+                         "enum":  [
+                                      "Report A Bug",
+                                      "Feature Request",
+                                      "General",
+                                      "Suggest Improvement"
+                                  ],
+                         "title":  "FeedbackType"
+                     },
+    "FileUploadResponse":  {
+                               "properties":  {
+                                                  "status":  {
+                                                                 "type":  "boolean",
+                                                                 "title":  "Status",
+                                                                 "description":  "True if files queued successfully"
+                                                             },
+                                                  "filenames":  {
+                                                                    "items":  "@{type=string}",
+                                                                    "type":  "array",
+                                                                    "title":  "Filenames",
+                                                                    "description":  "Names of the uploaded files"
+                                                                }
+                                              },
+                               "type":  "object",
+                               "required":  [
+                                                "status",
+                                                "filenames"
+                                            ],
+                               "title":  "FileUploadResponse"
+                           },
+    "GetAgents":  {
+                      "properties":  {
+                                         "agents":  {
+                                                        "items":  "@{$ref=#/components/schemas/AgentBuildResponse}",
+                                                        "type":  "array",
+                                                        "title":  "Agents"
+                                                    }
+                                     },
+                      "type":  "object",
+                      "required":  [
+                                       "agents"
+                                   ],
+                      "title":  "GetAgents",
+                      "description":  "Get all agents for a spacific user.."
+                  },
+    "HTTPValidationError":  {
+                                "properties":  {
+                                                   "detail":  {
+                                                                  "items":  "@{$ref=#/components/schemas/ValidationError}",
+                                                                  "type":  "array",
+                                                                  "title":  "Detail"
+                                                              }
+                                               },
+                                "type":  "object",
+                                "title":  "HTTPValidationError"
+                            },
+    "KnowledgeDetailDto":  {
+                               "properties":  {
+                                                  "knowledge_id":  {
+                                                                       "type":  "string",
+                                                                       "format":  "uuid",
+                                                                       "title":  "Knowledge Id",
+                                                                       "description":  "Unique ID of the knowledge item"
+                                                                   },
+                                                  "name":  {
+                                                               "type":  "string",
+                                                               "title":  "Name",
+                                                               "description":  "Name of the knowledge item"
+                                                           },
+                                                  "title":  {
+                                                                "type":  "string",
+                                                                "title":  "Title",
+                                                                "description":  "Title of the knowledge item"
+                                                            },
+                                                  "description":  {
+                                                                      "type":  "string",
+                                                                      "title":  "Description",
+                                                                      "description":  "Full content from Pinecone"
+                                                                  },
+                                                  "created_at":  {
+                                                                     "type":  "string",
+                                                                     "format":  "date-time",
+                                                                     "title":  "Created At",
+                                                                     "description":  "When the knowledge was created"
+                                                                 }
+                                              },
+                               "type":  "object",
+                               "required":  [
+                                                "knowledge_id",
+                                                "name",
+                                                "title",
+                                                "description",
+                                                "created_at"
+                                            ],
+                               "title":  "KnowledgeDetailDto"
+                           },
+    "KnowledgeItemDto":  {
+                             "properties":  {
+                                                "knowledge_id":  {
+                                                                     "type":  "string",
+                                                                     "format":  "uuid",
+                                                                     "title":  "Knowledge Id",
+                                                                     "description":  "Unique ID of the knowledge item"
+                                                                 },
+                                                "name":  {
+                                                             "type":  "string",
+                                                             "title":  "Name",
+                                                             "description":  "Name of the knowledge item"
+                                                         },
+                                                "title":  {
+                                                              "type":  "string",
+                                                              "title":  "Title",
+                                                              "description":  "Title of the knowledge item"
+                                                          },
+                                                "created_at":  {
+                                                                   "type":  "string",
+                                                                   "format":  "date-time",
+                                                                   "title":  "Created At",
+                                                                   "description":  "When the knowledge was created"
+                                                               },
+                                                "knowledge_type":  {
+                                                                       "$ref":  "#/components/schemas/KnowledgeType",
+                                                                       "description":  "TEXT or FILE"
+                                                                   }
+                                            },
+                             "type":  "object",
+                             "required":  [
+                                              "knowledge_id",
+                                              "name",
+                                              "title",
+                                              "created_at",
+                                              "knowledge_type"
+                                          ],
+                             "title":  "KnowledgeItemDto"
+                         },
+    "KnowledgeType":  {
+                          "type":  "string",
+                          "enum":  [
+                                       "text",
+                                       "file"
+                                   ],
+                          "title":  "KnowledgeType"
+                      },
+    "MessageResponse":  {
+                            "properties":  {
+                                               "messages":  {
+                                                                "items":  "@{$ref=#/components/schemas/MessageWithMetadata}",
+                                                                "type":  "array",
+                                                                "title":  "Messages",
+                                                                "description":  "List of message for a conversation"
+                                                            }
+                                           },
+                            "type":  "object",
+                            "required":  [
+                                             "messages"
+                                         ],
+                            "title":  "MessageResponse",
+                            "description":  "List of message for a conversation"
+                        },
+    "MessageWithMetadata":  {
+                                "properties":  {
+                                                   "message_id":  {
+                                                                      "type":  "string",
+                                                                      "format":  "uuid",
+                                                                      "title":  "Message Id",
+                                                                      "description":  "message_id for unique identity of the message"
+                                                                  },
+                                                   "message":  {
+                                                                   "anyOf":  " ",
+                                                                   "title":  "Message",
+                                                                   "description":  "text messages of the conversation."
+                                                               },
+                                                   "role":  {
+                                                                "type":  "string",
+                                                                "enum":  "user page",
+                                                                "title":  "Role",
+                                                                "description":  "user or page, who sent the message"
+                                                            },
+                                                   "has_attachment":  {
+                                                                          "type":  "boolean",
+                                                                          "title":  "Has Attachment",
+                                                                          "description":  "It\u0027s represent if this message contain any attachment such as images, voice or videos.."
+                                                                      },
+                                                   "is_ai_msg":  {
+                                                                     "type":  "boolean",
+                                                                     "title":  "Is Ai Msg",
+                                                                     "description":  "Represent is the message generate by AI agent"
+                                                                 },
+                                                   "created_at":  {
+                                                                      "type":  "string",
+                                                                      "format":  "date-time",
+                                                                      "title":  "Created At",
+                                                                      "description":  "message created time.."
+                                                                  }
+                                               },
+                                "type":  "object",
+                                "required":  [
+                                                 "message_id",
+                                                 "message",
+                                                 "role",
+                                                 "has_attachment",
+                                                 "is_ai_msg",
+                                                 "created_at"
+                                             ],
+                                "title":  "MessageWithMetadata",
+                                "description":  "This class contain message with it\u0027s own metadata...."
+                            },
+    "PageInfo":  {
+                     "properties":  {
+                                        "name":  {
+                                                     "type":  "string",
+                                                     "title":  "Name",
+                                                     "description":  "Page name.."
+                                                 },
+                                        "page_id":  {
+                                                        "type":  "string",
+                                                        "format":  "uuid",
+                                                        "title":  "Page Id",
+                                                        "description":  "Page id.."
+                                                    },
+                                        "agent_name":  {
+                                                           "anyOf":  " ",
+                                                           "title":  "Agent Name",
+                                                           "description":  "The name of the assigned agent"
+                                                       }
+                                    },
+                     "type":  "object",
+                     "required":  [
+                                      "name",
+                                      "page_id",
+                                      "agent_name"
+                                  ],
+                     "title":  "PageInfo",
+                     "description":  "page  info"
+                 },
+    "PageResponse":  {
+                         "properties":  {
+                                            "pages":  {
+                                                          "items":  "@{$ref=#/components/schemas/PageInfo}",
+                                                          "type":  "array",
+                                                          "title":  "Pages",
+                                                          "description":  "List of page"
+                                                      }
+                                        },
+                         "type":  "object",
+                         "required":  [
+                                          "pages"
+                                      ],
+                         "title":  "PageResponse",
+                         "description":  "Pydantic model for page API\u0027s response..."
+                     },
+    "ReplyRequest":  {
+                         "properties":  {
+                                            "message":  {
+                                                            "type":  "string",
+                                                            "maxLength":  2000,
+                                                            "title":  "Message",
+                                                            "description":  "Message to send to the user"
+                                                        }
+                                        },
+                         "type":  "object",
+                         "required":  [
+                                          "message"
+                                      ],
+                         "title":  "ReplyRequest"
+                     },
+    "UpdateDocDto":  {
+                         "properties":  {
+                                            "title":  {
+                                                          "anyOf":  " ",
+                                                          "title":  "Title",
+                                                          "description":  "Updated title"
+                                                      },
+                                            "description":  {
+                                                                "anyOf":  " ",
+                                                                "title":  "Description",
+                                                                "description":  "Updated description"
+                                                            }
+                                        },
+                         "type":  "object",
+                         "title":  "UpdateDocDto"
+                     },
+    "ValidationError":  {
+                            "properties":  {
+                                               "loc":  {
+                                                           "items":  "@{anyOf=System.Object[]}",
+                                                           "type":  "array",
+                                                           "title":  "Location"
+                                                       },
+                                               "msg":  {
+                                                           "type":  "string",
+                                                           "title":  "Message"
+                                                       },
+                                               "type":  {
+                                                            "type":  "string",
+                                                            "title":  "Error Type"
+                                                        }
+                                           },
+                            "type":  "object",
+                            "required":  [
+                                             "loc",
+                                             "msg",
+                                             "type"
+                                         ],
+                            "title":  "ValidationError"
+                        }
+}

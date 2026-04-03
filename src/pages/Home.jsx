@@ -5,9 +5,9 @@ import '../App.css'
 
 export default function Home() {
   return (
-    <div className="app-container">
+    <div className="bg-background font-body text-on-surface antialiased selection:bg-primary selection:text-on-primary">
       <Navbar />
-      <main className="main-content">
+      <main>
         <Hero />
       </main>
       <Footer />

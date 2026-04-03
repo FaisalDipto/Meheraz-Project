@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { LayoutDashboard, MessageSquare, Book, UserRound, MessageCircleWarning, Settings, Plus, User, LogOut, ChevronDown, TrendingUp, Headphones, HelpCircle, Palette, Monitor, Users, Trash2, Mail, Menu, X, Edit2 } from 'lucide-react';
 import { useWidget } from '../context/WidgetContext';
 import { useNavigate } from 'react-router-dom';
@@ -169,9 +170,28 @@ const ConversationList = ({ pages }) => {
       .then(data => {
         // Handle FB Graph variations
         const convs = data?.conversations?.data || data?.conversations || data?.data || [];
-        setContacts(Array.isArray(convs) ? convs : []);
-        if (convs.length > 0) setActiveContact(convs[0]);
+        const normalized = Array.isArray(convs) ? convs : [];
+        setContacts(normalized);
+        if (normalized.length > 0) setActiveContact(normalized[0]);
         else setActiveContact(null);
+
+        // Fetch snippets asynchronously to populate last message without blocking UI
+        normalized.forEach(conv => {
+          const cId = conv.conversation_id || conv.id;
+          if (!cId) return;
+          apiService.getConversationDetails(selectedPageId, cId)
+            .then(details => {
+              const msgs = details?.messages?.data || details?.messages || details?.data || [];
+              if (Array.isArray(msgs) && msgs.length > 0) {
+                const lastMsg = msgs[0]; // FB returns newest first
+                setContacts(prev => prev.map(c => 
+                  (c.conversation_id || c.id) === cId 
+                    ? { ...c, last_message: lastMsg.message, updated_time: lastMsg.created_time || lastMsg.timestamp || Date.now() }
+                    : c
+                ));
+              }
+            }).catch(() => {});
+        });
       })
       .catch(err => console.error("Failed to fetch conversations", err))
       .finally(() => setLoading(false));
@@ -318,7 +338,8 @@ const ConversationList = ({ pages }) => {
           ) : contacts.map((contact, i) => {
             const contactName = contact.name || contact.senders?.data?.[0]?.name || contact.participants?.data?.[0]?.name || `User ${i}`;
             const snippet = contact.snippet || contact.last_message || contact.messages?.data?.[0]?.message || contact.messages?.[0]?.message || 'No messages';
-            const updated = new Date(contact.updated_time || contact.last_message_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const updatedTimeValue = contact.updated_time || contact.last_message_at || contact.updated;
+            const updated = updatedTimeValue ? new Date(updatedTimeValue).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
             const id = contact.conversation_id || contact.id || i;
 
             return (
@@ -583,10 +604,23 @@ const Knowledge = ({ pages }) => {
   const [viewingItem, setViewingItem] = useState(null);
   const [fetchingDetails, setFetchingDetails] = useState(false);
 
+  // Toast state
+  const [toasts, setToasts] = useState([]);
+  const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
+
+  const addToast = (message, type = 'success') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
+
   const handleViewClick = async (item) => {
     const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
     if (!actualId || String(actualId).startsWith('temp_')) {
-      return alert('Wait for the item to be fully saved in the database before viewing');
+      addToast('Wait for the item to be fully saved in the database before viewing', 'error');
+      return;
     }
 
     setFetchingDetails(true);
@@ -595,7 +629,7 @@ const Knowledge = ({ pages }) => {
       setViewingItem(details);
     } catch (err) {
       console.error(err);
-      alert('Failed to fetch details: ' + err.message);
+      addToast('Failed to fetch details: ' + err.message, 'error');
     } finally {
       setFetchingDetails(false);
     }
@@ -624,22 +658,36 @@ const Knowledge = ({ pages }) => {
     }
   };
 
-  const handleDelete = async (item) => {
+  const handleRequestDelete = (item) => {
     const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
     if (!actualId || String(actualId).startsWith('temp_')) {
-      return alert('Cannot delete item without a valid ID. Wait for save to complete.');
+      addToast('Cannot delete item without a valid ID. Wait for save to complete.', 'error');
+      return;
     }
+    setDeleteConfirmItem(item);
+  };
 
-    if (!window.confirm(`Are you sure you want to delete "${item.name || item.title || 'this document'}"?`)) return;
-
+  const handleConfirmDelete = async () => {
+    const item = deleteConfirmItem;
+    if (!item) return;
+    setDeleteConfirmItem(null); 
+    const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
     const type = (item.knowledge_type === 'file' || item.file_name) ? 'file' : 'text';
+
+    console.log('--- DELETION DEBUG ---');
+    console.log('Page ID:', selectedPageId);
+    console.log('Knowledge type evaluated as:', type);
+    console.log('Deleting ID:', actualId);
+    console.log('Endpoint called:', `/api/knowledge/${selectedPageId}/${type}/${actualId}`);
+    console.log('----------------------');
 
     try {
       await apiService.deleteKnowledge(selectedPageId, actualId, type);
       setKnowledgeList(prev => prev.filter(k => (k.id || k.knowledge_id || k.knowledgeId || k.uuid) !== actualId));
+      addToast('Knowledge deleted successfully', 'delete');
     } catch (error) {
       console.error(error);
-      alert('Failed to delete knowledge: ' + error.message);
+      addToast('Failed to delete knowledge: ' + error.message, 'error');
     }
   };
 
@@ -663,7 +711,10 @@ const Knowledge = ({ pages }) => {
 
   const handleAddKnowledge = async (e) => {
     e.preventDefault();
-    if (!selectedPageId) return alert('Please select a page first');
+    if (!selectedPageId) {
+      addToast('Please select a page first', 'error');
+      return;
+    }
 
     // For edits, we keep it blocking since it's fast
     if (editingItemId) {
@@ -671,7 +722,8 @@ const Knowledge = ({ pages }) => {
       try {
         if (!name.trim() || !title.trim() || !description.trim()) {
            setUploading(false);
-           return alert('Name, Title, and Description are required');
+           addToast('Name, Title, and Description are required', 'error');
+           return;
         }
         const updateData = {
           name: name.trim(),
@@ -690,9 +742,10 @@ const Knowledge = ({ pages }) => {
         setSelectedFiles(null);
         setKnowledgeType('text');
         setEditingItemId(null);
+        addToast('Knowledge updated successfully!', 'edit');
       } catch (error) {
         console.error(error);
-        alert('Failed to edit knowledge: ' + error.message);
+        addToast('Failed to edit knowledge: ' + error.message, 'error');
       } finally {
         setUploading(false);
       }
@@ -702,7 +755,8 @@ const Knowledge = ({ pages }) => {
     // For Add Knowledge, we can run it optimistically and close the modal instantly!
     if (knowledgeType === 'text') {
         if (!name.trim() || !title.trim() || !description.trim()) {
-            return alert('Name, Title, and Description are required');
+            addToast('Name, Title, and Description are required', 'error');
+            return;
         }
         const payload = {
           documents: [{ name: name.trim(), title: title.trim(), description: description.trim() }]
@@ -713,18 +767,34 @@ const Knowledge = ({ pages }) => {
           id: optimisticId, name: name.trim(), title: title.trim(), description: description.trim(), knowledge_type: 'text'
         }]);
 
-        // Background process
+        // Background process: Poll the backend to wait for data (Pinecone sync)
         apiService.createKnowledge(selectedPageId, payload)
-          .then(() => apiService.getKnowledge(selectedPageId))
-          .then(updatedList => setKnowledgeList(Array.isArray(updatedList) ? updatedList : (updatedList.results || updatedList.items || [])))
+          .then(async () => {
+             addToast('Document added successfully!', 'success');
+             for (let i = 0; i < 5; i++) {
+                 await new Promise(resolve => setTimeout(resolve, i === 0 ? 1500 : 2000));
+                 const rawList = await apiService.getKnowledge(selectedPageId);
+                 const arr = Array.isArray(rawList) ? rawList : (rawList.results || rawList.items || []);
+                 
+                 setKnowledgeList(prev => {
+                     const currentTemps = prev.filter(p => String(p.id).startsWith('temp_'));
+                     const unmatchedTemps = currentTemps.filter(t => !arr.some(k => k.name === t.name || k.file_name === t.name));
+                     return [...arr, ...unmatchedTemps];
+                 });
+                 
+                 const found = arr.some(k => k.name === name.trim() && k.title === title.trim());
+                 if (found || i === 4) break;
+             }
+          })
           .catch(error => {
             console.error(error);
-            alert('Failed to add text knowledge: ' + error.message);
+            addToast('Failed to add text knowledge: ' + error.message, 'error');
             setKnowledgeList(prev => prev.filter(k => k.id !== optimisticId));
           });
     } else {
         if (!selectedFiles || selectedFiles.length === 0) {
-            return alert('Please select at least one file to upload');
+            addToast('Please select at least one file to upload', 'error');
+            return;
         }
         const formData = new FormData();
         const tempItems = [];
@@ -740,13 +810,29 @@ const Knowledge = ({ pages }) => {
         
         setKnowledgeList(prev => [...prev, ...tempItems]);
         
-        // Background process
+        // Background process: Poll the backend to wait for data (Pinecone sync)
         apiService.uploadKnowledgeFiles(selectedPageId, formData)
-          .then(() => apiService.getKnowledge(selectedPageId))
-          .then(updatedList => setKnowledgeList(Array.isArray(updatedList) ? updatedList : (updatedList.results || updatedList.items || [])))
+          .then(async () => {
+             addToast('File(s) uploaded successfully!', 'success');
+             for (let i = 0; i < 5; i++) {
+                 await new Promise(resolve => setTimeout(resolve, i === 0 ? 1500 : 2000));
+                 const rawList = await apiService.getKnowledge(selectedPageId);
+                 const arr = Array.isArray(rawList) ? rawList : (rawList.results || rawList.items || []);
+                 
+                 setKnowledgeList(prev => {
+                     const currentTemps = prev.filter(p => String(p.id).startsWith('temp_'));
+                     const unmatchedTemps = currentTemps.filter(t => !arr.some(k => k.name === t.name || k.file_name === t.name));
+                     return [...arr, ...unmatchedTemps];
+                 });
+                 
+                 // Check if the uploaded files are present in backend
+                 const found = tempItems.every(temp => arr.some(k => k.name === temp.name || k.file_name === temp.name || (k.title && k.title.includes(temp.name))));
+                 if (found || i === 4) break;
+             }
+          })
           .catch(error => {
             console.error(error);
-            alert('Failed to upload files: ' + error.message);
+            addToast('Failed to upload files: ' + error.message, 'error');
             const tempIds = tempItems.map(t => t.id);
             setKnowledgeList(prev => prev.filter(k => !tempIds.includes(k.id)));
           });
@@ -766,7 +852,7 @@ const Knowledge = ({ pages }) => {
     return (
       <div className="dashboard-content-area animate-fade-in-up">
         <div className="dashboard-header">
-          <h2>Knowledge Base</h2>
+          <h2>Knowledge Base Test</h2>
           <p>Please connect a Facebook page before adding knowledge. The API requires a linked page context.</p>
         </div>
       </div>
@@ -777,7 +863,7 @@ const Knowledge = ({ pages }) => {
     <div className="dashboard-content-area animate-fade-in-up">
       <div className="dashboard-header flex-between" style={{ flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h2>Knowledge Base</h2>
+          <h2>Knowledge Base Test</h2>
           <p>Manage the documents and context your AI uses.</p>
         </div>
 
@@ -843,7 +929,7 @@ const Knowledge = ({ pages }) => {
                   </>
                 )}
                 <button
-                  onClick={() => handleDelete(item)}
+                  onClick={() => handleRequestDelete(item)}
                   style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
                   title="Delete element"
                 >
@@ -995,6 +1081,59 @@ const Knowledge = ({ pages }) => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Slide-in Notifications */}
+      {ReactDOM.createPortal(
+        <div style={{ position: 'fixed', top: '24px', right: '24px', display: 'flex', flexDirection: 'column', gap: '12px', zIndex: 999999, pointerEvents: 'none' }}>
+          {toasts.map(t => (
+            <div key={t.id} style={{
+              animation: 'slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              padding: '16px 20px',
+              borderRadius: '8px',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '14px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              minWidth: '250px',
+              pointerEvents: 'auto',
+              backgroundColor: t.type === 'success' ? '#10b981' : t.type === 'error' ? '#ef4444' : t.type === 'delete' ? '#f43f5e' : '#0ea5e9',
+            }}>
+              <div style={{ marginRight: '12px', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '50%' }}>
+                {t.type === 'success' ? '✓' : t.type === 'error' ? '!' : t.type === 'delete' ? '✕' : 'ℹ'}
+              </div>
+              {t.message}
+            </div>
+          ))}
+          {deleteConfirmItem && (
+            <div style={{
+              animation: 'slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              padding: '16px 20px',
+              borderRadius: '8px',
+              color: '#0f172a',
+              fontWeight: 500,
+              fontSize: '14px',
+              boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
+              display: 'flex',
+              flexDirection: 'column',
+              minWidth: '280px',
+              pointerEvents: 'auto',
+              backgroundColor: '#fff',
+              borderLeft: '4px solid #ef4444'
+            }}>
+              <div style={{ marginBottom: '14px', fontWeight: 600, fontSize: '14.5px' }}>
+                Delete "{deleteConfirmItem.name || deleteConfirmItem.title || 'this document'}"?
+              </div>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <button onClick={() => setDeleteConfirmItem(null)} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor='#e2e8f0'} onMouseLeave={e => e.currentTarget.style.backgroundColor='#f1f5f9'}>Cancel</button>
+                <button onClick={handleConfirmDelete} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#ef4444', color: '#fff', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor='#dc2626'} onMouseLeave={e => e.currentTarget.style.backgroundColor='#ef4444'}>Yes, delete</button>
+              </div>
+            </div>
+          )}
+        </div>,
+        document.body
       )}
     </div>
   );
