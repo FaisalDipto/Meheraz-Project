@@ -109,7 +109,12 @@ export default function Hero() {
           <div className="space-y-8 animate-fade-up">
             <span className="inline-block px-4 py-1.5 bg-secondary text-white text-[10px] font-bold tracking-[0.2em] uppercase rounded-full shadow-lg shadow-secondary/20">Automate Everything</span>
             <h1 className="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] text-primary">
-              Automate Conversations on <span className="text-tertiary">Facebook, Instagram & WhatsApp</span>
+              Automate Conversations on <span className="text-tertiary">
+                <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom left'}}>Facebook,</span>{' '}
+                <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom center'}}>Instagram</span>{' '}
+                <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom center'}}>&amp;</span>{' '}
+                <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom right'}}>WhatsApp</span>
+              </span>
             </h1>
             <p className="text-lg md:text-xl text-on-surface-variant max-w-xl leading-relaxed">
               Scale your customer engagement with instant AI-powered replies, automated lead capture, and hyper-growth sales funnels that work 24/7.

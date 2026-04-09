@@ -97,9 +97,17 @@ export const apiService = {
     body: JSON.stringify(agentData),
   }),
   
+  deleteAgent: (agentId) => apiFetch(`/api/agent/delete?agent_id=${encodeURIComponent(agentId)}`, {
+    method: 'DELETE',
+  }),
+  
   assignAgentToPage: (pageId, agentId) => apiFetch(`/api/page/${pageId}/assign-agent`, {
     method: 'PATCH',
     body: JSON.stringify({ agent_id: agentId }),
+  }),
+  
+  unassignAgentFromPage: (pageId) => apiFetch(`/api/page/${pageId}/unassign-agent`, {
+    method: 'PATCH',
   }),
   
   // Profile

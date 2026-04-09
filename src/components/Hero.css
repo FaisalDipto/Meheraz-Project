@@ -139,3 +139,14 @@
 .animate-rect4 {
   animation: float-rect4 5s ease-in-out infinite;
 }
+
+/* Text stretch and shrink loop animation */
+@keyframes stretch-shrink-loop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+.animate-stretch-shrink {
+  animation: stretch-shrink-loop 4s ease-in-out infinite;
+  display: inline-block;
+}

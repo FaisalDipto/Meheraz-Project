@@ -8,6 +8,7 @@ import './Dashboard.css';
 
 // Sub-components
 const Overview = ({ user, pages, onNavigate }) => {
+  const [openDropdown, setOpenDropdown] = useState(null);
   const [assigning, setAssigning] = useState({}); // {pageId: boolean}
   const [success, setSuccess] = useState({}); // {pageId: boolean}
   const [selectedAgents, setSelectedAgents] = useState(() => {
@@ -20,6 +21,16 @@ const Overview = ({ user, pages, onNavigate }) => {
   });
 
   const agents = user?.agents || [];
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.custom-dropdown-container')) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (!Array.isArray(pages) || pages.length === 0) return;
@@ -91,57 +102,214 @@ const Overview = ({ user, pages, onNavigate }) => {
   };
 
   return (
-    <div className="dashboard-content-area animate-fade-in-up">
-      <div className="dashboard-header">
-        <h2>Overview</h2>
-        <p>Welcome back{user?.name || user?.username || user?.first_name ? `, ${user.name || user.username || user.first_name}` : ''}! Manage your pages and assign AI agents.</p>
+    <div className="dashboard-content-area animate-fade-in-up flex-1 p-8 space-y-12 w-full text-left bg-surface-bright">
+      {/* Hero Header */}
+      <div className="flex justify-between items-end">
+        <div>
+          <span className="label-md uppercase tracking-[0.2em] text-outline mb-2 block font-label font-semibold">Active Workspace</span>
+          <h1 className="text-5xl font-headline font-black tracking-tighter text-primary">My Workspace</h1>
+        </div>
+        <div className="flex gap-3">
+          <div className="flex -space-x-2">
+            <img alt="Team member" className="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmshpeiThC41D3oYoeWJPdOlPAZgPL4Q27QrQJqYQAk0lqbXxdOvgSHyv35ROzxQfzvc5ATVnSTUsJxi_Lr01YfpSP8hQ_5Ntk_Zpa2wIN9s0vUuGx-9geekTRAiwTnfHxLoiuUsfyimTDVFEZkrqmIJiaeehJD4un5GZv0DOqmeBI17YqzYT12OuO-ELphoCuIF0s0b_vmtjqRMich8eWky8JOxPRQGvY4wcbSc3dMYyptqBqITQtQZAR0p-TXDaZJ-FeUOugt38"/>
+            <img alt="Team member" className="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD17OerDChMrHv2dHx2sdIJRo6zgSAywzPvjIFEDcvczs-PE5Lt_tHErvdbnmvZWLkRpa1N-XUEdRbco2MftgKHV7gsnPYCFJy3YllMVT8P21etDi21ooo5rS-C_Yc0ekW6yrBRfUQtFPVdhWr62EFUpv7Z1nVJ3IPUzd7OS9y_U94KPA8aCq2NIvvt4HFN9QdlESzX7KBzxUoCTaWtnZz-m0vmJl6woSLXTGl_nuYalWAxprWDYgsU95Vlqd6Jb8rDVo8dGMNc3tU"/>
+            <div className="w-10 h-10 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">+4</div>
+          </div>
+        </div>
       </div>
 
-      <div className="pages-grid" style={{ paddingBottom: '40px' }}>
-        {Array.isArray(pages) && pages.map(page => (
-          <div key={page.page_id} className="page-card-container">
-            <div className="giant-page-btn btn-blue">
-              <UserRound size={48} className="page-icon" />
-              <span className="page-name">{page.name}</span>
+      {/* Bento Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {Array.isArray(pages) && pages.map((page, index) => {
+          const isEven = index % 2 === 0;
+          const cardBorder = isEven ? "border-emerald-500" : "border-primary";
+          const iconBg = isEven ? "bg-emerald-100" : "bg-slate-900";
+          const iconColor = isEven ? "text-emerald-600" : "text-white";
+          const iconName = isEven ? "movie" : "chat_bubble";
+          const assignHoverBorder = isEven ? "group-hover:border-emerald-100" : "group-hover:border-slate-200";
+          const assignIconColor = isEven ? "text-emerald-500" : "text-primary";
+          const assignIconName = isEven ? "person" : "smart_toy";
+          const barBg = isEven ? "bg-emerald-500" : "bg-primary";
+          const barWidth = isEven ? "75%" : "50%";
+          const percentageColor = isEven ? "text-emerald-600" : "text-primary";
+          
+          return (
+            <div key={page.page_id} className={`group bg-surface-container-lowest rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border-t-4 ${cardBorder}`}>
+              <div className="flex justify-between items-start mb-6">
+                <div className={`w-14 h-14 ${iconBg} rounded-2xl flex items-center justify-center`}>
+                  <span className={`material-symbols-outlined ${iconColor} text-3xl`} data-icon={iconName}>{iconName}</span>
+                </div>
+                <button className="p-2 text-slate-300 hover:text-slate-600">
+                  <span className="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+                </button>
+              </div>
+              <h3 className="text-2xl font-headline font-bold text-primary mb-1">{page.name}</h3>
+              <p className="text-on-surface-variant text-sm mb-6">{page.description || 'Automated agent assignments and settings for this workspace.'}</p>
+              <div className="space-y-4">
+                <div className={`flex items-center justify-between p-3 bg-surface-container-low rounded-lg border border-transparent ${assignHoverBorder} transition-colors`}>
+                  <div className="flex items-center gap-3">
+                    <span className={`material-symbols-outlined ${assignIconColor}`} data-icon={assignIconName}>{assignIconName}</span>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-outline">Assigned Agent</span>
+                  </div>
+                  <div className="relative custom-dropdown-container flex items-center justify-end">
+                    <button
+                      onClick={() => setOpenDropdown(openDropdown === page.page_id ? null : page.page_id)}
+                      disabled={assigning[page.page_id]}
+                      className={`flex items-center gap-1 bg-transparent border-none text-sm font-bold p-0 focus:ring-0 cursor-pointer hover:text-emerald-600 transition-colors ${success[page.page_id] ? 'text-green-500' : 'text-primary'}`}
+                    >
+                      {assigning[page.page_id] ? 'Assigning...' : (
+                        agents.find(a => a.agent_id === selectedAgents[page.page_id])?.name || 
+                        (selectedAgents[page.page_id] && String(selectedAgents[page.page_id]).startsWith('foreign_agent_') ? `${String(selectedAgents[page.page_id]).replace('foreign_agent_', '')} (Team)` : 'Select Agent')
+                      )}
+                      <span className="material-symbols-outlined text-[18px]">expand_more</span>
+                    </button>
+
+                    {openDropdown === page.page_id && (
+                      <div className="absolute top-[120%] right-0 w-[200px] bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-slate-100 z-[999] overflow-hidden text-left py-1 animate-fade-in-up">
+                        {agents.length === 0 ? (
+                          <div className="px-4 py-3 text-sm text-slate-500 font-medium text-center">No agents available</div>
+                        ) : (
+                          agents.map(agent => (
+                            <button
+                              key={agent.agent_id}
+                              onClick={() => {
+                                handleAssign(page.page_id, agent.agent_id);
+                                setOpenDropdown(null);
+                              }}
+                              className={`w-full text-left px-4 py-2.5 text-[13px] font-semibold hover:bg-slate-50 transition-colors flex items-center justify-between border-transparent border-none cursor-pointer ${selectedAgents[page.page_id] === agent.agent_id ? 'text-emerald-600 bg-emerald-50/50' : 'text-slate-700 bg-white'}`}
+                            >
+                              <span className="truncate pr-2">{agent.name}</span>
+                              {selectedAgents[page.page_id] === agent.agent_id && (
+                                <span className="material-symbols-outlined text-[16px] text-emerald-500 shrink-0">check</span>
+                              )}
+                            </button>
+                          ))
+                        )}
+                        <div className="border-t border-slate-100 my-1"></div>
+                        <button
+                          onClick={() => {
+                            setOpenDropdown(null);
+                            onNavigate('agent'); // Jump straight to Agents tab
+                          }}
+                          className="w-full text-left px-4 py-2.5 text-[13px] font-semibold text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-2 border-none bg-white cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">add</span>
+                          Create New
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 pt-2">
+                  <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className={`h-full ${barBg}`} style={{width: barWidth}}></div>
+                  </div>
+                  <span className={`text-xs font-bold ${percentageColor}`}>{barWidth}</span>
+                </div>
+              </div>
             </div>
+          );
+        })}
 
-            <div className="agent-assign-box">
-              <label>Assigned Agent</label>
-              <select
-                value={selectedAgents[page.page_id] || ""}
-                onChange={(e) => handleAssign(page.page_id, e.target.value)}
-                disabled={assigning[page.page_id]}
-                className={success[page.page_id] ? 'success-pulse' : ''}
-              >
-                <option value="" disabled>Select an Agent...</option>
+        {/* Add Page Placeholder Card */}
+        <button className="group border-2 border-dashed border-slate-200 rounded-xl p-6 flex flex-col items-center justify-center gap-4 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all duration-300 min-h-[250px] bg-transparent">
+          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+            <span className="material-symbols-outlined text-2xl" data-icon="add">add</span>
+          </div>
+          <div className="text-center">
+            <span className="block font-headline font-bold text-slate-400 group-hover:text-emerald-600">Add New Page</span>
+            <span className="text-xs text-slate-300 uppercase tracking-widest font-semibold mt-1 block">Project Canvas</span>
+          </div>
+        </button>
+      </div>
 
-                {selectedAgents[page.page_id] && String(selectedAgents[page.page_id]).startsWith('foreign_agent_') && (
-                  <option value={selectedAgents[page.page_id]} disabled>
-                    {String(selectedAgents[page.page_id]).replace('foreign_agent_', '')} (Assigned by teammate)
-                  </option>
-                )}
-
-                {agents.length === 0 ? (
-                  <option disabled>No agents created yet</option>
-                ) : (
-                  agents.map(agent => (
-                    <option key={agent.agent_id} value={agent.agent_id}>
-                      {agent.name} ({agent.role || 'Agent'})
-                    </option>
-                  ))
-                )}
-              </select>
-              {success[page.page_id] && <span className="assign-success-text">✓ Assigned!</span>}
+      {/* Metrics & Stats Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="lg:col-span-3 bg-surface-container-low rounded-2xl p-8 relative overflow-hidden">
+          {/* Abstract background visual for editorial feel */}
+          <div className="absolute right-0 top-0 w-64 h-full opacity-10 pointer-events-none">
+            <svg className="w-full h-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <path d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.5,90,-16.3,88.5,-0.9C86.9,14.6,81.3,29.1,72.4,41.4C63.5,53.7,51.3,63.7,37.8,71.1C24.4,78.5,9.7,83.2,-4.5,90.9C-18.7,98.6,-32.4,109.3,-44.6,106.9C-56.8,104.5,-67.5,89,-75,74.1C-82.5,59.2,-86.8,44.9,-89.1,30.5C-91.5,16.1,-91.8,1.6,-88.9,-12.3C-86.1,-26.2,-80.1,-39.5,-70.7,-50.2C-61.2,-61,-48.3,-69.2,-35,-76.8C-21.7,-84.4,-7.9,-91.3,3.7,-97.7C15.3,-104,30.6,-83.6,44.7,-76.4Z" fill="#000000" transform="translate(100 100)"></path>
+            </svg>
+          </div>
+          <div className="relative z-10">
+            <span className="label-md uppercase tracking-[0.2em] text-outline mb-6 block font-label font-semibold">Workspace Utilization</span>
+            <div className="flex flex-wrap items-end gap-12">
+              <div>
+                <div className="text-7xl font-headline font-black tracking-tighter text-primary">8.4k</div>
+                <div className="text-on-surface-variant font-semibold flex items-center gap-2 mt-2">
+                  <span className="material-symbols-outlined text-emerald-500 text-sm" data-icon="trending_up">trending_up</span>
+                  Monthly Invocations
+                </div>
+              </div>
+              <div>
+                <div className="text-7xl font-headline font-black tracking-tighter text-emerald-500">92%</div>
+                <div className="text-on-surface-variant font-semibold flex items-center gap-2 mt-2">
+                  <span className="material-symbols-outlined text-emerald-500 text-sm" data-icon="check_circle">check_circle</span>
+                  Accuracy Rate
+                </div>
+              </div>
             </div>
           </div>
-        ))}
+        </div>
 
-        {/* Add Page Placeholder */}
-        <div className="page-card-container">
-          <button className="giant-page-btn btn-add-dashed">
-            <Plus size={48} className="page-icon" />
-            <span className="page-name">Add Page</span>
+        <div className="bg-primary-container rounded-2xl p-8 text-white flex flex-col justify-between">
+          <div>
+            <span className="label-md uppercase tracking-[0.2em] text-on-primary-container mb-4 block font-label font-semibold">Pro Plan Status</span>
+            <h4 className="text-2xl font-headline font-bold mb-2">Unlimited Access</h4>
+            <p className="text-on-primary-container text-sm">Your workspace is currently operating on the Pro tier. Enjoy premium features.</p>
+          </div>
+          <button className="mt-8 bg-white text-primary font-bold py-3 px-6 rounded-xl text-center hover:bg-slate-100 transition-colors border-none cursor-pointer">
+            Manage Subscription
           </button>
+        </div>
+      </div>
+
+      {/* Recent Activities Section */}
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-headline font-bold text-primary">Recent Activity</h2>
+          <button className="text-sm font-bold text-emerald-600 hover:underline bg-transparent border-none cursor-pointer p-0">View All Logs</button>
+        </div>
+        <div className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm">
+          <div className="divide-y divide-slate-50">
+            <div className="p-4 hover:bg-surface-container-low transition-colors flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-slate-500" data-icon="sync">sync</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-primary font-medium">ZipClip: <span className="text-on-surface-variant">Knowledge base sync completed.</span></p>
+                <p className="text-xs text-outline mt-0.5">2 minutes ago</p>
+              </div>
+              <div className="hidden sm:block">
+                <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase rounded">Success</span>
+              </div>
+            </div>
+            <div className="p-4 hover:bg-surface-container-low transition-colors flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-slate-500" data-icon="person_add">person_add</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-primary font-medium">New Agent: <span className="text-on-surface-variant">Expert-Doc was deployed to QChat.</span></p>
+                <p className="text-xs text-outline mt-0.5">1 hour ago</p>
+              </div>
+              <div className="hidden sm:block">
+                <span className="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold uppercase rounded">System</span>
+              </div>
+            </div>
+            <div className="p-4 hover:bg-surface-container-low transition-colors flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-slate-500" data-icon="edit">edit</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-primary font-medium">Workspace Update: <span className="text-on-surface-variant">Brand guidelines updated in knowledge assets.</span></p>
+                <p className="text-xs text-outline mt-0.5">5 hours ago</p>
+              </div>
+              <div className="hidden sm:block">
+                <span className="px-2 py-1 bg-primary text-white text-[10px] font-bold uppercase rounded">Updated</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -150,6 +318,8 @@ const Overview = ({ user, pages, onNavigate }) => {
 
 const ConversationList = ({ pages }) => {
   const [selectedPageId, setSelectedPageId] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isProfileVisible, setIsProfileVisible] = useState(true);
   const [contacts, setContacts] = useState([]);
   const [activeContact, setActiveContact] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -162,6 +332,16 @@ const ConversationList = ({ pages }) => {
       setSelectedPageId(pages[0].page_id);
     }
   }, [pages]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.page-dropdown-container')) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (!selectedPageId) return;
@@ -243,46 +423,24 @@ const ConversationList = ({ pages }) => {
   };
 
   const renderAvatar = (contactObj, extraClass = "") => {
-    // Facebook Graph API usually returns profile pictures in one of these structures depending on your query
-    // Adding more variations like "profile_picture", "picture.url", etc.
-    const url =
-      contactObj?.senders?.data?.[0]?.profile_pic ||
-      contactObj?.participants?.data?.[0]?.profile_pic ||
-      contactObj?.profile_pic ||
-      contactObj?.picture?.data?.url ||
-      contactObj?.picture?.url ||
-      contactObj?.picture ||
-      contactObj?.profile_picture;
-
     const name = contactObj?.senders?.data?.[0]?.name || contactObj?.participants?.data?.[0]?.name || contactObj?.name || 'U';
-
-    if (url && typeof url === 'string') {
-      return (
-        <div
-          className={`contact-avatar ${extraClass}`}
-          style={{ backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#e2e8f0' }}
-        />
-      );
-    }
+    const initial = name.charAt(0).toUpperCase();
     return (
-      <div className={`contact-avatar ${extraClass}`} style={{ backgroundColor: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-        {name.charAt(0)}
-      </div>
+      <img
+        alt={name}
+        className={`${extraClass} object-cover grayscale brightness-110`}
+        src={`https://ui-avatars.com/api/?name=${initial}&background=random&font-size=0.4`}
+      />
     );
   };
 
   const renderChatMessage = (msg) => {
-    // The debug info shows msg has a "role" field ("user") and "is_ai_msg" boolean.
-    // If "role" is "user" -> it's the customer (isMe = false).
-    // If "is_ai_msg" is true -> it's the bot (isMe = true).
-
     let isMe = true;
     if (msg.role === 'user') {
       isMe = false;
     } else if (msg.is_ai_msg === true) {
       isMe = true;
     } else {
-      // Fallback: search for ID comparison or name matching
       const customerId = activeContact?.senders?.data?.[0]?.id || activeContact?.participants?.data?.[0]?.id || activeContact?.id;
       const fromId = msg?.from?.id;
       if (fromId && customerId) {
@@ -290,19 +448,40 @@ const ConversationList = ({ pages }) => {
       }
     }
 
-    return (
-      <div key={msg.id || msg.message_id || Math.random()} className={`chat-message-row ${isMe ? 'sent' : 'received'}`}>
-        {!isMe && renderAvatar(activeContact, "very-small")}
-        <div className="chat-bubble">
-          {msg.message || msg.text || ''}
-        </div>
-        {isMe && (
-          <div className="contact-avatar very-small" style={{ backgroundColor: '#cbd5e1', color: '#333' }}>
-            QB
+    const timeStr = msg.created_time || msg.timestamp 
+          ? new Date(msg.created_time || msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+          : 'Now';
+
+    if (isMe) {
+      // Sent message
+      return (
+        <div key={msg.id || msg.message_id || Math.random()} className="flex gap-4 max-w-2xl ml-auto flex-row-reverse group">
+          <div className="space-y-2 flex flex-col items-end">
+            <div className="bg-slate-900 text-white p-5 rounded-t-3xl rounded-bl-3xl text-[15px] leading-relaxed shadow-xl">
+              {msg.message || msg.text || ''}
+            </div>
+            <p className="text-[10px] text-slate-400 font-medium px-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {timeStr} <span className="material-symbols-outlined text-[12px] text-emerald-500" style={{fontVariationSettings: "'FILL' 1"}}>check_circle</span>
+            </p>
           </div>
-        )}
-      </div>
-    );
+        </div>
+      );
+    } else {
+      // Received message
+      return (
+        <div key={msg.id || msg.message_id || Math.random()} className="flex gap-4 max-w-2xl group">
+          {renderAvatar(activeContact, "w-8 h-8 rounded-full self-end")}
+          <div className="space-y-2">
+            <div className="bg-slate-50 text-slate-900 p-5 rounded-t-3xl rounded-br-3xl text-[15px] leading-relaxed shadow-sm border border-slate-200">
+              {msg.message || msg.text || ''}
+            </div>
+            <p className="text-[10px] text-slate-400 font-medium px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              {timeStr}
+            </p>
+          </div>
+        </div>
+      );
+    }
   };
 
   if (!pages || pages.length === 0) {
@@ -317,122 +496,252 @@ const ConversationList = ({ pages }) => {
   }
 
   return (
-    <div className="dashboard-content-area conversation-layout animate-fade-in-up">
-      {/* Left Pane: Contacts */}
-      <div className="conv-contacts-pane">
-        <div className="pane-header" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h3 style={{ margin: 0 }}>Inbox</h3>
-          <select
-            value={selectedPageId}
-            onChange={e => setSelectedPageId(e.target.value)}
-            style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: '#f8fafc', outline: 'none' }}
-          >
-            {pages.map(p => <option key={p.page_id} value={p.page_id}>{p.name}</option>)}
-          </select>
+    <div className="flex h-full w-full bg-slate-50 animate-fade-in-up flex-1 overflow-hidden">
+      {/* Conversation List Column */}
+      <main className="w-96 flex flex-col bg-slate-50 border-r border-slate-200 shrink-0">
+        <div className="p-8">
+          <header className="mb-8 flex justify-between items-start">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mb-2">Inbox</p>
+              <h1 className="text-3xl font-black font-['Epilogue'] tracking-tighter text-slate-900">Messages</h1>
+            </div>
+            <div className="relative page-dropdown-container">
+               <button 
+                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                 className="flex items-center gap-2 p-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors bg-white relative z-0 cursor-pointer"
+               >
+                 <span className="material-symbols-outlined text-lg">page_info</span>
+                 <span className="text-xs font-bold truncate max-w-[80px]">
+                   {pages.find(p => p.page_id === selectedPageId)?.name || 'Select Page'}
+                 </span>
+                 <span className="material-symbols-outlined text-[16px]">expand_more</span>
+               </button>
+
+               {isDropdownOpen && (
+                 <div className="absolute top-[110%] right-0 w-[220px] bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-slate-100 z-[999] overflow-hidden py-1 animate-fade-in-up">
+                    <div className="px-4 py-2 border-b border-slate-50 mb-1">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Select Page</p>
+                    </div>
+                    {pages.map(p => (
+                      <button
+                        key={p.page_id}
+                        onClick={() => {
+                          setSelectedPageId(p.page_id);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2.5 text-[13px] font-semibold hover:bg-slate-50 transition-colors flex items-center justify-between border-none cursor-pointer ${selectedPageId === p.page_id ? 'text-emerald-600 bg-emerald-50/50' : 'text-slate-700 bg-white'}`}
+                      >
+                        <span className="truncate pr-2">{p.name}</span>
+                        {selectedPageId === p.page_id && (
+                          <span className="material-symbols-outlined text-[16px] text-emerald-500 shrink-0" style={{fontVariationSettings: "'FILL' 1"}}>check_circle</span>
+                        )}
+                      </button>
+                    ))}
+                 </div>
+               )}
+            </div>
+          </header>
+          <div className="relative group">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors">search</span>
+            <input className="w-full bg-white border border-slate-200 shadow-sm rounded-xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition-all text-slate-900 placeholder:text-slate-400" placeholder="Search conversations..." type="text"/>
+          </div>
         </div>
-        <div className="contact-list">
+        
+        <div className="flex-1 overflow-y-auto px-4 pb-8 space-y-2">
           {loading ? (
-            <div style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>Loading channels...</div>
+            <div className="p-8 text-center text-slate-400 font-medium text-sm">Loading channels...</div>
           ) : contacts.length === 0 ? (
-            <div style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>No ongoing conversations.</div>
+            <div className="p-8 text-center text-slate-400 font-medium text-sm">No ongoing conversations.</div>
           ) : contacts.map((contact, i) => {
             const contactName = contact.name || contact.senders?.data?.[0]?.name || contact.participants?.data?.[0]?.name || `User ${i}`;
             const snippet = contact.snippet || contact.last_message || contact.messages?.data?.[0]?.message || contact.messages?.[0]?.message || 'No messages';
             const updatedTimeValue = contact.updated_time || contact.last_message_at || contact.updated;
             const updated = updatedTimeValue ? new Date(updatedTimeValue).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
             const id = contact.conversation_id || contact.id || i;
+            const isActive = (activeContact?.id || activeContact?.conversation_id) === id;
 
             return (
               <div
                 key={id}
-                className={`contact-item ${(activeContact?.id || activeContact?.conversation_id) === id ? 'active' : ''}`}
                 onClick={() => setActiveContact(contact)}
+                className={`p-4 rounded-2xl transition-colors cursor-pointer group ${isActive ? 'bg-white shadow-sm border-l-4 border-emerald-500' : 'hover:bg-slate-200/50'}`}
               >
-                {renderAvatar(contact)}
-                <div className="contact-info">
-                  <h4>{contactName}</h4>
-                  <p>{snippet}</p>
+                <div className="flex gap-4 items-center">
+                  {renderAvatar(contact, `w-12 h-12 rounded-full ${isActive ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`)}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-baseline mb-0.5">
+                      <h3 className="font-bold text-slate-900 truncate">{contactName}</h3>
+                      <span className="text-[10px] text-slate-400 font-medium">{updated}</span>
+                    </div>
+                    <p className={`text-sm truncate font-semibold ${isActive ? 'text-emerald-600' : 'text-slate-500 font-medium'}`}>{snippet}</p>
+                  </div>
                 </div>
-                <span className="contact-time">{updated}</span>
               </div>
             );
           })}
         </div>
-      </div>
+      </main>
 
-      {/* Middle Pane: Active Chat */}
-      <div className="conv-chat-pane">
+      {/* Active Chat Window */}
+      <section className="flex-1 flex flex-col bg-white border-r border-slate-100">
         {activeContact ? (
           <>
-            <div className="pane-header border-bottom">
-              <div className="active-chat-header">
-                {renderAvatar(activeContact, "small")}
-                <h3>{activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}</h3>
+            <header className="h-20 px-8 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 border-b border-slate-50">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  {renderAvatar(activeContact, "w-10 h-10 rounded-full")}
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
+                </div>
+                <div>
+                  <h2 className="font-['Epilogue'] font-bold text-lg text-slate-900 tracking-tight">
+                    {activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}
+                  </h2>
+                  <p className="text-[10px] text-emerald-600 font-bold tracking-widest uppercase">Active Now</p>
+                </div>
               </div>
-            </div>
+              <div className="flex items-center gap-6 text-slate-400">
+                <button className="hover:text-slate-900 transition-colors"><span className="material-symbols-outlined">call</span></button>
+                <button className="hover:text-slate-900 transition-colors"><span className="material-symbols-outlined">videocam</span></button>
+                <button 
+                  onClick={() => setIsProfileVisible(!isProfileVisible)}
+                  className={`hover:text-slate-900 transition-colors ${!isProfileVisible ? 'text-emerald-600' : ''}`}
+                  title={isProfileVisible ? "Hide Profile" : "Show Profile"}
+                >
+                  <span className="material-symbols-outlined">{isProfileVisible ? 'side_navigation' : 'person_search'}</span>
+                </button>
+                <button className="hover:text-slate-900 transition-colors"><span className="material-symbols-outlined">more_vert</span></button>
+              </div>
+            </header>
 
-
-            <div className="chat-history">
+            <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-slate-50/20">
               {loadingMsgs ? (
-                <div style={{ textAlign: 'center', color: '#64748b', marginTop: '20px' }}>Loading messages...</div>
+                <div className="text-center text-slate-400 mt-10">Loading messages...</div>
               ) : messages.length === 0 ? (
-                <div style={{ textAlign: 'center', color: '#64748b', marginTop: '20px' }}>No messages available in this thread.</div>
+                <div className="text-center text-slate-400 mt-10">No messages available.</div>
               ) : (
-                messages.map(msg => renderChatMessage(msg))
+                <>
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase py-2 px-4 rounded-full bg-slate-100 mb-6">Chat History</span>
+                  </div>
+                  {messages.map(msg => renderChatMessage(msg))}
+                </>
               )}
             </div>
 
-            <div className="chat-input-area">
-              <label htmlFor="chatInput" style={{ display: 'none' }}>Message</label>
-              <input
-                id="chatInput"
-                type="text"
-                placeholder="Type a message..."
-                className="chat-input"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              />
-              <button className="btn-send" onClick={handleSend}>Send</button>
-            </div>
+            <footer className="p-8 bg-white border-t border-slate-50">
+              <div className="max-w-4xl mx-auto flex items-center gap-4 bg-slate-50 rounded-2xl p-2 pr-4 shadow-sm border border-slate-200 focus-within:border-slate-900 transition-colors">
+                <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
+                  <span className="material-symbols-outlined">attach_file</span>
+                </button>
+                <input 
+                  className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium py-3 text-slate-900 placeholder:text-slate-400 outline-none" 
+                  placeholder="Type your message..." 
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                />
+                <div className="flex items-center gap-2">
+                  <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
+                    <span className="material-symbols-outlined">mood</span>
+                  </button>
+                  <button 
+                    className="bg-slate-900 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-md hover:scale-105 transition-transform"
+                    onClick={handleSend}
+                  >
+                    <span className="material-symbols-outlined text-xl">send</span>
+                  </button>
+                </div>
+              </div>
+            </footer>
           </>
         ) : (
-          <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+          <div className="flex-1 flex items-center justify-center text-slate-400 font-medium">
             Select a conversation to view chat history
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Right Pane: Analytics (Stateless Mock Panel) */}
-      <div className="conv-analytics-pane">
-        <div className="pane-header">
-          <h3>Chat Context</h3>
-        </div>
-        <div className="analytics-content">
-          <div className="stat-box">
-            <span className="stat-label">AI Agent Handling</span>
-            <span className="stat-value progress-status">Active</span>
-          </div>
-          <div className="stat-box">
-            <span className="stat-label">Message Count</span>
-            <span className="stat-value">{messages.length}</span>
-          </div>
+      {/* Profile Right Sidebar */}
+      {isProfileVisible && (
+        <aside className="w-80 bg-white hidden xl:flex flex-col overflow-y-auto shrink-0 border-l border-slate-100 animate-fade-in-right">
+          {activeContact ? (
+          <div className="p-8">
+            <div className="flex justify-center mb-8">
+              <div className="relative">
+                {renderAvatar(activeContact, "w-32 h-32 rounded-3xl shadow-xl")}
+                <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-xl shadow-lg">
+                  <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
+                </div>
+              </div>
+            </div>
 
-          <div className="dummy-graph-box">
-            <span className="stat-label" style={{ marginBottom: '12px', display: 'block' }}>Sentiment Trend</span>
-            <div className="dummy-graph">
-              <div className="graph-bar" style={{ height: '40%' }}></div>
-              <div className="graph-bar" style={{ height: '60%' }}></div>
-              <div className="graph-bar" style={{ height: '30%' }}></div>
-              <div className="graph-bar" style={{ height: '80%' }}></div>
-              <div className="graph-bar" style={{ height: '50%' }}></div>
-              <div className="graph-bar" style={{ height: '90%' }}></div>
+            <div className="text-center mb-10">
+              <h2 className="text-2xl font-black font-['Epilogue'] tracking-tighter text-slate-900">
+                {activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}
+              </h2>
+              <p className="text-sm text-slate-500 font-medium mt-1">Chat Participant</p>
+              <div className="flex justify-center gap-2 mt-4">
+                <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Pro Plan</span>
+                <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Active</span>
+              </div>
+            </div>
+
+            <div className="space-y-8">
+              <div>
+                <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Information</h4>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <span className="material-symbols-outlined text-sm text-slate-400 mt-0.5">mail</span>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Email / Source</p>
+                      <p className="text-xs font-semibold text-slate-900 truncate max-w-[200px]">Facebook Messenger</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="material-symbols-outlined text-sm text-slate-400 mt-0.5">schedule</span>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Local Time</p>
+                      <p className="text-xs font-semibold text-slate-900">Current Time</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Shared Files</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="aspect-square bg-slate-50 rounded-xl flex flex-col items-center justify-center gap-1 group hover:bg-slate-900 transition-all cursor-pointer">
+                    <span className="material-symbols-outlined text-slate-400 group-hover:text-white">description</span>
+                    <span className="text-[9px] font-bold text-slate-400 group-hover:text-white uppercase">Report.pdf</span>
+                  </div>
+                  <div className="aspect-square bg-slate-50 rounded-xl flex flex-col items-center justify-center gap-1 group hover:bg-slate-900 transition-all cursor-pointer">
+                    <span className="material-symbols-outlined text-slate-400 group-hover:text-white">table_chart</span>
+                    <span className="text-[9px] font-bold text-slate-400 group-hover:text-white uppercase">Metrics.csv</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Shortcuts</h4>
+                <div className="space-y-2">
+                  <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-xl flex items-center justify-between group">
+                    Block User
+                    <span className="material-symbols-outlined text-sm text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">block</span>
+                  </button>
+                  <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-xl flex items-center justify-between group">
+                    Clear Conversation
+                    <span className="material-symbols-outlined text-sm text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">delete_sweep</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
+        ) : null}
+      </aside>
+    )}
+  </div>
+);
 };
 
 const FeedbackPanel = () => {
@@ -464,125 +773,90 @@ const FeedbackPanel = () => {
   };
 
   return (
-    <div className="dashboard-content-area animate-fade-in-up">
-      <div className="dashboard-header" style={{ textAlign: 'center', marginBottom: '32px', paddingTop: '20px' }}>
-        <h3 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '12px' }}>Feedback</h3>
-        <p style={{ color: '#334155', fontSize: '15px' }}>
-          Give us Feedback, Report a Bug, or Tell us how we can improve.
-        </p>
+    <div className="flex-1 flex flex-col items-center justify-start pt-6 pb-20 md:pt-12 relative animate-fade-in-up w-full">
+      {/* Subtle Floating Orbs (Background Texture) */}
+      <div className="fixed top-[-10%] left-[-5%] w-[400px] h-[400px] rounded-full bg-emerald-200 blur-[80px] opacity-40 pointer-events-none -z-10"></div>
+      <div className="fixed bottom-[10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-violet-200 blur-[80px] opacity-40 pointer-events-none -z-10"></div>
+      <div className="fixed top-[40%] left-[60%] w-[300px] h-[300px] rounded-full bg-blue-100 blur-[80px] opacity-40 pointer-events-none -z-10"></div>
+
+      {/* Feedback Form Container */}
+      <div className="w-full max-w-2xl bg-white/80 backdrop-blur-2xl rounded-xl p-8 md:p-16 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.05)] border border-white/40">
+        <div className="mb-12 text-center md:text-left">
+          <span className="font-['Inter'] text-[10px] uppercase tracking-[0.2em] text-[#57657a] font-bold mb-4 block">Continuous Improvement</span>
+          <h1 className="font-['Epilogue'] text-5xl font-black tracking-tight text-[#000000] mb-4">Share Feedback</h1>
+          <p className="font-['Inter'] text-[#45464d] text-lg leading-relaxed max-w-md">Your insights shape the future of our autonomous agents. Tell us what's working and what's not.</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-10">
+          {/* Category Dropdown */}
+          <div className="space-y-3">
+            <label className="font-['Epilogue'] text-xs font-extrabold uppercase tracking-widest text-[#000000]" htmlFor="category">Category</label>
+            <div className="relative group">
+              <select 
+                className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all cursor-pointer" 
+                id="category" 
+                name="category"
+                value={feedbackType}
+                onChange={(e) => setFeedbackType(e.target.value)}
+              >
+                <option disabled value="">Select feedback type</option>
+                <option value="bug">Report a Bug</option>
+                <option value="feature">Feature Request</option>
+                <option value="performance">Performance Issue</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Title Field */}
+          <div className="space-y-3">
+            <label className="font-['Epilogue'] text-xs font-extrabold uppercase tracking-widest text-[#000000]" htmlFor="title">Title</label>
+            <input 
+              className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all placeholder:text-slate-400" 
+              id="title" 
+              name="title" 
+              placeholder="A brief summary of your feedback" 
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Details Textarea */}
+          <div className="space-y-3">
+            <label className="font-['Epilogue'] text-xs font-extrabold uppercase tracking-widest text-[#000000]" htmlFor="details">Details</label>
+            <textarea 
+              className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all resize-none placeholder:text-slate-400" 
+              id="details" 
+              name="details" 
+              placeholder="Tell us more about your experience..." 
+              rows="5"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            ></textarea>
+          </div>
+
+          {/* Submit Button */}
+          <div className="pt-6">
+            <button 
+              className="w-full md:w-auto bg-gradient-to-br from-violet-500 to-emerald-500 text-white font-['Epilogue'] font-bold text-lg px-12 py-5 rounded-lg shadow-xl shadow-emerald-500/10 hover:shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-3" 
+              type="submit"
+              disabled={submitted}
+            >
+              <span>{submitted ? 'Feedback Submitted' : 'Submit Feedback'}</span>
+              {!submitted && <span className="material-symbols-outlined">send</span>}
+              {submitted && <span className="material-symbols-outlined">check_circle</span>}
+            </button>
+          </div>
+        </form>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}
-      >
-        <div className="form-group" style={{ position: 'relative' }}>
-          <select
-            value={feedbackType}
-            onChange={(e) => setFeedbackType(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              fontSize: '15px',
-              fontFamily: 'inherit',
-              outline: 'none',
-              boxSizing: 'border-box',
-              backgroundColor: '#fff',
-              color: 'var(--text-primary)',
-              appearance: 'none',
-              cursor: 'pointer',
-              transition: 'border-color 0.2s, box-shadow 0.2s',
-            }}
-            onFocus={(e) => { e.target.style.borderColor = '#0ea5e9'; e.target.style.boxShadow = '0 0 0 3px rgba(14,165,233,0.12)'; }}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          >
-            <option value="General">General</option>
-            <option value="Report a bug">Report a bug</option>
-            <option value="Suggest Improvement">Suggest Improvement</option>
-            <option value="Feature Request">Feature Request</option>
-          </select>
-          <div style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#cbd5e1' }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="feedbackTitle" style={{ display: 'none' }}>Title</label>
-          <input
-            id="feedbackTitle"
-            type="text"
-            placeholder="Title *"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              fontSize: '15px',
-              fontFamily: 'inherit',
-              outline: 'none',
-              boxSizing: 'border-box',
-              backgroundColor: '#fff',
-              color: 'var(--text-primary)',
-              transition: 'border-color 0.2s, box-shadow 0.2s',
-            }}
-            onFocus={(e) => { e.target.style.borderColor = '#0ea5e9'; e.target.style.boxShadow = '0 0 0 3px rgba(14,165,233,0.12)'; }}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="feedbackDetails" style={{ display: 'none' }}>Details</label>
-          <textarea
-            id="feedbackDetails"
-            placeholder="Details *"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              fontSize: '15px',
-              fontFamily: 'inherit',
-              resize: 'vertical',
-              outline: 'none',
-              height: '140px',
-              boxSizing: 'border-box',
-              backgroundColor: '#fff',
-              color: 'var(--text-primary)',
-              transition: 'border-color 0.2s, box-shadow 0.2s',
-            }}
-            onFocus={(e) => { e.target.style.borderColor = '#0ea5e9'; e.target.style.boxShadow = '0 0 0 3px rgba(14,165,233,0.12)'; }}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="btn-submit"
-          style={{
-            backgroundColor: submitted ? '#22c55e' : 'var(--bg-primary)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '16px',
-            fontSize: '16px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            transition: 'background-color 0.25s, transform 0.1s',
-            marginTop: '8px',
-          }}
-          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-        >
-          {submitted ? '✓ Submitted!' : 'Submit'}
-        </button>
-      </form>
+      {/* Footer Meta */}
+      <div className="mt-12 text-center pb-8">
+        <p className="font-['Inter'] text-[10px] uppercase tracking-tighter text-[#76777d]">© 2024 ChatAutomate Labs. Feedback loop v4.2.0</p>
+      </div>
     </div>
   );
 };
@@ -859,86 +1133,188 @@ const Knowledge = ({ pages }) => {
     );
   }
 
+  const totalSizeMB = knowledgeList.reduce((acc, curr) => {
+    if (curr.size) return acc + (curr.size / (1024 * 1024));
+    return acc + (curr.knowledge_type === 'text' ? 0.1 : 1.2);
+  }, 0);
+
   return (
-    <div className="dashboard-content-area animate-fade-in-up">
-      <div className="dashboard-header flex-between" style={{ flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <h2>Knowledge Base Test</h2>
-          <p>Manage the documents and context your AI uses.</p>
+    <div className="flex-1 w-full bg-white p-8 md:p-12 overflow-y-auto animate-fade-in-up">
+      <div className="max-w-6xl mx-auto space-y-12">
+        
+        {/* Header Section */}
+        <div className="flex justify-between items-start">
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase mb-2">Resource Library</p>
+            <h1 className="text-4xl font-black font-['Epilogue'] tracking-tighter text-slate-900 mb-4">Knowledge Base</h1>
+            <p className="text-sm text-slate-500 max-w-lg leading-relaxed">
+              Upload and manage the documents that power your agents. These resources provide the semantic context for all AI interactions.
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <select
+              value={selectedPageId}
+              onChange={e => setSelectedPageId(e.target.value)}
+              className="text-sm font-bold text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none cursor-pointer focus:ring-2 focus:ring-emerald-500 transition-all appearance-none pr-8 relative"
+              style={{
+                backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 12px center',
+                backgroundSize: '16px'
+              }}
+            >
+              {pages.map(p => <option key={p.page_id} value={p.page_id}>{p.name}</option>)}
+            </select>
+            
+            <button 
+              className="bg-emerald-500 text-white text-sm font-bold py-3 px-6 rounded-xl flex items-center gap-2 hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 hover:-translate-y-0.5"
+              onClick={() => {
+                setName('');
+                setTitle('');
+                setDescription('');
+                setSelectedFiles(null);
+                setKnowledgeType('text');
+                setEditingItemId(null);
+                setShowModal(true);
+              }}
+            >
+              <span className="material-symbols-outlined text-[18px]">add_circle</span>
+              Add Knowledge
+            </button>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <select
-            value={selectedPageId}
-            onChange={e => setSelectedPageId(e.target.value)}
-            style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: '#fff', outline: 'none', fontWeight: 500 }}
-          >
-            {pages.map(p => <option key={p.page_id} value={p.page_id}>{p.name}</option>)}
-          </select>
-
-          <button className="btn-add-knowledge" onClick={() => {
-            setName('');
-            setTitle('');
-            setDescription('');
-            setSelectedFiles(null);
-            setKnowledgeType('text');
-            setEditingItemId(null);
-            setShowModal(true);
-          }}>
-            <Plus size={18} /> Add Knowledge
-          </button>
-        </div>
-      </div>
-
-      <div className="knowledge-list">
-        <div className="knowledge-header-row">
-          <div className="k-col k-name">Name</div>
-          <div className="k-col k-desc">Type</div>
-          <div className="k-col k-actions" style={{ width: '80px', textAlign: 'right' }}>Actions</div>
-        </div>
-
-        {loading ? (
-          <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>Loading documents...</div>
-        ) : knowledgeList.length === 0 ? (
-          <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>No documents found for this page.</div>
-        ) : (
-          knowledgeList.map((item, i) => (
-            <div key={item.id || i} className="knowledge-item">
-              <div className="k-col k-name">{item.name || item.title || item.data_source?.name || 'Unnamed Document'}</div>
-              <div className="k-col k-desc">
-                {item.knowledge_type === 'file' || item.file_name ? 'File' : item.knowledge_type === 'text' ? 'Raw Text' : (item.description ? 'Product Details' : (item.data_source?.url ? 'URL Link' : 'Raw Text'))}
-              </div>
-              <div className="k-col k-actions" style={{ width: '100px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                {!(item.knowledge_type === 'file' || item.file_name) && (
-                  <>
-                    <button
-                      onClick={() => handleViewClick(item)}
-                      style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
-                      title="View Details"
-                      disabled={fetchingDetails}
-                    >
-                      <Book size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleEditClick(item)}
-                      style={{ background: 'transparent', border: 'none', color: '#0ea5e9', cursor: 'pointer', padding: '4px' }}
-                      title="Edit element"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                  </>
-                )}
-                <button
-                  onClick={() => handleRequestDelete(item)}
-                  style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
-                  title="Delete element"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 flex flex-col gap-4 transition-transform hover:scale-[1.02]">
+            <span className="material-symbols-outlined text-emerald-500 text-3xl">description</span>
+            <div>
+              <div className="text-4xl font-black text-slate-900 font-['Epilogue']">{knowledgeList.length < 10 ? `0${knowledgeList.length}` : knowledgeList.length}</div>
+              <div className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mt-2">Active Docs</div>
             </div>
-          ))
-        )}
+          </div>
+          
+          <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 flex flex-col gap-4 transition-transform hover:scale-[1.02]">
+            <span className="material-symbols-outlined text-emerald-500 text-3xl">format_list_bulleted</span>
+            <div>
+              <div className="text-4xl font-black text-slate-900 font-['Epilogue']">{totalSizeMB.toFixed(1)} MB</div>
+              <div className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mt-2">Storage Used</div>
+            </div>
+          </div>
+          
+          <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 flex flex-col gap-4 transition-transform hover:scale-[1.02]">
+            <span className="material-symbols-outlined text-emerald-500 text-3xl">sync</span>
+            <div>
+              <div className="text-4xl font-black text-slate-900 font-['Epilogue']">100%</div>
+              <div className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mt-2">Indexing Status</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Data Table */}
+        <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
+          <div className="grid grid-cols-12 gap-4 p-5 text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase bg-slate-50/50 border-b border-slate-100">
+            <div className="col-span-4 pl-6 flex items-center">Name</div>
+            <div className="col-span-3 flex items-center">Type</div>
+            <div className="col-span-2 flex items-center">Size</div>
+            <div className="col-span-2 flex items-center">Status</div>
+            <div className="col-span-1 text-right pr-6 flex items-center justify-end">Actions</div>
+          </div>
+          
+          <div className="divide-y divide-slate-50">
+            {loading ? (
+              <div className="p-12 text-center text-slate-400 font-medium text-sm">Loading documents...</div>
+            ) : knowledgeList.length === 0 ? (
+              <div className="p-12 text-center text-slate-400 font-medium text-sm">No documents found for this page.</div>
+            ) : (
+              knowledgeList.map((item, i) => {
+                const name = item.name || item.title || item.data_source?.name || 'Unnamed Document';
+                const isFile = item.knowledge_type === 'file' || item.file_name;
+                
+                let extType = 'Text File';
+                if (isFile) {
+                  const extMatch = name.match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
+                  if (extMatch) {
+                     const ext = extMatch[1].toLowerCase();
+                     if (ext === 'pdf') extType = 'PDF Document';
+                     else if (ext === 'doc' || ext === 'docx') extType = 'Word Doc';
+                     else if (ext === 'csv') extType = 'CSV Data';
+                     else extType = ext.toUpperCase() + ' File';
+                  } else {
+                     extType = 'Document';
+                  }
+                }
+
+                let displaySize = '0.1 MB';
+                if (item.size) {
+                  displaySize = (item.size / (1024 * 1024)).toFixed(1) + ' MB';
+                } else if (!isFile) {
+                  displaySize = '0.1 MB';
+                } else {
+                  displaySize = '1.2 MB'; // fallback
+                }
+
+                return (
+                  <div key={item.id || i} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50/80 transition-colors group">
+                    <div className="col-span-4 flex items-center gap-4 pl-6">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+                         <span className="material-symbols-outlined text-[20px]">{isFile ? 'description' : 'text_snippet'}</span>
+                      </div>
+                      <span className="font-bold text-sm text-slate-900 truncate">{name}</span>
+                    </div>
+                    
+                    <div className="col-span-3 text-sm text-slate-600 font-medium">{extType}</div>
+                    
+                    <div className="col-span-2 text-sm text-slate-600 font-medium">{displaySize}</div>
+                    
+                    <div className="col-span-2 flex items-center gap-2">
+                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                       <span className="text-[11px] font-bold text-emerald-600">Ready</span>
+                    </div>
+                    
+                    <div className="col-span-1 flex items-center justify-end gap-1 pr-4">
+                      {!isFile && (
+                        <>
+                          <button
+                            onClick={() => handleViewClick(item)}
+                            disabled={fetchingDetails}
+                            className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
+                            title="View Details"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">visibility</span>
+                          </button>
+                          <button
+                            onClick={() => handleEditClick(item)}
+                            className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
+                            title="Edit"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">edit</span>
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={() => handleRequestDelete(item)}
+                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        title="Delete"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center text-xs font-bold text-slate-400 mb-8 pt-4">
+          <span>Showing {knowledgeList.length} of {knowledgeList.length} resources</span>
+          <div className="flex gap-4">
+            <button className="hover:text-slate-900 transition-colors cursor-not-allowed opacity-50">Previous</button>
+            <button className="text-slate-900 hover:underline transition-all">Next</button>
+          </div>
+        </div>
       </div>
 
       {viewingItem && (
@@ -1166,7 +1542,7 @@ const PERSONAS = [
   },
 ];
 
-const AgentPanel = ({ user, onUpdate, onAgentCreated, onAgentEdited }) => {
+const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) => {
   const agents = user?.agents || [];
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -1183,6 +1559,89 @@ const AgentPanel = ({ user, onUpdate, onAgentCreated, onAgentEdited }) => {
 
   const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState(false);
+  const [unassigningId, setUnassigningId] = useState(null);
+
+  const [toasts, setToasts] = useState([]);
+  const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
+  
+  const [assignModalAgent, setAssignModalAgent] = useState(null);
+  const [assigningId, setAssigningId] = useState(null);
+
+  const handleAssign = async (agentId, pageId) => {
+    if (!pageId) return;
+    setAssigningId(agentId);
+    try {
+      await apiService.assignAgentToPage(pageId, agentId);
+      const activeSelectedAgents = JSON.parse(localStorage.getItem('qchat_assigned_agents') || '{}');
+      activeSelectedAgents[pageId] = agentId;
+      localStorage.setItem('qchat_assigned_agents', JSON.stringify(activeSelectedAgents));
+      addToast('Agent assigned successfully', 'success');
+      setAssignModalAgent(null);
+      if (onUpdate) onUpdate();
+    } catch (e) {
+      console.error(e);
+      addToast('Failed to assign: ' + e.message, 'error');
+    } finally {
+      setAssigningId(null);
+    }
+  };
+
+  const addToast = (message, type = 'success') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
+
+  const handleUnassign = async (agentId, pageId) => {
+    if (!pageId) return;
+    setUnassigningId(agentId);
+    try {
+      await apiService.unassignAgentFromPage(pageId);
+      const activeSelectedAgents = JSON.parse(localStorage.getItem('qchat_assigned_agents') || '{}');
+      if (activeSelectedAgents[pageId]) {
+         delete activeSelectedAgents[pageId];
+         localStorage.setItem('qchat_assigned_agents', JSON.stringify(activeSelectedAgents));
+      }
+      addToast('Agent unassigned successfully', 'success');
+      if (onUpdate) onUpdate();
+    } catch (e) {
+      console.error(e);
+      addToast('Failed to unassign: ' + e.message, 'error');
+    } finally {
+      setUnassigningId(null);
+    }
+  };
+
+  const handleDeleteAgent = (agent) => {
+    setDeleteConfirmItem(agent);
+  };
+
+  const handleConfirmDelete = async () => {
+    const agent = deleteConfirmItem;
+    if (!agent) return;
+    setDeleteConfirmItem(null);
+    try {
+      await apiService.deleteAgent(agent.agent_id);
+      const activeSelectedAgents = JSON.parse(localStorage.getItem('qchat_assigned_agents') || '{}');
+      let changed = false;
+      Object.keys(activeSelectedAgents).forEach(pageId => {
+        if (activeSelectedAgents[pageId] === agent.agent_id) {
+          delete activeSelectedAgents[pageId];
+          changed = true;
+        }
+      });
+      if (changed) {
+        localStorage.setItem('qchat_assigned_agents', JSON.stringify(activeSelectedAgents));
+      }
+      addToast('Agent deleted successfully', 'delete');
+      if (onUpdate) onUpdate();
+    } catch (e) {
+      console.error(e);
+      addToast('Failed to delete agent: ' + e.message, 'error');
+    }
+  };
 
   const TONES = ["Professional", "Friendly", "Formal", "Casual", "Persuasive", "Empathetic", "Confident"];
   const LANGUAGES = ["Mimic User Language", "English", "Arabic", "Spanish", "French", "German", "Portuguese", "Hindi", "Bengali"];
@@ -1252,50 +1711,296 @@ const AgentPanel = ({ user, onUpdate, onAgentCreated, onAgentEdited }) => {
     }
   };
 
+  const overlays = typeof document !== 'undefined' ? ReactDOM.createPortal(
+    <div className="fixed inset-0 pointer-events-none z-[9999]">
+      <div className="absolute top-6 right-6 flex flex-col gap-3 items-end">
+        {toasts.map(t => (
+          <div key={t.id} style={{
+            animation: 'slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            color: '#fff',
+            fontWeight: 600,
+            fontSize: '14px',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: t.type === 'success' ? '#10b981' : t.type === 'error' ? '#ef4444' : t.type === 'delete' ? '#ef4444' : '#0ea5e9'
+          }}>
+            <div style={{ marginRight: '12px', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '50%' }}>
+              {t.type === 'success' ? '✓' : t.type === 'error' ? '!' : t.type === 'delete' ? '✕' : 'ℹ'}
+            </div>
+            {t.message}
+          </div>
+        ))}
+        {deleteConfirmItem && (
+          <div style={{
+            animation: 'slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            padding: '16px 20px',
+            borderRadius: '8px',
+            color: '#0f172a',
+            fontWeight: 500,
+            fontSize: '14px',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
+            display: 'flex',
+            flexDirection: 'column',
+            minWidth: '280px',
+            pointerEvents: 'auto',
+            backgroundColor: '#fff',
+            borderLeft: '4px solid #ef4444'
+          }}>
+            <div style={{ marginBottom: '14px', fontWeight: 600, fontSize: '14.5px' }}>
+              Delete "{deleteConfirmItem.name}"?
+            </div>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button onClick={() => setDeleteConfirmItem(null)} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor='#e2e8f0'} onMouseLeave={e => e.currentTarget.style.backgroundColor='#f1f5f9'}>Cancel</button>
+              <button onClick={handleConfirmDelete} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#ef4444', color: '#fff', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor='#dc2626'} onMouseLeave={e => e.currentTarget.style.backgroundColor='#ef4444'}>Yes, delete</button>
+            </div>
+          </div>
+        )}
+        {assignModalAgent && (
+          <div style={{
+            animation: 'slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            padding: '16px 20px',
+            borderRadius: '8px',
+            color: '#0f172a',
+            fontWeight: 500,
+            fontSize: '14px',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
+            display: 'flex',
+            flexDirection: 'column',
+            minWidth: '320px',
+            pointerEvents: 'auto',
+            backgroundColor: '#fff',
+            borderLeft: '4px solid #0ea5e9'
+          }}>
+            <div style={{ marginBottom: '14px', fontWeight: 600, fontSize: '14.5px' }}>
+              Assign "{assignModalAgent.name}" to Page
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px', maxHeight: '200px', overflowY: 'auto' }}>
+              {pages?.length > 0 ? pages.map(p => (
+                <button 
+                  key={p.page_id}
+                  onClick={() => handleAssign(assignModalAgent.agent_id, p.page_id)}
+                  disabled={assigningId === assignModalAgent.agent_id}
+                  style={{ textAlign: 'left', padding: '10px 14px', borderRadius: '8px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', cursor: assigningId === assignModalAgent.agent_id ? 'not-allowed' : 'pointer', fontWeight: 600, fontSize: '13px', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { if (assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor='#e0f2fe'; e.currentTarget.style.borderColor='#bae6fd'; }}
+                  onMouseLeave={e => { if (assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor='#f8fafc'; e.currentTarget.style.borderColor='#e2e8f0'; }}
+                >
+                  {p.name} {assigningId === assignModalAgent.agent_id && '(Assigning...)'}
+                </button>
+              )) : (
+                <div style={{ fontSize: '13px', color: '#64748b', textAlign: 'center', padding: '10px 0' }}>No pages connected.</div>
+              )}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button 
+                onClick={() => setAssignModalAgent(null)} 
+                disabled={assigningId === assignModalAgent.agent_id}
+                style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 600, transition: 'background-color 0.2s', cursor: assigningId === assignModalAgent.agent_id ? 'not-allowed' : 'pointer' }}
+                onMouseEnter={e => { if(assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor='#e2e8f0' }} 
+                onMouseLeave={e => { if(assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor='#f1f5f9' }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
+  ) : null;
+
   if (!isCreating && !isEditing) {
     return (
-      <div className="dashboard-content-area animate-fade-in-up">
-        <div className="dashboard-header">
-          <h2>Your Agents</h2>
-          <p>Manage your AI agents or create a new one.</p>
-        </div>
-
-        <div className="pages-grid" style={{ paddingBottom: '40px' }}>
-          {agents.map(agent => (
-            <div key={agent.agent_id} className="page-card-container" style={{ position: 'relative' }}>
-              <button
-                onClick={() => handleEditClick(agent)}
-                style={{ position: 'absolute', top: '12px', right: '12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '6px', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}
-                title="Edit Agent"
-                onMouseEnter={(e) => e.currentTarget.style.color = '#0ea5e9'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#64748b'}
-              >
-                <Edit2 size={16} />
-              </button>
-              <div className="giant-page-btn btn-blue" style={{ cursor: 'default' }}>
-                <UserRound size={48} className="page-icon" />
-                <span className="page-name">{agent.name}</span>
+      <div className="flex-1 w-full p-8 md:p-12 min-h-screen bg-[#f7f9fb] animate-fade-in-up">
+        <div className="max-w-[1400px] mx-auto">
+          {/* Header Section */}
+          <section className="mb-16">
+            <div className="flex justify-between items-end flex-wrap gap-6">
+              <div className="max-w-2xl">
+                <span className="font-['Inter'] text-[10px] uppercase tracking-[0.2em] text-[#45464d] mb-4 block font-bold">Fleet Management</span>
+                <h2 className="text-5xl font-extrabold tracking-tight text-primary font-['Epilogue'] mb-6">AI Agents</h2>
+                <p className="text-lg text-[#45464d] leading-relaxed">
+                    Deploy, monitor, and scale your autonomous intelligence fleet. Your agents are currently handling <span className="text-emerald-600 font-bold">84%</span> of all support traffic.
+                </p>
               </div>
-
-              <div className="agent-assign-box" style={{ textAlign: 'center', paddingTop: '16px' }}>
-                <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>Role: <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{agent.role}</span></div>
-                <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>Tone: <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{agent.tone}</span></div>
-                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '12px', wordBreak: 'break-all', padding: '6px', backgroundColor: '#f1f5f9', borderRadius: '6px' }}>
-                  <span style={{ fontWeight: 600, color: '#64748b', display: 'block', marginBottom: '2px' }}>Agent ID</span>
-                  {agent.agent_id}
-                </div>
+              <div className="flex gap-4">
+                <button className="flex items-center gap-2 px-6 py-3 bg-[#e6e8ea] rounded-xl text-sm font-semibold hover:bg-[#e0e3e5] transition-colors">
+                    <span className="material-symbols-outlined text-lg border-b-0" data-icon="tune">tune</span>
+                    Filter View
+                </button>
+                <button 
+                  onClick={() => setIsCreating(true)}
+                  className="flex items-center gap-2 px-8 py-3 bg-[#000000] text-white rounded-xl font-bold transition-all hover:opacity-90 active:scale-95 shadow-lg shadow-black/20"
+                >
+                    <span className="material-symbols-outlined font-black" style={{fontVariationSettings: "'FILL' 1"}}>add</span>
+                    Create New Agent
+                </button>
               </div>
             </div>
-          ))}
+          </section>
 
-          {/* Create Agent Placeholder */}
-          <div className="page-card-container">
-            <button className="giant-page-btn btn-add-dashed" onClick={() => setIsCreating(true)}>
-              <UserRound size={48} className="page-icon" />
-              <span className="page-name">Create Agent</span>
-            </button>
+          {/* Stats Overview */}
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            <div className="bg-[#f2f4f6] p-8 rounded-3xl border border-white/50 shadow-sm">
+              <p className="font-['Inter'] text-[10px] uppercase tracking-widest text-[#45464d] mb-4 font-bold">Total Fleet</p>
+              <h3 className="text-4xl font-extrabold text-[#000000] font-['Epilogue']">{agents.length < 10 ? `0${agents.length}` : agents.length}</h3>
+              <div className="mt-4 flex items-center text-emerald-600 text-xs font-bold">
+                  <span className="material-symbols-outlined text-sm mr-1">trending_up</span>
+                  +2 this month
+              </div>
+            </div>
+            <div className="bg-[#f2f4f6] p-8 rounded-3xl border border-white/50 shadow-sm">
+              <p className="font-['Inter'] text-[10px] uppercase tracking-widest text-[#45464d] mb-4 font-bold">Active Now</p>
+              <h3 className="text-4xl font-extrabold text-[#000000] font-['Epilogue']">09</h3>
+              <div className="mt-4 flex items-center text-[#45464d] text-xs font-bold">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                  Running smoothly
+              </div>
+            </div>
+            <div className="bg-[#f2f4f6] p-8 rounded-3xl border border-white/50 shadow-sm">
+              <p className="font-['Inter'] text-[10px] uppercase tracking-widest text-[#45464d] mb-4 font-bold">Total Dialogues</p>
+              <h3 className="text-4xl font-extrabold text-[#000000] font-['Epilogue']">42.8k</h3>
+              <div className="mt-4 flex items-center text-emerald-600 text-xs font-bold">
+                  <span className="material-symbols-outlined text-sm mr-1">trending_up</span>
+                  12% increase
+              </div>
+            </div>
+            <div className="bg-[#f2f4f6] p-8 rounded-3xl border border-white/50 shadow-sm">
+              <p className="font-['Inter'] text-[10px] uppercase tracking-widest text-[#45464d] mb-4 font-bold">Resolution Rate</p>
+              <h3 className="text-4xl font-extrabold text-[#000000] font-['Epilogue']">91.4%</h3>
+              <div className="mt-4 flex items-center text-[#45464d] text-xs font-bold">
+                  <span className="material-symbols-outlined text-sm mr-1">verified</span>
+                  High Performance
+              </div>
+            </div>
+          </section>
+
+          {/* Agents Bento Grid */}
+          <div className="grid grid-cols-12 gap-6 pb-20 auto-rows-fr">
+            
+            {/* Create Agent Card */}
+            <div 
+              onClick={() => setIsCreating(true)}
+              className="col-span-12 md:col-span-6 lg:col-span-4 min-h-[360px] relative group overflow-hidden bg-[#000000] rounded-[2rem] cursor-pointer shadow-lg"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#000000] to-[#131b2e] opacity-90"></div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center border border-white/10 m-3 rounded-[1.5rem] border-dashed transition-colors group-hover:border-emerald-500/50">
+                  <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300 shadow-lg">
+                      <span className="material-symbols-outlined text-white text-3xl group-hover:text-emerald-400">add</span>
+                  </div>
+                  <h3 className="text-white text-xl font-bold mb-2 font-['Epilogue'] tracking-tight">New Intelligence</h3>
+                  <p className="text-[#bec6e0] text-sm font-medium">Deploy a custom trained model to handle specific logic.</p>
+              </div>
+            </div>
+
+            {/* Dynamic Agents List mapped to grid */}
+            {agents.map((agent) => {
+              // Read assigned agents from localStorage to determine active/online state globally
+              const activeSelectedAgents = JSON.parse(localStorage.getItem('qchat_assigned_agents') || '{}');
+              const assignedPageId = Object.keys(activeSelectedAgents).find(key => activeSelectedAgents[key] === agent.agent_id);
+              const isAssigned = !!assignedPageId;
+
+              return (
+                <div key={agent.agent_id} className="col-span-12 md:col-span-6 lg:col-span-4 bg-white rounded-[2rem] p-8 flex flex-col justify-between group hover:shadow-2xl hover:shadow-black/5 transition-all duration-500 border border-[#e0e3e5] relative break-inside-avoid min-h-[360px]">
+                  
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex gap-4">
+                      {isAssigned ? (
+                         <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0 border border-emerald-100 group-hover:scale-105 transition-transform">
+                            <span className="material-symbols-outlined text-emerald-600 text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>support_agent</span>
+                         </div>
+                      ) : (
+                         <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 group-hover:scale-105 transition-transform">
+                            <span className="material-symbols-outlined text-slate-600 text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>psychology</span>
+                         </div>
+                      )}
+                      
+                      <div className="flex flex-col justify-center min-w-0">
+                        <h3 className="text-2xl font-bold text-[#000000] leading-tight font-['Epilogue'] truncate pr-4">{agent.name}</h3>
+                        {isAssigned ? (
+                           <div className="flex items-center gap-2 mt-2">
+                             <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]"></span>
+                             <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Active</span>
+                           </div>
+                        ) : (
+                            <div className="bg-slate-50 px-3 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 flex items-center gap-1 border border-slate-200 w-fit mt-2">
+                                <span className="material-symbols-outlined text-[14px]">pause_circle</span>
+                                IDLE
+                            </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteAgent(agent);
+                      }}
+                      className="p-2 -mt-2 -mr-2 rounded-xl hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors z-20"
+                      title="Delete Agent"
+                    >
+                      <span className="material-symbols-outlined text-xl">delete</span>
+                    </button>
+                  </div>
+
+                  <div className="mb-6 flex-1 mt-4">
+                    <div className="grid grid-cols-2 gap-8 my-8">
+                      <div>
+                        <p className="font-['Inter'] text-[10px] uppercase tracking-widest text-[#45464d] mb-2 font-bold">Core Function</p>
+                        <p className="text-sm font-semibold text-[#000000]">{agent.role}</p>
+                      </div>
+                      <div>
+                        <p className="font-['Inter'] text-[10px] uppercase tracking-widest text-[#45464d] mb-2 font-bold">Tone Setup</p>
+                        <p className="text-sm font-semibold text-[#000000] max-w-[120px] truncate">{agent.tone} Profile</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-[#eceef0] flex justify-between items-center mt-auto">
+                    <div className="flex gap-10">
+                      <div>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-[#76777d] block mb-1">Dialogues</span>
+                        <span className="text-xl font-bold text-[#000000]">12,402</span>
+                      </div>
+                      <div>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-[#76777d] block mb-1">Success</span>
+                        <span className="text-xl font-bold text-[#000000]">94.2%</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {isAssigned ? (
+                        <button 
+                          onClick={() => handleUnassign(agent.agent_id, assignedPageId)}
+                          disabled={unassigningId === agent.agent_id}
+                          className="text-sm font-bold text-red-500 flex items-center gap-2 transition-all px-4 py-2 hover:bg-red-50 rounded-xl disabled:opacity-50"
+                        >
+                          {unassigningId === agent.agent_id ? 'Unassigning...' : 'Unassign'}
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => setAssignModalAgent(agent)}
+                          className="text-sm font-bold text-blue-600 flex items-center gap-2 transition-all px-4 py-2 hover:bg-blue-50 rounded-xl"
+                        >
+                          Assign
+                        </button>
+                      )}
+                      <button 
+                        onClick={() => handleEditClick(agent)}
+                        className="text-sm font-bold text-emerald-600 flex items-center gap-2 hover:gap-3 transition-all px-4 py-2 hover:bg-emerald-50 rounded-xl"
+                      >
+                          Configure <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            
           </div>
         </div>
+        {overlays}
       </div>
     );
   }
@@ -1382,6 +2087,7 @@ const AgentPanel = ({ user, onUpdate, onAgentCreated, onAgentEdited }) => {
           {loading ? (isEditing ? 'Saving...' : 'Creating...') : (created ? (isEditing ? '✓ Settings Saved!' : '✓ Agent Created!') : (isEditing ? 'Save Changes' : 'Create Agent'))}
         </button>
       </form>
+      {overlays}
     </div>
   );
 };
@@ -1756,6 +2462,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
@@ -1799,7 +2506,7 @@ export default function Dashboard() {
       case 'overview': return <Overview user={user} pages={pages} onNavigate={setActiveTab} />;
       case 'conversation': return <ConversationList pages={pages} />;
       case 'knowledge': return <Knowledge pages={pages} />;
-      case 'agent': return <AgentPanel user={user} onUpdate={fetchData} onAgentCreated={(newAgent) => setUser(prev => prev ? { ...prev, agents: [...(prev.agents || []), newAgent] } : prev)} onAgentEdited={(id, payload) => setUser(prev => prev ? { ...prev, agents: (prev.agents || []).map(a => a.agent_id === id ? { ...a, ...payload } : a) } : prev)} />;
+      case 'agent': return <AgentPanel user={user} pages={pages} onUpdate={fetchData} onAgentCreated={(newAgent) => setUser(prev => prev ? { ...prev, agents: [...(prev.agents || []), newAgent] } : prev)} onAgentEdited={(id, payload) => setUser(prev => prev ? { ...prev, agents: (prev.agents || []).map(a => a.agent_id === id ? { ...a, ...payload } : a) } : prev)} />;
       case 'feedback': return <FeedbackPanel />;
       case 'settings': return <SettingsPanel />;
       default: return <div className="dashboard-content-area"><h2>Coming Soon</h2></div>;
@@ -1817,69 +2524,69 @@ export default function Dashboard() {
       )}
 
       {/* Sidebar */}
-      <aside className={`dashboard-sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-logo">
-          <div className="sidebar-logo-q">
-            Q<div className="sidebar-logo-bubble"></div>
+      <aside className={`bg-slate-50 border-r border-slate-100 flex flex-col font-['Epilogue'] font-medium h-full py-8 shrink-0 transition-all duration-300 z-50 ${isSidebarOpen ? 'translate-x-0 absolute left-0 shadow-2xl w-64 px-4' : '-translate-x-full fixed w-64 px-4'} ${isSidebarCollapsed ? 'md:-translate-x-full md:w-0 md:px-0 md:border-none md:absolute md:overflow-hidden' : 'md:translate-x-0 md:relative md:w-64 md:px-4'}`}>
+        <div className="p-0 m-0 mb-8 w-full flex items-center justify-start px-2 py-0">
+          <div className="flex items-center gap-[6px]">
+            <div className="text-[#0ea5e9] text-[42px] font-extrabold flex items-center justify-center relative leading-none" style={{ fontFamily: 'Inter, sans-serif' }}>
+              Q
+              <div className="absolute w-[16px] h-[16px] bg-slate-50 rounded-full rounded-bl-[2px] flex items-center justify-center gap-[2px] right-[-3px] bottom-[6px] z-10">
+                <div className="w-[2px] h-[2px] bg-slate-900 rounded-full"></div>
+                <div className="w-[2px] h-[2px] bg-slate-900 rounded-full"></div>
+                <div className="w-[2px] h-[2px] bg-slate-900 rounded-full"></div>
+              </div>
+            </div>
+            <span className="text-slate-900 font-extrabold text-[28px] tracking-tight -ml-[2px]">chat</span>
           </div>
-          <span className="sidebar-logo-text">chat</span>
           {/* Mobile Close Button */}
-          <button className="mobile-sidebar-close" onClick={() => setIsSidebarOpen(false)}>
-            <X size={24} color="#fff" />
+          <button className="md:hidden ml-auto bg-transparent border-none p-0 cursor-pointer text-slate-400" onClick={() => setIsSidebarOpen(false)}>
+            <X size={24} />
           </button>
         </div>
 
-        <nav className="sidebar-nav primary-nav">
-          <button
-            className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('overview'); setIsSidebarOpen(false); }}
-          >
-            <LayoutDashboard size={20} />
-            <span>Overview</span>
-          </button>
+        <button className="mb-8 w-full bg-[#0b0f19] text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors cursor-pointer border-none shadow-sm h-12">
+          <Plus size={20} className="text-[#38bdf8]" />
+          New Agent
+        </button>
 
-          <button
-            className={`nav-item ${activeTab === 'conversation' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('conversation'); setIsSidebarOpen(false); }}
-          >
-            <MessageSquare size={20} />
-            <span>Conversation List</span>
-          </button>
-
-          <button
-            className={`nav-item ${activeTab === 'knowledge' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('knowledge'); setIsSidebarOpen(false); }}
-          >
-            <Book size={20} />
-            <span>Knowledge</span>
-          </button>
-
-          <button
-            className={`nav-item ${activeTab === 'agent' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('agent'); setIsSidebarOpen(false); }}
-          >
-            <UserRound size={20} />
-            <span>Agent</span>
-          </button>
-
-          <button
-            className={`nav-item ${activeTab === 'feedback' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('feedback'); setIsSidebarOpen(false); }}
-          >
-            <MessageCircleWarning size={20} />
-            <span>Feedback</span>
-          </button>
+        <nav className="flex-1 space-y-1">
+          {[
+            { id: 'overview', icon: LayoutDashboard, label: 'Overview' },
+            { id: 'conversation', icon: MessageSquare, label: 'Conversations' },
+            { id: 'knowledge', icon: Book, label: 'Knowledge' },
+            { id: 'agent', icon: UserRound, label: 'Agents' },
+            { id: 'feedback', icon: MessageCircleWarning, label: 'Feedback' },
+            { id: 'settings', icon: Settings, label: 'Settings' }
+          ].map(item => (
+            <button
+              key={item.id}
+              onClick={() => { setActiveTab(item.id); setIsSidebarOpen(false); }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all cursor-pointer border-none text-left ${
+                activeTab === item.id 
+                  ? 'text-emerald-600 font-bold border-l-0 border-r-4 border-emerald-500 bg-[#ecfdf5] rounded-r-none pl-[16px] pr-[12px]' 
+                  : 'text-slate-500 hover:bg-slate-100 bg-transparent'
+              }`}
+            >
+              <item.icon size={20} />
+              <span className="text-[15px]">{item.label}</span>
+            </button>
+          ))}
         </nav>
 
-        <nav className="sidebar-nav secondary-nav">
-          <button
-            className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('settings'); setIsSidebarOpen(false); }}
-          >
-            <Settings size={20} />
-            <span>Settings</span>
+        <div className="mt-auto pt-8 border-t border-slate-100 space-y-1">
+          <button className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-100 transition-all rounded-lg cursor-pointer border-none bg-transparent text-left">
+            <HelpCircle size={20} />
+            <span className="text-[15px]">Support</span>
           </button>
-        </nav>
+          <button onClick={async () => {
+              await apiService.logout().catch(() => { });
+              window.location.href = '/app/login';
+            }} 
+            className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-100 transition-all rounded-lg cursor-pointer border-none bg-transparent text-left"
+          >
+            <LogOut size={20} />
+            <span className="text-[15px]">Logout</span>
+          </button>
+        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -1888,8 +2595,15 @@ export default function Dashboard() {
         <header className="dashboard-top-navbar">
           <div className="top-nav-left" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <button
-              className="mobile-sidebar-open"
-              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer flex items-center justify-center"
+              onClick={() => {
+                if (window.innerWidth < 768) {
+                  setIsSidebarOpen(true);
+                } else {
+                  setIsSidebarCollapsed(!isSidebarCollapsed);
+                }
+              }}
+              title="Toggle Sidebar"
             >
               <Menu size={24} />
             </button>
