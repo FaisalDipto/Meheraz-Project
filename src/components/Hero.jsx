@@ -11,7 +11,7 @@ const TEAM = [
     id: 'meharaz',
     name: 'Meharaz Hossain',
     since: 'Since 2025',
-    role: 'Founder & AI',
+    role: 'Backend & AI',
     background: 'BSc. Engg. in CSE, Bangladesh University of Business and Technology',
     interests: null,
     photo: meharazPhoto,

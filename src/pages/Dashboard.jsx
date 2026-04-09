@@ -1958,40 +1958,45 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
                     </div>
                   </div>
 
-                  <div className="pt-6 border-t border-[#eceef0] flex justify-between items-center mt-auto">
-                    <div className="flex gap-10">
+                  <div className="pt-6 border-t border-[#eceef0] mt-auto space-y-6">
+                    {/* Stats Row */}
+                    <div className="flex gap-6 sm:gap-8 justify-start">
                       <div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-[#76777d] block mb-1">Dialogues</span>
-                        <span className="text-xl font-bold text-[#000000]">12,402</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#76777d] block mb-1">Dialogues</span>
+                        <span className="text-lg font-bold text-[#000000]">12,402</span>
                       </div>
                       <div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-[#76777d] block mb-1">Success</span>
-                        <span className="text-xl font-bold text-[#000000]">94.2%</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#76777d] block mb-1">Success</span>
+                        <span className="text-lg font-bold text-[#000000]">94.2%</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {isAssigned ? (
+
+                    {/* Actions Row */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1">
+                        {isAssigned ? (
+                          <button 
+                            onClick={() => handleUnassign(agent.agent_id, assignedPageId)}
+                            disabled={unassigningId === agent.agent_id}
+                            className="text-[13px] font-bold text-red-500 flex items-center gap-1.5 transition-all px-3 py-1.5 hover:bg-red-50 rounded-lg disabled:opacity-50 whitespace-nowrap"
+                          >
+                            {unassigningId === agent.agent_id ? 'Wait...' : 'Unassign'}
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => setAssignModalAgent(agent)}
+                            className="text-[13px] font-bold text-blue-600 flex items-center gap-1.5 transition-all px-3 py-1.5 hover:bg-blue-50 rounded-lg whitespace-nowrap"
+                          >
+                            Assign
+                          </button>
+                        )}
                         <button 
-                          onClick={() => handleUnassign(agent.agent_id, assignedPageId)}
-                          disabled={unassigningId === agent.agent_id}
-                          className="text-sm font-bold text-red-500 flex items-center gap-2 transition-all px-4 py-2 hover:bg-red-50 rounded-xl disabled:opacity-50"
+                          onClick={() => handleEditClick(agent)}
+                          className="text-[13px] font-bold text-emerald-600 flex items-center gap-1.5 hover:gap-2 transition-all px-3 py-1.5 hover:bg-emerald-50 rounded-lg whitespace-nowrap"
                         >
-                          {unassigningId === agent.agent_id ? 'Unassigning...' : 'Unassign'}
+                          Configure <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
                         </button>
-                      ) : (
-                        <button 
-                          onClick={() => setAssignModalAgent(agent)}
-                          className="text-sm font-bold text-blue-600 flex items-center gap-2 transition-all px-4 py-2 hover:bg-blue-50 rounded-xl"
-                        >
-                          Assign
-                        </button>
-                      )}
-                      <button 
-                        onClick={() => handleEditClick(agent)}
-                        className="text-sm font-bold text-emerald-600 flex items-center gap-2 hover:gap-3 transition-all px-4 py-2 hover:bg-emerald-50 rounded-xl"
-                      >
-                          Configure <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                      </button>
+                      </div>
                     </div>
                   </div>
                 </div>
