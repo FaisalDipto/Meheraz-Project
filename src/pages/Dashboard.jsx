@@ -7,7 +7,7 @@ import { apiService } from '../services/api';
 import './Dashboard.css';
 
 // Sub-components
-const Overview = ({ user, pages, onNavigate }) => {
+const Overview = ({ user, pages, onNavigate, onUpdate }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [assigning, setAssigning] = useState({}); // {pageId: boolean}
   const [success, setSuccess] = useState({}); // {pageId: boolean}
@@ -93,9 +93,35 @@ const Overview = ({ user, pages, onNavigate }) => {
       setTimeout(() => {
         setSuccess(prev => ({ ...prev, [pageId]: false }));
       }, 3000);
+      if (onUpdate) onUpdate();
     } catch (error) {
       console.error("Failed to assign agent:", error);
       alert("Failed to assign agent: " + error.message);
+    } finally {
+      setAssigning(prev => ({ ...prev, [pageId]: false }));
+    }
+  };
+
+  const handleUnassign = async (pageId) => {
+    setAssigning(prev => ({ ...prev, [pageId]: true }));
+    try {
+      await apiService.unassignAgentFromPage(pageId);
+      setSelectedAgents(prev => {
+        const nextState = { ...prev };
+        delete nextState[pageId];
+        try {
+          localStorage.setItem('qchat_assigned_agents', JSON.stringify(nextState));
+        } catch (e) { }
+        return nextState;
+      });
+      setSuccess(prev => ({ ...prev, [pageId]: true }));
+      setTimeout(() => {
+        setSuccess(prev => ({ ...prev, [pageId]: false }));
+      }, 3000);
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error("Failed to unassign agent:", error);
+      alert("Failed to unassign agent: " + error.message);
     } finally {
       setAssigning(prev => ({ ...prev, [pageId]: false }));
     }
@@ -186,6 +212,18 @@ const Overview = ({ user, pages, onNavigate }) => {
                           ))
                         )}
                         <div className="border-t border-slate-100 my-1"></div>
+                        {selectedAgents[page.page_id] && (
+                          <button
+                            onClick={() => {
+                              handleUnassign(page.page_id);
+                              setOpenDropdown(null);
+                            }}
+                            className="w-full text-left px-4 py-2.5 text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 border-none bg-white cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">person_remove</span>
+                            Unassign Agent
+                          </button>
+                        )}
                         <button
                           onClick={() => {
                             setOpenDropdown(null);
@@ -2508,7 +2546,7 @@ export default function Dashboard() {
     }
 
     switch (activeTab) {
-      case 'overview': return <Overview user={user} pages={pages} onNavigate={setActiveTab} />;
+      case 'overview': return <Overview user={user} pages={pages} onNavigate={setActiveTab} onUpdate={fetchData} />;
       case 'conversation': return <ConversationList pages={pages} />;
       case 'knowledge': return <Knowledge pages={pages} />;
       case 'agent': return <AgentPanel user={user} pages={pages} onUpdate={fetchData} onAgentCreated={(newAgent) => setUser(prev => prev ? { ...prev, agents: [...(prev.agents || []), newAgent] } : prev)} onAgentEdited={(id, payload) => setUser(prev => prev ? { ...prev, agents: (prev.agents || []).map(a => a.agent_id === id ? { ...a, ...payload } : a) } : prev)} />;
