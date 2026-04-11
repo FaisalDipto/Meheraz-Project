@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
+import logoImg from '../assets/logo1.png';
+import titleImg from '../assets/title.png';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -27,17 +29,10 @@ export default function Navbar() {
     <div className="navbar-container">
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         {/* Logo Section */}
-        <div className="nav-logo">
-          <div className="logo-q">
-            Q
-            <div className="logo-bubble">
-              <div className="logo-dot"></div>
-              <div className="logo-dot"></div>
-              <div className="logo-dot"></div>
-            </div>
-          </div>
-          <span className="logo-text">chat</span>
-        </div>
+        <Link to="/app" className="nav-logo">
+          <img src={logoImg} alt="LYFFLOW Logo" className="brand-logo-img" />
+          <img src={titleImg} alt="LYFFLOW" className="brand-title-img" />
+        </Link>
 
         {/* Hamburger Menu Button */}
         <button 
@@ -93,7 +88,7 @@ export default function Navbar() {
                   <svg className="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 </div>
                 <div className="dropdown-text-content">
-                  <h4 className="dropdown-title">Qchat Web</h4>
+                  <h4 className="dropdown-title">LYFFLOW Web</h4>
                   <p className="dropdown-desc">Custom widget for your site.</p>
                 </div>
               </div>

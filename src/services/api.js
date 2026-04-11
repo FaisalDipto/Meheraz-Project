@@ -1,5 +1,5 @@
 /**
- * API Service for interacting with the Qchat Backend
+ * API Service for interacting with the LYFFLOW Backend
  */
 
 // Since we setup a proxy in Vite, we can just use relative paths locally

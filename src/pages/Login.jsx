@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
+import logoImg from '../assets/logo1.png';
+import titleImg from '../assets/title.png';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -24,15 +26,8 @@ export default function Login() {
         {/* Header / Logo */}
         <div className="login-header">
           <Link to="/app" className="login-logo-container">
-            <div className="login-logo-q">
-              Q
-              <div className="login-logo-bubble">
-                <div className="login-logo-dot"></div>
-                <div className="login-logo-dot"></div>
-                <div className="login-logo-dot"></div>
-              </div>
-            </div>
-            <span className="login-logo-text">chat</span>
+            <img src={logoImg} alt="LYFFLOW Logo" className="brand-logo-img-login" style={{ height: '50px', width: 'auto' }} />
+            <img src={titleImg} alt="LYFFLOW" className="brand-title-img-login" style={{ height: '28px', width: 'auto', marginLeft: '10px' }} />
           </Link>
           <h1 className="login-title">Welcome Back</h1>
           <p className="login-subtitle">Log in to your workspace to continue.</p>

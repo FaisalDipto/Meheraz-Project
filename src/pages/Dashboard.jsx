@@ -5,6 +5,8 @@ import { useWidget } from '../context/WidgetContext';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/api';
 import './Dashboard.css';
+import logoImg from '../assets/logo1.png';
+import titleImg from '../assets/title.png';
 
 // Sub-components
 const Overview = ({ user, pages, onNavigate, onUpdate }) => {
@@ -13,7 +15,7 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
   const [success, setSuccess] = useState({}); // {pageId: boolean}
   const [selectedAgents, setSelectedAgents] = useState(() => {
     try {
-      const cached = localStorage.getItem('qchat_assigned_agents');
+      const cached = localStorage.getItem('lyfflow_assigned_agents');
       return cached ? JSON.parse(cached) : {};
     } catch (e) {
       return {};
@@ -68,7 +70,7 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
 
       if (changed) {
         try {
-          localStorage.setItem('qchat_assigned_agents', JSON.stringify(nextAgents));
+          localStorage.setItem('lyfflow_assigned_agents', JSON.stringify(nextAgents));
         } catch (e) { }
         return nextAgents;
       }
@@ -85,7 +87,7 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
       setSelectedAgents(prev => {
         const nextState = { ...prev, [pageId]: agentId };
         try {
-          localStorage.setItem('qchat_assigned_agents', JSON.stringify(nextState));
+          localStorage.setItem('lyfflow_assigned_agents', JSON.stringify(nextState));
         } catch (e) { }
         return nextState;
       });
@@ -110,7 +112,7 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
         const nextState = { ...prev };
         delete nextState[pageId];
         try {
-          localStorage.setItem('qchat_assigned_agents', JSON.stringify(nextState));
+          localStorage.setItem('lyfflow_assigned_agents', JSON.stringify(nextState));
         } catch (e) { }
         return nextState;
       });
@@ -328,7 +330,7 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
                 <span className="material-symbols-outlined text-slate-500" data-icon="person_add">person_add</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm text-primary font-medium">New Agent: <span className="text-on-surface-variant">Expert-Doc was deployed to QChat.</span></p>
+                <p className="text-sm text-primary font-medium">New Agent: <span className="text-on-surface-variant">Expert-Doc was deployed to LYFFLOW.</span></p>
                 <p className="text-xs text-outline mt-0.5">1 hour ago</p>
               </div>
               <div className="hidden sm:block">
@@ -2569,16 +2571,9 @@ export default function Dashboard() {
       {/* Sidebar */}
       <aside className={`bg-slate-50 border-r border-slate-100 flex flex-col font-['Epilogue'] font-medium h-full py-8 shrink-0 transition-all duration-300 z-50 ${isSidebarOpen ? 'translate-x-0 absolute left-0 shadow-2xl w-64 px-4' : '-translate-x-full fixed w-64 px-4'} ${isSidebarCollapsed ? 'md:-translate-x-full md:w-0 md:px-0 md:border-none md:absolute md:overflow-hidden' : 'md:translate-x-0 md:relative md:w-64 md:px-4'}`}>
         <div className="p-0 m-0 mb-8 w-full flex items-center justify-start px-2 py-0">
-          <div className="flex items-center gap-[6px]">
-            <div className="text-[#0ea5e9] text-[42px] font-extrabold flex items-center justify-center relative leading-none" style={{ fontFamily: 'Inter, sans-serif' }}>
-              Q
-              <div className="absolute w-[16px] h-[16px] bg-slate-50 rounded-full rounded-bl-[2px] flex items-center justify-center gap-[2px] right-[-3px] bottom-[6px] z-10">
-                <div className="w-[2px] h-[2px] bg-slate-900 rounded-full"></div>
-                <div className="w-[2px] h-[2px] bg-slate-900 rounded-full"></div>
-                <div className="w-[2px] h-[2px] bg-slate-900 rounded-full"></div>
-              </div>
-            </div>
-            <span className="text-slate-900 font-extrabold text-[28px] tracking-tight -ml-[2px]">chat</span>
+          <div className="flex items-center gap-[6px] px-2">
+            <img src={logoImg} alt="LYFFLOW" style={{ height: '36px', width: 'auto' }} />
+            <img src={titleImg} alt="LYFFLOW" style={{ height: '22px', width: 'auto' }} />
           </div>
           {/* Mobile Close Button */}
           <button className="md:hidden ml-auto bg-transparent border-none p-0 cursor-pointer text-slate-400" onClick={() => setIsSidebarOpen(false)}>

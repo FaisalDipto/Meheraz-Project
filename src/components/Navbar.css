@@ -50,47 +50,21 @@
   color: var(--text-primary);
 }
 
-.logo-q {
-  color: #0ea5e9; /* Brighter, distinct blue compared to the sky blue background */
-  font-size: 48px;
-  font-weight: 800;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.brand-logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
 }
 
-.logo-bubble {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  background-color: white;
-  border-radius: 50%;
-  border-bottom-left-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
+.brand-title-img {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
+  margin-top: 4px; /* Slight alignment adjustment */
 }
 
-.logo-dot {
-  width: 2.5px;
-  height: 2.5px;
-  background-color: var(--bg-primary);
-  border-radius: 50%;
-}
-
-.logo-text {
-  display: inline-block;
-  opacity: 1;
-  max-width: 100px;
-  overflow: hidden;
-  transition: opacity var(--transition-medium), max-width var(--transition-medium);
-}
-
-.navbar:hover .logo-text {
-  opacity: 0;
-  max-width: 0;
+.navbar:hover .brand-title-img {
+  filter: brightness(0.2); /* Adjust based on theme if needed */
 }
 
 /* Links Styles */

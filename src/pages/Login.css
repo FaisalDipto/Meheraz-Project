@@ -77,41 +77,7 @@
   margin-bottom: 30px;
 }
 
-.login-logo-q {
-  color: #0ea5e9;
-  font-size: 48px;
-  font-weight: 800;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.login-logo-bubble {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  background-color: #ffffff;
-  border-radius: 50%;
-  border-bottom-left-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2.5px;
-}
-
-.login-logo-dot {
-  width: 2.5px;
-  height: 2.5px;
-  background-color: #0ea5e9;
-  border-radius: 50%;
-}
-
-.login-logo-text {
-  color: var(--text-primary); /* Dark text instead of white because of white card bg */
-  font-size: 36px;
-  font-weight: 700;
-}
 
 .login-title {
   color: var(--text-primary);

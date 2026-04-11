@@ -29,31 +29,7 @@
   z-index: 2;
 }
 
-.sidebar-logo-q {
-  color: #fff;
-  font-size: 28px;
-  font-weight: 800;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.sidebar-logo-bubble {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background-color: #ffffff;
-  border: 2px solid var(--accent);
-  border-radius: 50%;
-  border-bottom-left-radius: 2px;
-}
-
-.sidebar-logo-text {
-  color: #ffffff;
-  font-size: 22px;
-  font-weight: 700;
-}
 
 .sidebar-nav {
   display: flex;

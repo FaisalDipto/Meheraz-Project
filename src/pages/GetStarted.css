@@ -26,40 +26,7 @@
   text-decoration: none;
 }
 
-.gs-logo-q {
-  color: #0ea5e9; /* Brighter blue logo on sky blue bg */
-  font-size: 48px;
-  font-weight: 800;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.gs-logo-bubble {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  background-color: #ffffff;
-  border-radius: 50%;
-  border-bottom-left-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-
-.gs-logo-dot {
-  width: 2.5px;
-  height: 2.5px;
-  background-color: #0ea5e9;
-  border-radius: 50%;
-}
-
-.gs-logo-text {
-  color: var(--text-light);
-  font-size: 36px;
-}
 
 .left-panel-content {
   display: flex;

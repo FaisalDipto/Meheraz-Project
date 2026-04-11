@@ -389,7 +389,7 @@ export default function Hero() {
                   <span className="font-headline text-5xl text-tertiary/25 font-black flex-shrink-0">03</span>
                   <div>
                     <h3 className="font-headline text-2xl mb-4 text-primary">Scalability</h3>
-                    <p className="text-on-surface-variant text-lg leading-relaxed">Growth should never be painful. Whether you're handling ten chats or ten million, QchatLive scales horizontally to meet the demand without missing a beat.</p>
+                    <p className="text-on-surface-variant text-lg leading-relaxed">Growth should never be painful. Whether you're handling ten chats or ten million, Lyfflow scales horizontally to meet the demand without missing a beat.</p>
                   </div>
                 </div>
               </div>
@@ -516,7 +516,7 @@ export default function Hero() {
               Ready to dominate your <br className="hidden md:block"/>social channels?
             </h2>
             <p className="text-slate-400 text-xl md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed">
-              Join 10,000+ businesses automating their growth with ChatAutomate. Start your 14-day free trial today.
+              Join 10,000+ businesses automating their growth with Lyfflow. Start your 14-day free trial today.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Link to="/app/login" className="bg-white text-primary px-12 py-5 rounded-2xl font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-white/5">

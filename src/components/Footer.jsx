@@ -1,22 +1,20 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import logoImg from '../assets/logo1.png';
+import titleImg from '../assets/title.png';
+
 export default function Footer() {
   return (
     <footer className="bg-white py-20 px-8">
       <div className="w-full flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto border-t border-slate-100 pt-16">
         <div className="mb-10 md:mb-0 text-center md:text-left">
           <div className="text-2xl font-black text-primary mb-3 tracking-tighter flex items-center justify-center md:justify-start gap-1">
-            <div className="nav-logo" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <div className="logo-q" style={{ position: 'relative', display: 'flex', alignItems: 'center', fontWeight: '900', color: '#0ea5e9', fontSize: '28px', lineHeight: '1' }}>
-                Q
-                <div className="logo-bubble" style={{ position: 'absolute', top: '-4px', right: '-12px', background: '#cbd5e1', padding: '4px', borderRadius: '8px', borderRadiusBottomLeft: '2px', display: 'flex', gap: '2px' }}>
-                  <div className="logo-dot" style={{ width: '3px', height: '3px', background: '#fff', borderRadius: '50%' }}></div>
-                  <div className="logo-dot" style={{ width: '3px', height: '3px', background: '#fff', borderRadius: '50%' }}></div>
-                  <div className="logo-dot" style={{ width: '3px', height: '3px', background: '#fff', borderRadius: '50%' }}></div>
-                </div>
-              </div>
-              <span className="logo-text" style={{ fontWeight: '700', fontSize: '24px', color: '#0f172a', marginLeft: '10px' }}>chat</span>
-            </div>
+          <Link to="/app" className="nav-logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img src={logoImg} alt="LYFFLOW Logo" style={{ height: '32px', width: 'auto' }} />
+            <img src={titleImg} alt="LYFFLOW" style={{ height: '18px', width: 'auto' }} />
+          </Link>
           </div>
-          <p className="font-['Inter'] text-slate-500 text-sm">© {new Date().getFullYear()} Qchat, Inc. All rights reserved.</p>
+          <p className="font-['Inter'] text-slate-500 text-sm">© {new Date().getFullYear()} LYFFLOW, Inc. All rights reserved.</p>
         </div>
         <div className="flex flex-wrap justify-center gap-10">
           <a className="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Privacy Policy</a>
