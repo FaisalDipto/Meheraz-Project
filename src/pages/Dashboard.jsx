@@ -130,14 +130,14 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
   };
 
   return (
-    <div className="dashboard-content-area animate-fade-in-up flex-1 p-8 space-y-12 w-full text-left bg-surface-bright">
+    <div className="dashboard-content-area animate-fade-in-up flex-1 p-4 sm:p-8 space-y-8 sm:space-y-12 w-full text-left bg-surface-bright">
       {/* Hero Header */}
       <div className="flex justify-between items-end">
         <div>
-          <span className="label-md uppercase tracking-[0.2em] text-outline mb-2 block font-label font-semibold">Active Workspace</span>
-          <h1 className="text-5xl font-headline font-black tracking-tighter text-primary">My Workspace</h1>
+          <span className="label-md uppercase tracking-[0.2em] text-outline mb-1 sm:mb-2 block font-label font-semibold text-xs sm:text-sm">Active Workspace</span>
+          <h1 className="text-3xl sm:text-5xl font-headline font-black tracking-tighter text-primary">My Workspace</h1>
         </div>
-        <div className="flex gap-3">
+        <div className="hidden sm:flex gap-3">
           <div className="flex -space-x-2">
             <img alt="Team member" className="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmshpeiThC41D3oYoeWJPdOlPAZgPL4Q27QrQJqYQAk0lqbXxdOvgSHyv35ROzxQfzvc5ATVnSTUsJxi_Lr01YfpSP8hQ_5Ntk_Zpa2wIN9s0vUuGx-9geekTRAiwTnfHxLoiuUsfyimTDVFEZkrqmIJiaeehJD4un5GZv0DOqmeBI17YqzYT12OuO-ELphoCuIF0s0b_vmtjqRMich8eWky8JOxPRQGvY4wcbSc3dMYyptqBqITQtQZAR0p-TXDaZJ-FeUOugt38"/>
             <img alt="Team member" className="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD17OerDChMrHv2dHx2sdIJRo6zgSAywzPvjIFEDcvczs-PE5Lt_tHErvdbnmvZWLkRpa1N-XUEdRbco2MftgKHV7gsnPYCFJy3YllMVT8P21etDi21ooo5rS-C_Yc0ekW6yrBRfUQtFPVdhWr62EFUpv7Z1nVJ3IPUzd7OS9y_U94KPA8aCq2NIvvt4HFN9QdlESzX7KBzxUoCTaWtnZz-m0vmJl6woSLXTGl_nuYalWAxprWDYgsU95Vlqd6Jb8rDVo8dGMNc3tU"/>
@@ -147,7 +147,7 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
       </div>
 
       {/* Bento Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
         {Array.isArray(pages) && pages.map((page, index) => {
           const isEven = index % 2 === 0;
           const cardBorder = isEven ? "border-emerald-500" : "border-primary";
@@ -262,96 +262,6 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
           </div>
         </button>
       </div>
-
-      {/* Metrics & Stats Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-3 bg-surface-container-low rounded-2xl p-8 relative overflow-hidden">
-          {/* Abstract background visual for editorial feel */}
-          <div className="absolute right-0 top-0 w-64 h-full opacity-10 pointer-events-none">
-            <svg className="w-full h-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-              <path d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.5,90,-16.3,88.5,-0.9C86.9,14.6,81.3,29.1,72.4,41.4C63.5,53.7,51.3,63.7,37.8,71.1C24.4,78.5,9.7,83.2,-4.5,90.9C-18.7,98.6,-32.4,109.3,-44.6,106.9C-56.8,104.5,-67.5,89,-75,74.1C-82.5,59.2,-86.8,44.9,-89.1,30.5C-91.5,16.1,-91.8,1.6,-88.9,-12.3C-86.1,-26.2,-80.1,-39.5,-70.7,-50.2C-61.2,-61,-48.3,-69.2,-35,-76.8C-21.7,-84.4,-7.9,-91.3,3.7,-97.7C15.3,-104,30.6,-83.6,44.7,-76.4Z" fill="#000000" transform="translate(100 100)"></path>
-            </svg>
-          </div>
-          <div className="relative z-10">
-            <span className="label-md uppercase tracking-[0.2em] text-outline mb-6 block font-label font-semibold">Workspace Utilization</span>
-            <div className="flex flex-wrap items-end gap-12">
-              <div>
-                <div className="text-7xl font-headline font-black tracking-tighter text-primary">8.4k</div>
-                <div className="text-on-surface-variant font-semibold flex items-center gap-2 mt-2">
-                  <span className="material-symbols-outlined text-emerald-500 text-sm" data-icon="trending_up">trending_up</span>
-                  Monthly Invocations
-                </div>
-              </div>
-              <div>
-                <div className="text-7xl font-headline font-black tracking-tighter text-emerald-500">92%</div>
-                <div className="text-on-surface-variant font-semibold flex items-center gap-2 mt-2">
-                  <span className="material-symbols-outlined text-emerald-500 text-sm" data-icon="check_circle">check_circle</span>
-                  Accuracy Rate
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-primary-container rounded-2xl p-8 text-white flex flex-col justify-between">
-          <div>
-            <span className="label-md uppercase tracking-[0.2em] text-on-primary-container mb-4 block font-label font-semibold">Pro Plan Status</span>
-            <h4 className="text-2xl font-headline font-bold mb-2">Unlimited Access</h4>
-            <p className="text-on-primary-container text-sm">Your workspace is currently operating on the Pro tier. Enjoy premium features.</p>
-          </div>
-          <button className="mt-8 bg-white text-primary font-bold py-3 px-6 rounded-xl text-center hover:bg-slate-100 transition-colors border-none cursor-pointer">
-            Manage Subscription
-          </button>
-        </div>
-      </div>
-
-      {/* Recent Activities Section */}
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-headline font-bold text-primary">Recent Activity</h2>
-          <button className="text-sm font-bold text-emerald-600 hover:underline bg-transparent border-none cursor-pointer p-0">View All Logs</button>
-        </div>
-        <div className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm">
-          <div className="divide-y divide-slate-50">
-            <div className="p-4 hover:bg-surface-container-low transition-colors flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-slate-500" data-icon="sync">sync</span>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-primary font-medium">ZipClip: <span className="text-on-surface-variant">Knowledge base sync completed.</span></p>
-                <p className="text-xs text-outline mt-0.5">2 minutes ago</p>
-              </div>
-              <div className="hidden sm:block">
-                <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase rounded">Success</span>
-              </div>
-            </div>
-            <div className="p-4 hover:bg-surface-container-low transition-colors flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-slate-500" data-icon="person_add">person_add</span>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-primary font-medium">New Agent: <span className="text-on-surface-variant">Expert-Doc was deployed to LYFFLOW.</span></p>
-                <p className="text-xs text-outline mt-0.5">1 hour ago</p>
-              </div>
-              <div className="hidden sm:block">
-                <span className="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold uppercase rounded">System</span>
-              </div>
-            </div>
-            <div className="p-4 hover:bg-surface-container-low transition-colors flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-slate-500" data-icon="edit">edit</span>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-primary font-medium">Workspace Update: <span className="text-on-surface-variant">Brand guidelines updated in knowledge assets.</span></p>
-                <p className="text-xs text-outline mt-0.5">5 hours ago</p>
-              </div>
-              <div className="hidden sm:block">
-                <span className="px-2 py-1 bg-primary text-white text-[10px] font-bold uppercase rounded">Updated</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
@@ -366,6 +276,7 @@ const ConversationList = ({ pages }) => {
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
+  const [mobileShowChat, setMobileShowChat] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -543,8 +454,8 @@ const ConversationList = ({ pages }) => {
   return (
     <div className="flex h-full w-full bg-slate-50 animate-fade-in-up flex-1 overflow-hidden">
       {/* Conversation List Column */}
-      <main className="w-96 flex flex-col bg-slate-50 border-r border-slate-200 shrink-0">
-        <div className="p-8">
+      <main className={`flex flex-col bg-slate-50 border-r border-slate-200 shrink-0 ${mobileShowChat ? 'hidden md:flex' : 'flex'} w-full md:w-96`}>
+        <div className="p-4 md:p-8">
           <header className="mb-8 flex justify-between items-start">
             <div>
               <p className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mb-2">Inbox</p>
@@ -608,7 +519,7 @@ const ConversationList = ({ pages }) => {
             return (
               <div
                 key={id}
-                onClick={() => setActiveContact(contact)}
+                onClick={() => { setActiveContact(contact); setMobileShowChat(true); }}
                 className={`p-4 rounded-2xl transition-colors cursor-pointer group ${isActive ? 'bg-white shadow-sm border-l-4 border-emerald-500' : 'hover:bg-slate-200/50'}`}
               >
                 <div className="flex gap-4 items-center">
@@ -628,11 +539,18 @@ const ConversationList = ({ pages }) => {
       </main>
 
       {/* Active Chat Window */}
-      <section className="flex-1 flex flex-col bg-white border-r border-slate-100">
+      <section className={`flex-col bg-white border-r border-slate-100 ${mobileShowChat ? 'flex' : 'hidden md:flex'} flex-1`}>
         {activeContact ? (
           <>
-            <header className="h-20 px-8 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 border-b border-slate-50">
-              <div className="flex items-center gap-4">
+            <header className="h-20 px-4 md:px-8 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 border-b border-slate-50">
+              <div className="flex items-center gap-3">
+                {/* Mobile back button */}
+                <button
+                  onClick={() => setMobileShowChat(false)}
+                  className="md:hidden p-2 -ml-1 text-slate-500 hover:text-slate-900 transition-colors"
+                >
+                  <span className="material-symbols-outlined">arrow_back</span>
+                </button>
                 <div className="relative">
                   {renderAvatar(activeContact, "w-10 h-10 rounded-full")}
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
@@ -708,7 +626,7 @@ const ConversationList = ({ pages }) => {
         )}
       </section>
 
-      {/* Profile Right Sidebar */}
+      {/* Profile Right Sidebar - hidden on mobile */}
       {isProfileVisible && (
         <aside className="w-80 bg-white hidden xl:flex flex-col overflow-y-auto shrink-0 border-l border-slate-100 animate-fade-in-right">
           {activeContact ? (
@@ -2595,7 +2513,10 @@ export default function Dashboard() {
       )}
 
       {/* Sidebar */}
-      <aside className={`bg-slate-50 border-r border-slate-100 flex flex-col font-['Epilogue'] font-medium h-full py-8 shrink-0 transition-all duration-300 z-50 ${isSidebarOpen ? 'translate-x-0 absolute left-0 shadow-2xl w-64 px-4' : '-translate-x-full fixed w-64 px-4'} ${isSidebarCollapsed ? 'md:-translate-x-full md:w-0 md:px-0 md:border-none md:absolute md:overflow-hidden' : 'md:translate-x-0 md:relative md:w-64 md:px-4'}`}>
+      <aside className={`bg-slate-50 border-r border-slate-100 flex flex-col font-['Epilogue'] font-medium h-full py-8 shrink-0 transition-all duration-300
+        fixed top-0 left-0 w-64 px-4 z-[10000]
+        ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
+        ${isSidebarCollapsed ? 'md:-translate-x-full md:w-0 md:px-0 md:border-none md:overflow-hidden' : 'md:translate-x-0 md:relative md:w-64 md:px-4 md:z-auto md:shadow-none'}`}>
         <div className="p-0 m-0 mb-8 w-full flex items-center justify-start px-2 py-0">
           <div className="flex items-center gap-[6px] px-2">
             <img src={logoImg} alt="LYFFLOW" style={{ height: '36px', width: 'auto' }} />
