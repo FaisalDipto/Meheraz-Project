@@ -1,5 +1,6 @@
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
+import LegalCenter from '../components/LegalCenter'
 import Footer from '../components/Footer'
 import '../App.css'
 
@@ -9,6 +10,7 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        <LegalCenter />
       </main>
       <Footer />
     </div>
