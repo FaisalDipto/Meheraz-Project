@@ -26,6 +26,20 @@ export default function LegalCenter() {
     };
   }, []);
 
+  // Handle scrolling to hash on mount
+  useEffect(() => {
+    if (window.location.hash) {
+      setTimeout(() => {
+        const id = window.location.hash.replace('#', '');
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          setActiveSection(id);
+        }
+      }, 100);
+    }
+  }, []);
+
   const getLinkClasses = (sectionId) => {
     if (activeSection === sectionId) {
       return "flex items-center gap-3 px-4 py-3 text-primary font-bold bg-surface-container-lowest rounded-xl shadow-sm transition-transform duration-200 hover:translate-x-1";
@@ -34,10 +48,10 @@ export default function LegalCenter() {
   };
 
   return (
-    <section className="max-w-[1440px] mx-auto px-6 md:px-12 py-24 flex flex-col md:flex-row gap-16 border-t border-surface-variant">
+    <section className="max-w-[1440px] mx-auto px-6 md:px-12 pt-[136px] pb-24 flex flex-col md:flex-row gap-16 border-t border-surface-variant">
       {/* SideNavBar (Sticky Sidebar) */}
       <aside className="md:w-72 relative">
-        <div className="sticky top-24 w-full h-fit p-6 bg-surface-container-low dark:bg-slate-900 rounded-2xl font-body text-sm font-medium border border-surface-variant/50">
+        <div className="sticky top-[120px] w-full h-fit p-6 bg-surface-container-low dark:bg-slate-900 rounded-2xl font-body text-sm font-medium border border-surface-variant/50">
           <div className="mb-8">
             <h2 className="text-lg font-bold text-on-surface">Legal Center</h2>
             <p className="text-xs text-on-surface-variant mt-1 uppercase tracking-wider">Last updated April 2026</p>
