@@ -254,6 +254,19 @@
   margin: 0 auto;
 }
 
+/* ── 18.5-inch / 1366×768 comfortable layout ── */
+@media (max-width: 1440px) and (min-width: 769px) {
+  .dashboard-top-navbar {
+    padding: 0 24px;
+    height: 56px;
+  }
+
+  .dashboard-content-area {
+    padding: 24px 28px;
+    max-width: 100%;
+  }
+}
+
 .dashboard-header {
   margin-bottom: 40px;
 }

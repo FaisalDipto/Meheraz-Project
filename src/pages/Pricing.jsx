@@ -57,10 +57,7 @@ export default function Pricing() {
                   <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                   <span>100K Tokens/mo</span>
                 </li>
-                <li className="flex items-center gap-3 text-sm">
-                  <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  <span>~50 AI replies</span>
-                </li>
+
                 <li className="flex items-center gap-3 text-sm">
                   <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                   <span>10 MB Storage</span>
@@ -97,10 +94,7 @@ export default function Pricing() {
                   <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                   <span>3M Tokens/mo</span>
                 </li>
-                <li className="flex items-center gap-3 text-sm">
-                  <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  <span>~1,500 AI replies</span>
-                </li>
+
                 <li className="flex items-center gap-3 text-sm">
                   <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                   <span>200 MB Storage</span>
@@ -117,7 +111,7 @@ export default function Pricing() {
             </div>
 
             {/* Growth Plan (Featured) */}
-            <div className="relative flex flex-col p-8 rounded-[1.5rem] bg-white border-2 border-primary shadow-2xl shadow-primary/10 transform md:-translate-y-4">
+            <div className="relative flex flex-col p-8 rounded-[1.5rem] bg-white border-2 border-primary shadow-2xl shadow-primary/10 transition-all duration-300 hover:-translate-y-3 hover:shadow-[0_32px_64px_-8px_rgba(15,23,42,0.25)] cursor-pointer">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Most Popular</div>
               <div className="mb-8">
                 <h3 className="font-headline text-2xl font-bold mb-2">Growth</h3>
@@ -140,10 +134,7 @@ export default function Pricing() {
                   <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                   <span>10M Tokens/mo</span>
                 </li>
-                <li className="flex items-center gap-3 text-sm font-semibold">
-                  <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  <span>~5,000 AI replies</span>
-                </li>
+
                 <li className="flex items-center gap-3 text-sm font-semibold">
                   <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                   <span>1 GB Storage</span>
@@ -161,7 +152,7 @@ export default function Pricing() {
             </div>
 
             {/* Agency Plan */}
-            <div className="flex flex-col p-8 rounded-[1.5rem] bg-[#222222] text-[#f1f1f1] transition-all duration-300 hover:shadow-2xl shadow-black/20 group border border-[#333]">
+            <div className="flex flex-col p-8 rounded-[1.5rem] bg-[#222222] text-[#f1f1f1] transition-all duration-300 hover:-translate-y-3 hover:shadow-[0_32px_64px_-8px_rgba(0,0,0,0.6)] hover:border-[#6366f1] group border border-[#333] cursor-pointer">
               <div className="mb-8">
                 <h3 className="font-headline text-2xl font-bold mb-2">Agency</h3>
                 <p className="text-[#a1a1aa] text-sm">For agencies & resellers</p>
@@ -183,10 +174,7 @@ export default function Pricing() {
                   <span className="text-[#a1a1aa]">Tokens / mo</span>
                   <span className="px-2 py-0.5 bg-[#14532d]/40 text-[#4ade80] rounded font-semibold flex items-center gap-1">30M <span className="material-symbols-outlined text-[14px] font-bold">arrow_upward</span></span>
                 </li>
-                <li className="flex items-center justify-between">
-                  <span className="text-[#a1a1aa]">~AI replies</span>
-                  <span className="px-2 py-0.5 bg-[#18181b] rounded font-semibold border border-[#333]">~15,000</span>
-                </li>
+
                 <li className="flex items-center justify-between">
                   <span className="text-[#a1a1aa]">Storage</span>
                   <span className="px-2 py-0.5 bg-[#18181b] rounded font-semibold border border-[#333]">5 GB</span>
@@ -220,9 +208,7 @@ export default function Pricing() {
             </div>
           </div>
           
-          <p className="text-center text-sm text-on-surface-variant max-w-4xl mx-auto mt-8">
-            ~AI replies estimated at 2,000 input + 300 output tokens per reply (with KB context). All paid plans can top-up tokens anytime.
-          </p>
+
         </section>
 
         {/* Feature Comparison (Editorial Style) */}

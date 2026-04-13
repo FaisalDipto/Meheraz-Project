@@ -6,6 +6,7 @@
   padding: 20px 40px;
   z-index: 1000;
   transition: var(--transition-medium);
+  box-sizing: border-box;
 }
 
 .navbar {
@@ -54,13 +55,17 @@
   height: 40px;
   width: auto;
   object-fit: contain;
+  flex-shrink: 0;
+  filter: brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%);
 }
 
 .brand-title-img {
   height: 24px;
   width: auto;
   object-fit: contain;
-  margin-top: 4px; /* Slight alignment adjustment */
+  margin-top: 4px;
+  flex-shrink: 0;
+  filter: brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%);
 }
 
 .navbar:hover .brand-title-img {
@@ -525,6 +530,39 @@
   }
 
   .btn-get-started::before {
-    display: none; /* disable desktop hover sweep on mobile */
+    display: none;
+  }
+}
+
+/* Very narrow phones (< 400px) */
+@media (max-width: 400px) {
+  .navbar-container {
+    padding: 12px 16px;
+  }
+
+  .navbar {
+    padding: 10px 12px;
+  }
+
+  .brand-logo-img {
+    height: 30px;
+  }
+
+  .brand-title-img {
+    height: 18px;
+  }
+
+  .nav-logo {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 991px) and (min-width: 401px) {
+  .navbar-container {
+    padding: 16px 20px;
+  }
+
+  .navbar {
+    padding: 12px 16px;
   }
 }

@@ -13,7 +13,7 @@ const TEAM = [
     id: 'meharaz',
     name: 'Meharaz Hossain',
     since: 'Since 2025',
-    role: 'Backend & AI',
+    role: 'Backend & AI Developer',
     background: 'BSc. Engg. in CSE, Bangladesh University of Business and Technology',
     interests: null,
     photo: meharazPhoto,
@@ -23,7 +23,7 @@ const TEAM = [
     id: 'mehedi',
     name: 'Mehedi Rifat',
     since: 'Since 2025',
-    role: 'Backend Engineer',
+    role: 'Backend Developer',
     background: 'BSc. Engg. in CSE, Bangladesh University of Business and Technology',
     interests: null,
     photo: mehediPhoto,
@@ -33,7 +33,7 @@ const TEAM = [
     id: 'faisal',
     name: 'Faisal Amir Dipto',
     since: 'Since 2026',
-    role: 'UI/UX & Frontend',
+    role: 'UI/UX & Frontend Developer',
     background: 'BSc. Engg. in CSE, Bangladesh University of Business and Technology',
     interests: null,
     photo: faisalPhoto,
@@ -43,7 +43,7 @@ const TEAM = [
     id: 'swajan',
     name: 'Swajan Baruah',
     since: 'Since 2026',
-    role: 'Backend Engineer',
+    role: 'Backend Developer',
     background: 'BSc. Engg. in CSE, American International University Bangladesh (AIUB)',
     interests: null,
     photo: swajanPhoto,
@@ -54,6 +54,7 @@ const TEAM = [
 export default function Hero() {
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
   const [hoveredMember, setHoveredMember] = useState(null);
+  const [tappedMember, setTappedMember] = useState(null);
 
   const handleMouseMove = useCallback((e, memberId) => {
     setCursor({ x: e.clientX, y: e.clientY });
@@ -88,29 +89,31 @@ export default function Hero() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative isolate min-h-screen flex items-center pt-[136px] pb-[88px] overflow-hidden">
+      <section className="relative isolate min-h-screen flex items-center pt-[96px] sm:pt-[136px] pb-[60px] sm:pb-[88px] overflow-hidden">
         <div className="absolute inset-0 bg-background -z-30"></div>
         
-        {/* Floating Background Layers (4 Distinct Glass Rectangles) */}
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          {/* Rect 1: Top Left — Green | increased tilt + stronger up/down */}
-          <div className="absolute top-[12%] left-[8%] w-[450px] h-[450px] bg-[#10B981]/15 opacity-60 rounded-[12px] animate-rect1"></div>
-
-          {/* Rect 2: Top Right — Purple | left/right drift + subtle tilt, shifted left to not overlap rect1 much */}
-          <div className="absolute top-[8%] right-[10%] w-[350px] h-[350px] bg-[#6366F1]/10 opacity-50 rounded-[12px] animate-rect2"></div>
-
-          {/* Rect 3: Overlaps Rect4 ~40% — Green 350x350, higher z, more visible */}
-          <div className="absolute top-[52%] left-[42%] w-[350px] h-[350px] bg-[#10B981]/20 opacity-70 rounded-[12px] animate-rect3 z-10"></div>
-
-          {/* Rect 4: Touches bottom-right of Rect1 — Purple, slightly higher */}
-          <div className="absolute top-[38%] left-[22%] w-[500px] h-[500px] bg-[#6366F1]/15 opacity-60 rounded-[12px] animate-rect4"></div>
-        </div>
+          {/* Floating Background Layers — hidden on very small screens */}
+          <div className="absolute inset-0 -z-10 pointer-events-none hidden sm:block">
+            {/* Rect 1: Top Left */}
+            <div className="absolute top-[12%] left-[8%] w-[450px] h-[450px] bg-[#10B981]/15 opacity-60 rounded-[12px] animate-rect1"></div>
+            {/* Rect 2: Top Right */}
+            <div className="absolute top-[8%] right-[10%] w-[350px] h-[350px] bg-[#6366F1]/10 opacity-50 rounded-[12px] animate-rect2"></div>
+            {/* Rect 3 */}
+            <div className="absolute top-[52%] left-[42%] w-[350px] h-[350px] bg-[#10B981]/20 opacity-70 rounded-[12px] animate-rect3 z-10"></div>
+            {/* Rect 4 */}
+            <div className="absolute top-[38%] left-[22%] w-[500px] h-[500px] bg-[#6366F1]/15 opacity-60 rounded-[12px] animate-rect4"></div>
+          </div>
+          {/* Simplified blob for mobile only */}
+          <div className="absolute inset-0 -z-10 pointer-events-none sm:hidden">
+            <div className="absolute top-[-10%] right-[-10%] w-[200px] h-[200px] bg-[#6366F1]/10 opacity-40 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-[10%] left-[-5%] w-[150px] h-[150px] bg-[#10B981]/10 opacity-40 rounded-full blur-2xl"></div>
+          </div>
 
         {/* CONTENT LAYER */}
-        <div className="max-w-7xl mx-auto px-12 grid lg:grid-cols-2 gap-16 items-center relative z-10 w-full">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center relative z-10 w-full">
           <div className="space-y-8 animate-fade-up">
             <span className="inline-block px-4 py-1.5 bg-secondary text-white text-[10px] font-bold tracking-[0.2em] uppercase rounded-full shadow-lg shadow-secondary/20">Automate Everything</span>
-            <h1 className="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] text-primary">
+            <h1 className="font-headline text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] text-primary">
               Automate Conversations on <span className="text-tertiary">
                 <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom left'}}>Facebook,</span>{' '}
                 <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom center'}}>Instagram</span>{' '}
@@ -131,8 +134,8 @@ export default function Hero() {
               </button>
             </div>
           </div>
-          {/* Detailed Chat Interface */}
-          <div className="relative animate-fade-in [animation-delay:200ms]">
+          {/* Detailed Chat Interface — hidden on small mobile, shown from sm+ */}
+          <div className="relative animate-fade-in [animation-delay:200ms] hidden sm:block">
             {/* Accent Blur 1 — Green #108981, 160×160, bottom-left overflow, 60% opacity, layer blur */}
             <div className="absolute -bottom-[40px] -left-[40px] w-[160px] h-[160px] bg-[#10B981]/5 opacity-30 rounded-[12px] blur-[32px] z-20 pointer-events-none"></div>
             {/* Accent Blur 2 — Amber #FEF3C7, 128×128, top-right overflow, 60% opacity, layer blur */}
@@ -179,8 +182,8 @@ export default function Hero() {
       </section>
 
       {/* How it Works */}
-      <section className="py-40 bg-surface-container-lowest">
-        <div className="max-w-7xl mx-auto px-8">
+      <section className="py-20 sm:py-40 bg-surface-container-lowest">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <div className="text-center mb-24 reveal">
             <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-secondary mb-4 block">The Process</label>
             <h2 className="font-headline text-4xl md:text-5xl font-black tracking-tight text-primary">Three steps to automation</h2>
@@ -212,8 +215,8 @@ export default function Hero() {
       </section>
 
       {/* Platform Synergy */}
-      <section className="py-32 bg-primary text-on-primary overflow-hidden">
-        <div className="max-w-7xl mx-auto px-8 flex flex-col items-center">
+      <section className="py-20 sm:py-32 bg-primary text-on-primary overflow-hidden">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 flex flex-col items-center">
           <div className="text-center max-w-2xl mb-20 reveal">
             <h2 className="font-headline text-4xl font-bold mb-6">Omnichannel Synergy</h2>
             <p className="text-slate-400 text-lg">A single dashboard to rule them all. No more switching apps or missing messages.</p>
@@ -243,8 +246,8 @@ export default function Hero() {
       </section>
 
       {/* ── WHO WE ARE ── */}
-      <section id="about" className="bg-surface-container-low py-32">
-        <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+      <section id="about" className="bg-surface-container-low py-20 sm:py-32">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-20 items-center">
           {/* Left: image + stat card */}
           <div className="relative">
             <div className="aspect-[4/5] rounded-[2rem] overflow-hidden bg-surface-container-highest shadow-2xl">
@@ -263,7 +266,7 @@ export default function Hero() {
           {/* Right: text */}
           <div>
             <span className="text-secondary font-label uppercase tracking-[0.2em] text-sm mb-6 block">Who We Are</span>
-            <h2 className="font-headline text-4xl md:text-6xl font-bold mb-8 leading-tight text-primary">Eliminating the bottlenecks of human scale.</h2>
+            <h2 className="font-headline text-3xl sm:text-4xl md:text-6xl font-bold mb-8 leading-tight text-primary">Eliminating the bottlenecks of human scale.</h2>
             <div className="space-y-6 text-on-surface-variant text-lg leading-relaxed">
               <p>We are a team of curators, engineers, and dreamers who believe that technology should amplify human connection, not replace it. Our mission is to provide the digital infrastructure that allows brands to speak with thousands while maintaining the intimacy of one.</p>
               <p>By blending high-end editorial aesthetics with cutting-edge AI, we've built a platform that feels like a boutique agency but performs like a global enterprise.</p>
@@ -273,13 +276,13 @@ export default function Hero() {
       </section>
 
       {/* ── THE PROBLEM WE SOLVE ── */}
-      <section className="py-32 px-8">
+      <section className="py-20 sm:py-32 px-5 sm:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
             <div className="max-w-2xl">
               <span className="text-tertiary font-label uppercase tracking-[0.2em] text-sm mb-6 block">The Challenge</span>
-              <h2 className="font-headline text-4xl md:text-6xl font-bold leading-tight text-primary">The noise of scaling is the silence of lost revenue.</h2>
+              <h2 className="font-headline text-3xl sm:text-4xl md:text-6xl font-bold leading-tight text-primary">The noise of scaling is the silence of lost revenue.</h2>
             </div>
             <p className="text-on-surface-variant max-w-sm pb-2 text-lg">Traditional communication tools create silos and delays. We solve the friction points that prevent growth.</p>
           </div>
@@ -320,8 +323,8 @@ export default function Hero() {
       </section>
 
       {/* ── WHAT WE DO — Feature Grid ── */}
-      <section className="py-32 bg-surface-container-lowest">
-        <div className="max-w-7xl mx-auto px-8">
+      <section className="py-20 sm:py-32 bg-surface-container-lowest">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <div className="text-center mb-24">
             <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-secondary mb-4 block">Our Platform</label>
             <h2 className="font-headline text-4xl md:text-5xl font-black tracking-tight text-primary mb-6">Designed for impact.</h2>
@@ -361,8 +364,8 @@ export default function Hero() {
       </section>
 
       {/* ── OUR MISSION & PRINCIPLES ── */}
-      <section className="py-32 bg-surface">
-        <div className="max-w-7xl mx-auto px-8">
+      <section className="py-20 sm:py-32 bg-surface">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <div className="flex flex-col lg:flex-row gap-20">
             {/* Sticky label */}
             <div className="lg:w-1/3">
@@ -407,25 +410,55 @@ export default function Hero() {
       </section>
 
       {/* Expertise Section */}
-      <section className="py-40 bg-primary relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-8 relative">
-          <div className="mb-24">
+      <section className="py-20 sm:py-40 bg-primary relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 relative">
+          <div className="mb-12 sm:mb-24">
             <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-tertiary mb-4 block">The Brains Behind the Solution</label>
-            <h2 className="font-headline text-5xl font-black tracking-tight text-white">Our Expertise</h2>
+            <h2 className="font-headline text-4xl sm:text-5xl font-black tracking-tight text-white">Our Expertise</h2>
           </div>
           <div className="relative space-y-0">
             {TEAM.map((member) => (
               <div
                 key={member.id}
-                className="team-row group relative py-12 flex items-center justify-between cursor-pointer border-b border-white/10"
-                onMouseMove={(e) => handleMouseMove(e, member.id)}
+                className="team-row group relative py-8 sm:py-12 flex flex-col cursor-pointer border-b border-white/10 overflow-hidden"
+                onMouseMove={(e) => { if (window.innerWidth >= 768) handleMouseMove(e, member.id); }}
                 onMouseLeave={handleMouseLeave}
+                onClick={() => { if (window.innerWidth < 768) setTappedMember(tappedMember === member.id ? null : member.id); }}
               >
-                <span className="hidden md:block text-slate-400 font-bold text-xs uppercase tracking-widest z-20 transition-colors group-hover:text-white">{member.since}</span>
-                <div className="flex-1 text-center md:text-left z-20">
-                  <h3 className="team-name font-headline text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">{member.name}</h3>
+                {/* Row content */}
+                <div className="flex items-center justify-between w-full">
+                  <span className="hidden md:block text-slate-400 font-bold text-xs uppercase tracking-widest z-20 transition-colors group-hover:text-white shrink-0">{member.since}</span>
+                  <div className="flex-1 text-center md:text-left z-20 min-w-0">
+                    <h3 className="team-name font-headline text-xl sm:text-4xl md:text-8xl font-black tracking-tighter uppercase leading-none truncate">{member.name}</h3>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="hidden md:block text-slate-400 font-bold text-xs uppercase tracking-widest text-right z-20 transition-colors group-hover:text-white">{member.role}</span>
+                    {/* Mobile chevron */}
+                    <span className={`md:hidden text-white/50 text-lg transition-transform duration-300 ${tappedMember === member.id ? 'rotate-180' : ''}`}>▾</span>
+                  </div>
                 </div>
-                <span className="hidden md:block text-slate-400 font-bold text-xs uppercase tracking-widest text-right z-20 transition-colors group-hover:text-white">{member.role}</span>
+
+                {/* Mobile expand card */}
+                <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
+                  tappedMember === member.id ? 'max-h-[400px] opacity-100 mt-6' : 'max-h-0 opacity-0 mt-0'
+                }`}>
+                  <div className="flex items-start gap-5 bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+                    <img
+                      src={member.photo}
+                      alt={member.name}
+                      className="w-24 h-24 rounded-xl object-cover flex-shrink-0 shadow-lg"
+                    />
+                    <div className="min-w-0">
+                      <p className="text-white font-bold text-base">{member.name}</p>
+                      <p className="text-tertiary text-xs font-semibold uppercase tracking-wider mb-3">{member.role}</p>
+                      <p className="text-slate-300 text-sm leading-relaxed">{member.background}</p>
+                      {member.interests && (
+                        <p className="text-slate-400 text-xs mt-2">🎯 {member.interests}</p>
+                      )}
+                      <p className="text-slate-500 text-xs mt-2 uppercase tracking-widest">{member.since}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -433,8 +466,8 @@ export default function Hero() {
       </section>
 
       {/* Bento Grid */}
-      <section className="py-40">
-        <div className="max-w-7xl mx-auto px-8">
+      <section className="py-20 sm:py-40">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
             <div className="max-w-xl">
               <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-tertiary mb-4 block">Visual Interface</label>
@@ -516,8 +549,8 @@ export default function Hero() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-40 px-8">
-        <div className="max-w-7xl mx-auto bg-primary rounded-[4rem] p-16 md:p-32 text-center relative overflow-hidden">
+      <section className="py-20 sm:py-40 px-5 sm:px-8">
+        <div className="max-w-7xl mx-auto bg-primary rounded-[2rem] sm:rounded-[4rem] p-8 sm:p-16 md:p-32 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-tertiary/40 via-primary to-primary"></div>
           <div className="relative z-10">
             <h2 className="font-headline text-4xl md:text-7xl font-extrabold text-white tracking-tighter mb-10 leading-tight">
@@ -538,8 +571,8 @@ export default function Hero() {
         </div>
       </section>
 
-      {/* Cursor-following team member card */}
-      {hoveredMember && (() => {
+      {/* Cursor-following team card — desktop only */}
+      {hoveredMember && window.innerWidth >= 768 && (() => {
         const member = TEAM.find(m => m.id === hoveredMember);
         if (!member) return null;
         const CARD_W = 600;

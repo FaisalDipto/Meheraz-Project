@@ -130,12 +130,12 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
   };
 
   return (
-    <div className="dashboard-content-area animate-fade-in-up flex-1 p-4 sm:p-8 space-y-8 sm:space-y-12 w-full text-left bg-surface-bright">
+    <div className="dashboard-content-area animate-fade-in-up flex-1 p-4 md:p-6 xl:p-8 space-y-6 xl:space-y-12 w-full text-left bg-surface-bright">
       {/* Hero Header */}
       <div className="flex justify-between items-end">
         <div>
           <span className="label-md uppercase tracking-[0.2em] text-outline mb-1 sm:mb-2 block font-label font-semibold text-xs sm:text-sm">Active Workspace</span>
-          <h1 className="text-3xl sm:text-5xl font-headline font-black tracking-tighter text-primary">My Workspace</h1>
+          <h1 className="text-3xl lg:text-4xl xl:text-5xl font-headline font-black tracking-tighter text-primary">My Workspace</h1>
         </div>
         <div className="hidden sm:flex gap-3">
           <div className="flex -space-x-2">
@@ -1777,7 +1777,7 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
 
   if (!isCreating && !isEditing) {
     return (
-      <div className="flex-1 w-full p-8 md:p-12 min-h-screen bg-[#f7f9fb] animate-fade-in-up">
+      <div className="flex-1 w-full p-6 md:p-8 xl:p-12 min-h-screen bg-[#f7f9fb] animate-fade-in-up">
         <div className="max-w-[1400px] mx-auto">
           {/* Header Section */}
           <section className="mb-16">
@@ -1801,42 +1801,6 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
                     <span className="material-symbols-outlined font-black" style={{fontVariationSettings: "'FILL' 1"}}>add</span>
                     Create New Agent
                 </button>
-              </div>
-            </div>
-          </section>
-
-          {/* Stats Overview */}
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-            <div className="bg-[#f2f4f6] p-8 rounded-3xl border border-white/50 shadow-sm">
-              <p className="font-['Inter'] text-[10px] uppercase tracking-widest text-[#45464d] mb-4 font-bold">Total Fleet</p>
-              <h3 className="text-4xl font-extrabold text-[#000000] font-['Epilogue']">{agents.length < 10 ? `0${agents.length}` : agents.length}</h3>
-              <div className="mt-4 flex items-center text-emerald-600 text-xs font-bold">
-                  <span className="material-symbols-outlined text-sm mr-1">trending_up</span>
-                  +2 this month
-              </div>
-            </div>
-            <div className="bg-[#f2f4f6] p-8 rounded-3xl border border-white/50 shadow-sm">
-              <p className="font-['Inter'] text-[10px] uppercase tracking-widest text-[#45464d] mb-4 font-bold">Active Now</p>
-              <h3 className="text-4xl font-extrabold text-[#000000] font-['Epilogue']">09</h3>
-              <div className="mt-4 flex items-center text-[#45464d] text-xs font-bold">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                  Running smoothly
-              </div>
-            </div>
-            <div className="bg-[#f2f4f6] p-8 rounded-3xl border border-white/50 shadow-sm">
-              <p className="font-['Inter'] text-[10px] uppercase tracking-widest text-[#45464d] mb-4 font-bold">Total Dialogues</p>
-              <h3 className="text-4xl font-extrabold text-[#000000] font-['Epilogue']">42.8k</h3>
-              <div className="mt-4 flex items-center text-emerald-600 text-xs font-bold">
-                  <span className="material-symbols-outlined text-sm mr-1">trending_up</span>
-                  12% increase
-              </div>
-            </div>
-            <div className="bg-[#f2f4f6] p-8 rounded-3xl border border-white/50 shadow-sm">
-              <p className="font-['Inter'] text-[10px] uppercase tracking-widest text-[#45464d] mb-4 font-bold">Resolution Rate</p>
-              <h3 className="text-4xl font-extrabold text-[#000000] font-['Epilogue']">91.4%</h3>
-              <div className="mt-4 flex items-center text-[#45464d] text-xs font-bold">
-                  <span className="material-symbols-outlined text-sm mr-1">verified</span>
-                  High Performance
               </div>
             </div>
           </section>
@@ -2514,13 +2478,13 @@ export default function Dashboard() {
 
       {/* Sidebar */}
       <aside className={`bg-slate-50 border-r border-slate-100 flex flex-col font-['Epilogue'] font-medium h-full py-8 shrink-0 transition-all duration-300
-        fixed top-0 left-0 w-64 px-4 z-[10000]
+        fixed top-0 left-0 w-56 px-3 z-[10000]
         ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
-        ${isSidebarCollapsed ? 'md:-translate-x-full md:w-0 md:px-0 md:border-none md:overflow-hidden' : 'md:translate-x-0 md:relative md:w-64 md:px-4 md:z-auto md:shadow-none'}`}>
+        ${isSidebarCollapsed ? 'md:-translate-x-full md:w-0 md:px-0 md:border-none md:overflow-hidden' : 'md:translate-x-0 md:relative md:w-56 md:px-3 xl:w-64 xl:px-4 md:z-auto md:shadow-none'}`}>
         <div className="p-0 m-0 mb-8 w-full flex items-center justify-start px-2 py-0">
           <div className="flex items-center gap-[6px] px-2">
-            <img src={logoImg} alt="LYFFLOW" style={{ height: '36px', width: 'auto' }} />
-            <img src={titleImg} alt="LYFFLOW" style={{ height: '22px', width: 'auto' }} />
+            <img src={logoImg} alt="LYFFLOW" style={{ height: '36px', width: 'auto', filter: 'brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%)' }} />
+            <img src={titleImg} alt="LYFFLOW" style={{ height: '22px', width: 'auto', filter: 'brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%)' }} />
           </div>
           {/* Mobile Close Button */}
           <button className="md:hidden ml-auto bg-transparent border-none p-0 cursor-pointer text-slate-400" onClick={() => setIsSidebarOpen(false)}>
@@ -2540,7 +2504,7 @@ export default function Dashboard() {
             { id: 'knowledge', icon: Book, label: 'Knowledge' },
             { id: 'agent', icon: UserRound, label: 'Agents' },
             { id: 'feedback', icon: MessageCircleWarning, label: 'Feedback' },
-            { id: 'settings', icon: Settings, label: 'Settings' }
+            { id: 'tutorial', icon: Settings, label: 'Tutorial' }
           ].map(item => (
             <button
               key={item.id}
@@ -2551,7 +2515,9 @@ export default function Dashboard() {
                   : 'text-slate-500 hover:bg-slate-100 bg-transparent'
               }`}
             >
-              <item.icon size={20} />
+              {item.id === 'tutorial'
+                ? <span className="material-symbols-outlined text-[20px]">school</span>
+                : <item.icon size={20} />}
               <span className="text-[15px]">{item.label}</span>
             </button>
           ))}
@@ -2562,11 +2528,11 @@ export default function Dashboard() {
             <HelpCircle size={20} />
             <span className="text-[15px]">Support</span>
           </button>
-          <button onClick={() => { setActiveTab('tutorial'); setIsSidebarOpen(false); }} 
-            className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'tutorial' ? 'text-emerald-600 font-bold bg-[#ecfdf5]' : 'text-slate-500 hover:bg-slate-100 bg-transparent'}`}
+          <button onClick={() => { setActiveTab('settings'); setIsSidebarOpen(false); }} 
+            className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'settings' ? 'text-emerald-600 font-bold bg-[#ecfdf5]' : 'text-slate-500 hover:bg-slate-100 bg-transparent'}`}
           >
-            <span className="material-symbols-outlined text-[20px]">school</span>
-            <span className="text-[15px]">Tutorial</span>
+            <Settings size={20} />
+            <span className="text-[15px]">Settings</span>
           </button>
         </div>
       </aside>
