@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Feedback from './pages/Feedback'
 import Legal from './pages/Legal'
+import Pricing from './pages/Pricing'
 import { WidgetProvider } from './context/WidgetContext'
 import './App.css'
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/app/dashboard/*" element={<Dashboard />} />
         <Route path="/app/feedback" element={<Feedback />} />
         <Route path="/app/legal" element={<Legal />} />
+        <Route path="/app/pricing" element={<Pricing />} />
         
         {/* Redirect hardcoded backend callbacks back to /app prefix */}
         <Route path="/dashboard/*" element={<Navigate to={`/app${location.pathname}${location.search}`} replace />} />

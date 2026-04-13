@@ -227,13 +227,13 @@ export default function LegalCenter() {
             <div>
               <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">1. Introduction</h2>
               <p className="text-lg leading-relaxed text-on-surface-variant font-light">
-                Welcome to QchatLive, an AI-powered communication and business messaging platform operated by <strong>Lyfflow</strong> ("Lyfflow", "we", "us", or "our"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform, website, and related services (collectively, the "Service").
+                Welcome to Lyfflow, an AI-powered communication and business messaging platform operated by <strong>Lyfflow</strong> ("Lyfflow", "we", "us", or "our"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform, website, and related services (collectively, the "Service").
               </p>
               <p className="text-lg leading-relaxed text-on-surface-variant font-light mt-4">
-                By accessing or using QchatLive, you agree to the terms of this Privacy Policy. If you do not agree, please discontinue use of the Service immediately.
+                By accessing or using Lyfflow, you agree to the terms of this Privacy Policy. If you do not agree, please discontinue use of the Service immediately.
               </p>
               <p className="text-lg leading-relaxed text-on-surface-variant font-light mt-4">
-                This policy applies to all users of QchatLive globally, including users located in Bangladesh, the European Union, the United Kingdom, and the United States of America.
+                This policy applies to all users of Lyfflow globally, including users located in Bangladesh, the European Union, the United Kingdom, and the United States of America.
               </p>
             </div>
 
@@ -258,7 +258,7 @@ export default function LegalCenter() {
             <div>
               <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">4. Facebook and Meta Platform Data</h2>
               <p className="text-lg leading-relaxed text-on-surface-variant font-light mb-4">
-                QchatLive integrates with the Meta (Facebook) Platform. By connecting your Facebook Page to QchatLive, you acknowledge and agree to the following:
+                Lyfflow integrates with the Meta (Facebook) Platform. By connecting your Facebook Page to Lyfflow, you acknowledge and agree to the following:
               </p>
               <ul className="space-y-4 text-on-surface-variant ml-4 border-l-2 border-primary/20 pl-6">
                 <li className="flex items-start gap-3">
