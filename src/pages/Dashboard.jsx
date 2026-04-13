@@ -2509,11 +2509,30 @@ const SettingsPanel = () => {
   );
 };
 
+const TutorialPanel = () => {
+  return (
+    <div className="dashboard-content-area animate-fade-in-up" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '600px' }}>
+      <div style={{ textAlign: 'center' }}>
+        <span className="material-symbols-outlined text-slate-300 mb-4 inline-block" style={{ fontSize: '72px' }}>school</span>
+        <h2 className="text-4xl font-headline font-black tracking-tighter text-slate-900 mb-4">Tutorials</h2>
+        <p className="text-slate-500 max-w-md mx-auto text-base">We're putting together comprehensive guides and interactive walkthroughs to help you master LYFFLOW. Check back soon!</p>
+        <div className="mt-8">
+          <span className="bg-slate-100 text-slate-600 px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase inline-block">
+            Coming Soon
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
@@ -2560,6 +2579,7 @@ export default function Dashboard() {
       case 'agent': return <AgentPanel user={user} pages={pages} onUpdate={fetchData} onAgentCreated={(newAgent) => setUser(prev => prev ? { ...prev, agents: [...(prev.agents || []), newAgent] } : prev)} onAgentEdited={(id, payload) => setUser(prev => prev ? { ...prev, agents: (prev.agents || []).map(a => a.agent_id === id ? { ...a, ...payload } : a) } : prev)} />;
       case 'feedback': return <FeedbackPanel />;
       case 'settings': return <SettingsPanel />;
+      case 'tutorial': return <TutorialPanel />;
       default: return <div className="dashboard-content-area"><h2>Coming Soon</h2></div>;
     }
   };
@@ -2621,8 +2641,8 @@ export default function Dashboard() {
             <HelpCircle size={20} />
             <span className="text-[15px]">Support</span>
           </button>
-          <button onClick={() => window.location.href = '/app/tutorial'} 
-            className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-100 transition-all rounded-lg cursor-pointer border-none bg-transparent text-left"
+          <button onClick={() => { setActiveTab('tutorial'); setIsSidebarOpen(false); }} 
+            className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'tutorial' ? 'text-emerald-600 font-bold bg-[#ecfdf5]' : 'text-slate-500 hover:bg-slate-100 bg-transparent'}`}
           >
             <span className="material-symbols-outlined text-[20px]">school</span>
             <span className="text-[15px]">Tutorial</span>
@@ -2687,17 +2707,53 @@ export default function Dashboard() {
                 <button className="drawer-menu-item">
                   <User size={18} /> Account Settings
                 </button>
-                <button className="drawer-menu-item" onClick={async () => {
-                  if (window.confirm("Are you sure you want to log out?")) {
-                    await apiService.logout().catch(() => { });
-                    window.location.href = '/app/login';
-                  }
+                <button className="drawer-menu-item" onClick={() => {
+                  setIsLogoutModalOpen(true);
+                  setIsProfileOpen(false);
                 }}>
                   <LogOut size={18} /> Log Out
                 </button>
               </div>
             </div>
           </div>
+
+          {/* Custom Logout Modal */}
+          {isLogoutModalOpen && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up border border-slate-100 p-6 m-4">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-red-500 text-2xl">logout</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-headline font-bold text-slate-900">Log Out</h3>
+                    <p className="text-sm text-slate-500 font-medium">Are you sure you want to exit your workspace?</p>
+                  </div>
+                </div>
+                
+                <div className="flex gap-3 mt-8">
+                  <button 
+                    onClick={() => setIsLogoutModalOpen(false)}
+                    disabled={isLoggingOut}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold border-2 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={async () => {
+                      setIsLoggingOut(true);
+                      await apiService.logout().catch(() => { });
+                      window.location.href = '/app/login';
+                    }}
+                    disabled={isLoggingOut}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {isLoggingOut ? 'Logging out...' : 'Log Out'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
