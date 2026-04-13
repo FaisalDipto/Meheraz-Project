@@ -7,7 +7,7 @@ import titleImg from '../assets/title.png';
 export default function GetStarted() {
   const handleConnectMeta = () => {
     const redirectUrl = encodeURIComponent(window.location.origin + '/app/dashboard');
-    window.location.href = `http://www.meharaz733.com/api/auth/facebook/login?redirect_uri=${redirectUrl}&next=/app/dashboard`;
+    window.location.href = `https://www.lyfflow.com/api/auth/facebook/login?redirect_uri=${redirectUrl}&next=/app/dashboard`;
   };
 
   return (

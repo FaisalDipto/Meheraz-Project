@@ -23,10 +23,10 @@ export default defineConfig({
   server: {
     host: '127.0.0.1',
     port: 3000,
-    allowedHosts: ['meharaz733.com', 'www.meharaz733.com'],
+    allowedHosts: ['lyfflow.com', 'www.lyfflow.com'],
     proxy: {
       '/api': {
-        target: 'http://www.meharaz733.com',
+        target: 'http://www.lyfflow.com',
         changeOrigin: true
       }
     }
