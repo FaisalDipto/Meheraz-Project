@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { LayoutDashboard, MessageSquare, Book, UserRound, MessageCircleWarning, Settings, Plus, User, LogOut, ChevronDown, TrendingUp, Headphones, HelpCircle, Palette, Monitor, Users, Trash2, Mail, Menu, X, Edit2 } from 'lucide-react';
 import { useWidget } from '../context/WidgetContext';
@@ -366,6 +366,11 @@ const ConversationList = ({ pages }) => {
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     if (pages && pages.length > 0 && !selectedPageId) {
@@ -664,6 +669,7 @@ const ConversationList = ({ pages }) => {
                     <span className="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase py-2 px-4 rounded-full bg-slate-100 mb-6">Chat History</span>
                   </div>
                   {messages.map(msg => renderChatMessage(msg))}
+                  <div ref={messagesEndRef} />
                 </>
               )}
             </div>
