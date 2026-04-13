@@ -2621,14 +2621,11 @@ export default function Dashboard() {
             <HelpCircle size={20} />
             <span className="text-[15px]">Support</span>
           </button>
-          <button onClick={async () => {
-              await apiService.logout().catch(() => { });
-              window.location.href = '/app/login';
-            }} 
+          <button onClick={() => window.location.href = '/app/tutorial'} 
             className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-100 transition-all rounded-lg cursor-pointer border-none bg-transparent text-left"
           >
-            <LogOut size={20} />
-            <span className="text-[15px]">Logout</span>
+            <span className="material-symbols-outlined text-[20px]">school</span>
+            <span className="text-[15px]">Tutorial</span>
           </button>
         </div>
       </aside>
@@ -2691,8 +2688,10 @@ export default function Dashboard() {
                   <User size={18} /> Account Settings
                 </button>
                 <button className="drawer-menu-item" onClick={async () => {
-                  await apiService.logout().catch(() => { });
-                  window.location.href = '/app/login';
+                  if (window.confirm("Are you sure you want to log out?")) {
+                    await apiService.logout().catch(() => { });
+                    window.location.href = '/app/login';
+                  }
                 }}>
                   <LogOut size={18} /> Log Out
                 </button>
