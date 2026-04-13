@@ -7,8 +7,7 @@ export default function Pricing() {
   const navigate = useNavigate();
 
   const handleConnectFacebook = () => {
-    const redirectUrl = encodeURIComponent(window.location.origin + '/app/dashboard');
-    window.location.href = `https://www.lyfflow.com/api/auth/facebook/login?redirect_uri=${redirectUrl}&next=/app/dashboard`;
+    navigate('/app/dashboard');
   };
 
   return (
@@ -33,8 +32,8 @@ export default function Pricing() {
         </section>
 
         {/* Pricing Grid */}
-        <section className="relative px-6 pb-32 max-w-7xl mx-auto z-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+        <section className="relative px-6 pb-32 max-w-7xl mx-auto z-10 w-full overflow-x-auto lg:overflow-x-visible">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch min-w-max lg:min-w-0 pb-8 lg:pb-0">
             {/* Free Plan */}
             <div className="flex flex-col p-8 rounded-[1.5rem] bg-surface-container-low transition-all duration-300 hover:bg-surface-container-lowest hover:shadow-2xl shadow-on-surface/5 group border border-transparent hover:border-outline-variant/30">
               <div className="mb-8">
@@ -160,7 +159,70 @@ export default function Pricing() {
                 Coming Soon
               </button>
             </div>
+
+            {/* Agency Plan */}
+            <div className="flex flex-col p-8 rounded-[1.5rem] bg-[#222222] text-[#f1f1f1] transition-all duration-300 hover:shadow-2xl shadow-black/20 group border border-[#333]">
+              <div className="mb-8">
+                <h3 className="font-headline text-2xl font-bold mb-2">Agency</h3>
+                <p className="text-[#a1a1aa] text-sm">For agencies & resellers</p>
+              </div>
+              <div className="mb-8 border-b border-[#333] pb-6">
+                <span className="text-4xl font-black text-white">$99</span>
+                <span className="text-[#a1a1aa]">/mo</span>
+              </div>
+              <ul className="flex-grow space-y-3 mb-10 text-[13px] xl:text-[14px]">
+                <li className="flex items-center justify-between">
+                  <span className="text-[#a1a1aa]">Pages</span>
+                  <span className="px-2 py-0.5 bg-[#18181b] rounded font-semibold border border-[#333]">Unlimited</span>
+                </li>
+                <li className="flex items-center justify-between">
+                  <span className="text-[#a1a1aa]">AI Agents</span>
+                  <span className="px-2 py-0.5 bg-[#18181b] rounded font-semibold border border-[#333]">Unlimited</span>
+                </li>
+                <li className="flex items-center justify-between">
+                  <span className="text-[#a1a1aa]">Tokens / mo</span>
+                  <span className="px-2 py-0.5 bg-[#14532d]/40 text-[#4ade80] rounded font-semibold flex items-center gap-1">30M <span className="material-symbols-outlined text-[14px] font-bold">arrow_upward</span></span>
+                </li>
+                <li className="flex items-center justify-between">
+                  <span className="text-[#a1a1aa]">~AI replies</span>
+                  <span className="px-2 py-0.5 bg-[#18181b] rounded font-semibold border border-[#333]">~15,000</span>
+                </li>
+                <li className="flex items-center justify-between">
+                  <span className="text-[#a1a1aa]">Storage</span>
+                  <span className="px-2 py-0.5 bg-[#18181b] rounded font-semibold border border-[#333]">5 GB</span>
+                </li>
+                <div className="pt-6 space-y-4 border-t border-[#333] !mt-6 block">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-[#4ade80] text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    <span>All Growth features</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-[#4ade80] text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    <span>White-label branding</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-[#4ade80] text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    <span>Advanced analytics + export</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-[#4ade80] text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    <span>Token top-up available</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-[#4ade80] text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    <span>Dedicated support + SLA</span>
+                  </div>
+                </div>
+              </ul>
+              <button disabled className="w-full py-4 mt-auto bg-[#333]/50 text-gray-400 opacity-80 cursor-not-allowed font-medium rounded-full shadow-lg transition-transform border border-[#444]">
+                Coming Soon
+              </button>
+            </div>
           </div>
+          
+          <p className="text-center text-sm text-on-surface-variant max-w-4xl mx-auto mt-8">
+            ~AI replies estimated at 2,000 input + 300 output tokens per reply (with KB context). All paid plans can top-up tokens anytime.
+          </p>
         </section>
 
         {/* Feature Comparison (Editorial Style) */}

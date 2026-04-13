@@ -145,7 +145,7 @@ export default function Navbar() {
             <a href="#about" className="nav-link-text" onClick={() => isMobileMenuOpen && setIsMobileMenuOpen(false)}>About</a>
           </li>
           <li className="nav-item">
-            <span className="nav-link-text">Pricing</span>
+            <Link to="/app/pricing" className="nav-link-text" onClick={() => isMobileMenuOpen && setIsMobileMenuOpen(false)}>Pricing</Link>
           </li>
         </ul>
 

@@ -8,7 +8,13 @@ export default function GetStarted() {
   const navigate = useNavigate();
 
   const handleConnectFacebook = () => {
-    navigate('/app/pricing');
+    const isNewUser = !localStorage.getItem('lyfflow_ReturningUser');
+    const nextPath = isNewUser ? '/app/pricing' : '/app/dashboard';
+    
+    localStorage.setItem('lyfflow_ReturningUser', 'true');
+
+    const redirectUrl = encodeURIComponent(window.location.origin + nextPath);
+    window.location.href = `https://www.lyfflow.com/api/auth/facebook/login?redirect_uri=${redirectUrl}&next=${nextPath}`;
   };
 
   return (
