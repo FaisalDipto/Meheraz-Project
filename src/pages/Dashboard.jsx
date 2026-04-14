@@ -1549,6 +1549,37 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
   const [assignModalAgent, setAssignModalAgent] = useState(null);
   const [assigningId, setAssigningId] = useState(null);
 
+  // Filter State
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    status: 'All',
+    role: 'All',
+    tone: 'All'
+  });
+
+  const activeSelectedAgents = JSON.parse(localStorage.getItem('qchat_assigned_agents') || '{}');
+
+  const filteredAgents = agents.filter(agent => {
+    // Role filter
+    if (filters.role !== 'All' && agent.role !== filters.role) return false;
+    
+    // Tone filter
+    if (filters.tone !== 'All' && agent.tone !== filters.tone) return false;
+    
+    // Status filter
+    if (filters.status !== 'All') {
+      const assignedPageId = Object.keys(activeSelectedAgents).find(key => activeSelectedAgents[key] === agent.agent_id);
+      const isActive = !!assignedPageId;
+      if (filters.status === 'Active' && !isActive) return false;
+      if (filters.status === 'IDLE' && isActive) return false;
+    }
+    
+    return true;
+  });
+
+  const clearFilters = () => setFilters({ status: 'All', role: 'All', tone: 'All' });
+  const activeFiltersCount = Object.values(filters).filter(v => v !== 'All').length;
+
   const handleAssign = async (agentId, pageId) => {
     if (!pageId) return;
     setAssigningId(agentId);
@@ -1808,9 +1839,12 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
                 </p>
               </div>
               <div className="flex gap-4">
-                <button className="flex items-center gap-2 px-6 py-3 bg-[#e6e8ea] rounded-xl text-sm font-semibold hover:bg-[#e0e3e5] transition-colors">
+                <button 
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all ${isFilterOpen || activeFiltersCount > 0 ? 'bg-black text-white shadow-lg shadow-black/20' : 'bg-[#e6e8ea] hover:bg-[#e0e3e5]'}`}
+                >
                     <span className="material-symbols-outlined text-lg border-b-0" data-icon="tune">tune</span>
-                    Filter View
+                    {activeFiltersCount > 0 ? `Filters (${activeFiltersCount})` : 'Filter View'}
                 </button>
                 <button 
                   onClick={() => setIsCreating(true)}
@@ -1821,6 +1855,59 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
                 </button>
               </div>
             </div>
+          {/* Filter Bar */}
+          <div className={`overflow-hidden transition-all duration-300 ${isFilterOpen ? 'max-h-40 opacity-100 mb-12' : 'max-h-0 opacity-0 mb-0'}`}>
+            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-wrap items-center gap-6">
+              <div className="flex flex-col gap-1.5 min-w-[140px]">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Status</label>
+                <select 
+                  value={filters.status}
+                  onChange={e => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                  className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-black/5"
+                >
+                  <option value="All">All Statuses</option>
+                  <option value="Active">Active</option>
+                  <option value="IDLE">IDLE</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5 min-w-[140px]">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Role</label>
+                <select 
+                  value={filters.role}
+                  onChange={e => setFilters(prev => ({ ...prev, role: e.target.value }))}
+                  className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-black/5"
+                >
+                  <option value="All">All Roles</option>
+                  <option value="Sales Agent">Sales Agent</option>
+                  <option value="Support Agent">Support Agent</option>
+                  <option value="Q&A Agent">Q&A Agent</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5 min-w-[140px]">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Personality</label>
+                <select 
+                  value={filters.tone}
+                  onChange={e => setFilters(prev => ({ ...prev, tone: e.target.value }))}
+                  className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-black/5"
+                >
+                  <option value="All">All Tones</option>
+                  {TONES.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+
+              {activeFiltersCount > 0 && (
+                <button 
+                  onClick={clearFilters}
+                  className="mt-5 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[14px]">refresh</span>
+                  Clear All
+                </button>
+              )}
+            </div>
+          </div>
           </section>
 
           {/* Agents Bento Grid */}
@@ -1841,10 +1928,18 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
               </div>
             </div>
 
-            {/* Dynamic Agents List mapped to grid */}
-            {agents.map((agent) => {
-              // Read assigned agents from localStorage to determine active/online state globally
-              const activeSelectedAgents = JSON.parse(localStorage.getItem('qchat_assigned_agents') || '{}');
+            {/* Dynamic Agents List */}
+            {filteredAgents.length === 0 && activeFiltersCount > 0 ? (
+              <div className="col-span-12 py-20 text-center bg-white rounded-[2rem] border border-dashed border-slate-200">
+                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="material-symbols-outlined text-slate-300 text-3xl">filter_list_off</span>
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 mb-2">No agents match your filters</h4>
+                <p className="text-slate-500 text-sm mb-6">Try adjusting your criteria or clearing all filters.</p>
+                <button onClick={clearFilters} className="text-emerald-600 font-bold text-sm hover:underline">Clear all filters</button>
+              </div>
+            ) : filteredAgents.map((agent) => {
+              // Read assigned agents state globally
               const assignedPageId = Object.keys(activeSelectedAgents).find(key => activeSelectedAgents[key] === agent.agent_id);
               const isAssigned = !!assignedPageId;
 
