@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function Pricing() {
   const navigate = useNavigate();
@@ -254,7 +254,7 @@ export default function Pricing() {
           <h2 className="font-headline text-3xl font-bold mb-4">Have questions about our plans?</h2>
           <p className="text-on-surface-variant mb-10">Our sales team is ready to help you find the perfect fit for your workflow.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-3 bg-on-surface text-surface rounded-full font-bold hover:bg-surface-variant hover:text-on-surface transition-colors">Contact Sales</button>
+            <Link to="/app/sales" className="px-8 py-3 bg-on-surface text-surface rounded-full font-bold hover:bg-surface-variant hover:text-on-surface transition-colors">Contact Sales</Link>
             <button className="px-8 py-3 border border-outline text-on-surface rounded-full font-bold hover:bg-surface-container-low transition-colors">View All FAQs</button>
           </div>
         </section>

@@ -563,12 +563,12 @@ export default function Hero() {
               Join 10,000+ businesses automating their growth with Lyfflow. Start your 14-day free trial today.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link to="/app/login" className="bg-white text-primary px-12 py-5 rounded-2xl font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-white/5">
+              <Link to="/app/get-started" className="bg-white text-primary px-12 py-5 rounded-2xl font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-white/5">
                 Create Free Account
               </Link>
-              <button className="bg-transparent border-2 border-white/20 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:bg-white/5 transition-all">
+              <Link to="/app/sales" className="bg-transparent border-2 border-white/20 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:bg-white/5 transition-all">
                 Talk to Sales
-              </button>
+              </Link>
             </div>
           </div>
         </div>

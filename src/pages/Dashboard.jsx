@@ -526,10 +526,15 @@ const ConversationList = ({ pages }) => {
                   {renderAvatar(contact, `w-12 h-12 rounded-full ${isActive ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`)}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline mb-0.5">
-                      <h3 className="font-bold text-slate-900 truncate">{contactName}</h3>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <h3 className="font-bold text-slate-900 truncate">{contactName}</h3>
+                        {contact.is_human_needed && (
+                          <span className="flex-shrink-0 w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse" title="Needs Human Support"></span>
+                        )}
+                      </div>
                       <span className="text-[10px] text-slate-400 font-medium">{updated}</span>
                     </div>
-                    <p className={`text-sm truncate font-semibold ${isActive ? 'text-emerald-600' : 'text-slate-500 font-medium'}`}>{snippet}</p>
+                    <p className={`text-sm truncate font-semibold ${isActive ? 'text-emerald-600' : contact.is_human_needed ? 'text-red-500' : 'text-slate-500 font-medium'}`}>{snippet}</p>
                   </div>
                 </div>
               </div>
@@ -559,7 +564,16 @@ const ConversationList = ({ pages }) => {
                   <h2 className="font-['Epilogue'] font-bold text-lg text-slate-900 tracking-tight">
                     {activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}
                   </h2>
-                  <p className="text-[10px] text-emerald-600 font-bold tracking-widest uppercase">Active Now</p>
+                  <div className="flex items-center gap-2">
+                    {activeContact?.is_human_needed ? (
+                      <p className="text-[10px] text-red-500 font-black tracking-widest uppercase flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[10px] animate-pulse">warning</span>
+                        Manual Support Needed
+                      </p>
+                    ) : (
+                      <p className="text-[10px] text-emerald-600 font-bold tracking-widest uppercase">Autonomous Mode</p>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-6 text-slate-400">
@@ -645,9 +659,13 @@ const ConversationList = ({ pages }) => {
                 {activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}
               </h2>
               <p className="text-sm text-slate-500 font-medium mt-1">Chat Participant</p>
-              <div className="flex justify-center gap-2 mt-4">
+              <div className="flex justify-center flex-wrap gap-2 mt-4">
                 <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Pro Plan</span>
-                <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Active</span>
+                {activeContact?.is_human_needed ? (
+                  <span className="bg-red-100 text-red-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider animate-bounce-subtle">Needs Human</span>
+                ) : (
+                  <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Managed by AI</span>
+                )}
               </div>
             </div>
 

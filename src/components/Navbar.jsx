@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Navbar.css';
 import logoImg from '../assets/logo1.png';
 import titleImg from '../assets/title.png';
@@ -8,6 +8,19 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleAboutClick = () => {
+    if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+    if (location.pathname === '/app') {
+      // Already on home — smooth scroll directly
+      document.getElementById('about')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      // Navigate to home with hash — ScrollManager will handle the scroll
+      navigate('/app#about');
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -111,7 +124,7 @@ export default function Navbar() {
                   <p className="dropdown-desc">Guides and documentation.</p>
                 </div>
               </div>
-              <div className="dropdown-item">
+              <Link to="/app/sales" className="dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>
                 <div className="dropdown-icon-container">
                   <svg className="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                 </div>
@@ -119,7 +132,7 @@ export default function Navbar() {
                   <h4 className="dropdown-title">Contact Us</h4>
                   <p className="dropdown-desc">Get in touch with sales.</p>
                 </div>
-              </div>
+              </Link>
               <div className="dropdown-item">
                 <div className="dropdown-icon-container">
                   <svg className="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
@@ -142,7 +155,7 @@ export default function Navbar() {
           </li>
           
           <li className="nav-item">
-            <a href="#about" className="nav-link-text" onClick={() => isMobileMenuOpen && setIsMobileMenuOpen(false)}>About</a>
+            <button className="nav-link-text" onClick={handleAboutClick} style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', padding: 0 }}>About</button>
           </li>
           <li className="nav-item">
             <Link to="/app/pricing" className="nav-link-text" onClick={() => isMobileMenuOpen && setIsMobileMenuOpen(false)}>Pricing</Link>
