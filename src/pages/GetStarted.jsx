@@ -8,10 +8,12 @@ export default function GetStarted() {
   const navigate = useNavigate();
 
   const handleConnectFacebook = () => {
-    const isNewUser = !localStorage.getItem('lyfflow_ReturningUser');
-    const nextPath = isNewUser ? '/app/pricing' : '/app/dashboard';
-    
-    localStorage.setItem('lyfflow_ReturningUser', 'true');
+    const isReturningUser = !!localStorage.getItem('lyfflow_ReturningUser');
+    const nextPath = isReturningUser ? '/app/dashboard' : '/app/pricing';
+
+    // Save intended destination — backend will redirect to /dashboard regardless,
+    // so Dashboard will pick this up and forward the user to the right place.
+    localStorage.setItem('lyfflow_postAuthRedirect', nextPath);
 
     const redirectUrl = encodeURIComponent(window.location.origin + nextPath);
     window.location.href = `https://www.lyfflow.com/api/auth/facebook/login?redirect_uri=${redirectUrl}&next=${nextPath}`;

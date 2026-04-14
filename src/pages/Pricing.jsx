@@ -7,6 +7,8 @@ export default function Pricing() {
   const navigate = useNavigate();
 
   const handleConnectFacebook = () => {
+    // Mark this user as returning so future logins skip pricing and go straight to dashboard
+    localStorage.setItem('lyfflow_ReturningUser', 'true');
     navigate('/app/dashboard');
   };
 

@@ -2435,10 +2435,22 @@ export default function Dashboard() {
       if (parsedUser) parsedUser.agents = parsedAgents;
       setUser(parsedUser);
       setPages(parsedPages);
+
+      // Handle post-OAuth redirect (backend always lands on /dashboard,
+      // so we use this flag to forward new users to /app/pricing instead)
+      const postAuthRedirect = localStorage.getItem('lyfflow_postAuthRedirect');
+      if (postAuthRedirect && postAuthRedirect !== '/app/dashboard') {
+        localStorage.removeItem('lyfflow_postAuthRedirect');
+        navigate(postAuthRedirect);
+      } else {
+        localStorage.removeItem('lyfflow_postAuthRedirect');
+      }
     } catch (err) {
       console.error("Failed to fetch user data:", err);
       if (err.status === 401) {
-        navigate('/app/login');
+        // Clear stale returning-user flag so the next OAuth flow treats them as new
+        localStorage.removeItem('lyfflow_ReturningUser');
+        navigate('/app/get-started');
       }
     } finally {
       setLoading(false);
