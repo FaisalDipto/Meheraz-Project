@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import './Hero.css';
+import ProductShowcase from './ProductShowcase';
 import meharazPhoto from '../assets/team/meharaz.jpg';
 import swajanPhoto from '../assets/team/swajan.jpg';
 import mehediPhoto from '../assets/team/mehedi.jpg';
@@ -362,6 +363,8 @@ export default function Hero() {
           </div>
         </div>
       </section>
+
+      <ProductShowcase />
 
       {/* ── OUR MISSION & PRINCIPLES ── */}
       <section className="py-20 sm:py-32 bg-surface">
