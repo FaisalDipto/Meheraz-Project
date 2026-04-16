@@ -224,6 +224,187 @@
   height: 16px;
 }
 
+/* --- Onboarding Steps & Transitions --- */
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-container {
+  width: 100%;
+}
+
+/* --- Full Screen Modals --- */
+
+:root {
+  --gs-primary: #0f172a;
+  --gs-on-primary: #ffffff;
+  --gs-surface: #ffffff;
+  --font-headline: 'Epilogue', sans-serif;
+}
+
+.onboarding-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 23, 42, 0.4); /* Darker Slate Navy tint */
+  backdrop-filter: blur(20px); /* Premium Glassmorphism */
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.onboarding-modal-container {
+  width: 90%;
+  max-width: 1050px; /* Increased for full package details */
+  height: 90%;
+  background-color: var(--gs-surface);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.4);
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.onboarding-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden; /* Force hide horizontal scroll */
+  padding: 40px 50px;
+}
+
+.onboarding-modal-footer {
+  padding: 24px 50px;
+  background-color: var(--gs-surface);
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: row; /* Restore horizontal layout for wider modal */
+  justify-content: flex-end;
+  align-items: center;
+  gap: 30px;
+  z-index: 10;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.02);
+}
+
+/* Modals Content Overrides */
+
+.onboarding-modal-body section[id] {
+  scroll-mt: 20px;
+}
+
+/* Hide navigation/header in LegalCenter when in modal */
+.onboarding-modal-body section.max-w-\[1440px\] {
+  padding-top: 20px !important;
+  border-top: none !important;
+  margin-top: 0 !important;
+  flex-direction: row !important; /* Restore row layout for LegalCenter sections */
+}
+
+.onboarding-modal-body aside {
+  display: none !important;
+}
+
+.onboarding-modal-body article {
+  padding-bottom: 20px !important;
+  max-width: 100% !important;
+}
+
+/* --- Step 2: Package Selection Modal --- */
+
+.pricing-modal-content {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.pricing-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2x2 grid fits best in 850px width */
+  gap: 20px;
+  padding-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+  .pricing-modal-grid {
+    grid-template-columns: 1fr;
+  }
+  .onboarding-modal-container {
+    width: 95%;
+    height: 95%;
+  }
+}
+
+/* --- Common UI Components in Modals --- */
+
+.btn-step-next {
+  min-width: 220px;
+  padding: 18px 36px;
+  background-color: var(--gs-primary); /* Slate Navy */
+  color: var(--gs-on-primary);
+  border: none;
+  border-radius: 100px; /* Modern pill shape */
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
+}
+
+.btn-step-next:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02);
+  background-color: #1e293b;
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.3);
+}
+
+.btn-step-next:disabled {
+  background-color: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.checkbox-container-modal {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-container-modal input {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 2px solid #cbd5e1;
+  accent-color: var(--gs-primary);
+  cursor: pointer;
+}
+
+.modal-step-title {
+  font-family: var(--font-headline);
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--gs-primary);
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.modal-step-desc {
+  font-size: 18px;
+  color: #64748b;
+  margin-bottom: 30px;
+}
+
 /* Responsiveness */
 @media (max-width: 991px) {
   .get-started-container {
@@ -233,14 +414,16 @@
   .left-panel {
     width: 100%;
     padding: 30px 20px;
-    align-items: center; /* Center content on mobile */
-    min-height: 50vh;
+    align-items: center; 
+    min-height: auto;
   }
 
   .left-panel-content {
     align-items: center;
     text-align: center;
     margin-top: 40px;
+    margin-left: 0;
+    max-width: 100%;
   }
 
   .left-title {
@@ -250,6 +433,10 @@
   .right-panel {
     width: 100%;
     padding: 40px 20px;
-    min-height: 50vh;
+    min-height: auto;
+  }
+
+  .package-features {
+    grid-template-cols: 1fr;
   }
 }
