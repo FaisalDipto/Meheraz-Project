@@ -51,24 +51,24 @@ export default function LegalCenter() {
   };
 
   const navLinks = [
-    { id: "sec-1", title: "Agreement to Terms", icon: "handshake" },
-    { id: "sec-2", title: "Description of Service", icon: "apps" },
-    { id: "sec-3", title: "Eligibility", icon: "verified_user" },
-    { id: "sec-4", title: "Account Registration", icon: "person_add" },
-    { id: "sec-5", title: "Subscriptions & Billing", icon: "credit_card" },
-    { id: "sec-6", title: "Acceptable Use Policy", icon: "rule" },
-    { id: "sec-7", title: "Meta Compliance", icon: "policy" },
-    { id: "sec-8", title: "Intellectual Property", icon: "copyright" },
-    { id: "sec-9", title: "Privacy Policy", icon: "lock" },
-    { id: "sec-10", title: "Service Availability", icon: "dns" },
-    { id: "sec-11", title: "Suspension & Termination", icon: "block" },
-    { id: "sec-12", title: "Disclaimers & Warranties", icon: "warning" },
-    { id: "sec-13", title: "Limitation of Liability", icon: "shield" },
-    { id: "sec-14", title: "Dispute Resolution", icon: "balance" },
-    { id: "sec-15", title: "Confidentiality", icon: "visibility_off" },
-    { id: "sec-16", title: "Modifications", icon: "update" },
-    { id: "sec-17", title: "Data Deletion", icon: "delete_forever" },
-    { id: "sec-18", title: "Contact Information", icon: "contact_support" },
+    { id: "aggrement_to_terms", title: "Agreement to Terms", icon: "handshake" },
+    { id: "description_of_service", title: "Description of Service", icon: "apps" },
+    { id: "eligibility", title: "Eligibility", icon: "verified_user" },
+    { id: "account_registation_and_security", title: "Account Registration", icon: "person_add" },
+    { id: "subscriptions_billing_and_payment", title: "Subscriptions & Billing", icon: "credit_card" },
+    { id: "acceptable_use_policy", title: "Acceptable Use Policy", icon: "rule" },
+    { id: "facebook_and_meta_platform", title: "Meta Compliance", icon: "policy" },
+    { id: "intellectual_property_rights", title: "Intellectual Property", icon: "copyright" },
+    { id: "privacy_policy_and_security", title: "Privacy Policy", icon: "lock" },
+    { id: "service_availability_and_maintenance", title: "Service Availability", icon: "dns" },
+    { id: "suspension_and_termination", title: "Suspension & Termination", icon: "block" },
+    { id: "disclaimers_and_warranties", title: "Disclaimers & Warranties", icon: "warning" },
+    { id: "limitation_of_liability", title: "Limitation of Liability", icon: "shield" },
+    { id: "dispute_resolution", title: "Dispute Resolution", icon: "balance" },
+    { id: "confidentiality", title: "Confidentiality", icon: "visibility_off" },
+    { id: "modifications_to_terms_and_service", title: "Modifications", icon: "update" },
+    { id: "data_deletion_instructions", title: "Data Deletion", icon: "delete_forever" },
+    { id: "contact_information", title: "Contact Information", icon: "contact_support" },
   ];
 
   return (
@@ -135,7 +135,7 @@ export default function LegalCenter() {
           </p>
         </header>
 
-        <section id="sec-1" className="scroll-mt-32">
+        <section id="aggrement_to_terms" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">1. Agreement to Terms</h2>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light">
             These Terms of Service ("Terms") constitute a legally binding agreement between you ("User," "you," or "your") and Lyfflow ("Company," "we," "us," or "our"), governing your access to and use of the Lyfflow platform, including all associated software, services, APIs, dashboards, and features (collectively, the "Service").
@@ -148,7 +148,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-2" className="scroll-mt-32">
+        <section id="description_of_service" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">2. Description of Service</h2>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light mb-4">
             Lyfflow is a Software-as-a-Service (SaaS) platform that enables businesses and individuals ("Clients") to deploy AI-powered automation agents on social media platforms (e.g., Facebook, Messenger, Instagram, TikTok, etc.). Core features of the Service include, but are not limited to:
@@ -188,7 +188,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-3" className="scroll-mt-32">
+        <section id="eligibility" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">3. Eligibility</h2>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light mb-4">
             To use the Service, you must:
@@ -204,7 +204,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-4" className="scroll-mt-32">
+        <section id="account_registation_and_security" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">4. Account Registration and Security</h2>
           
           <h3 className="font-headline text-xl font-bold text-on-surface mb-3 mt-6">4.1 Account Creation</h3>
@@ -228,7 +228,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-5" className="scroll-mt-32">
+        <section id="subscriptions_billing_and_payment" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">5. Subscriptions, Billing, and Payment</h2>
 
           <h3 className="font-headline text-xl font-bold text-on-surface mb-3 mt-6">5.1 Subscription Plans</h3>
@@ -267,7 +267,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-6" className="scroll-mt-32">
+        <section id="acceptable_use_policy" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">6. Acceptable Use Policy</h2>
 
           <h3 className="font-headline text-xl font-bold text-on-surface mb-3 mt-6">6.1 Permitted Use</h3>
@@ -336,7 +336,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-7" className="scroll-mt-32">
+        <section id="facebook_and_meta_platform" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">7. Facebook and Meta Platform Compliance</h2>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light mb-4">
             The Service integrates with the Meta Platform. Your use of the Service in connection with Facebook Pages is additionally governed by:
@@ -372,7 +372,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-8" className="scroll-mt-32">
+        <section id="intellectual_property_rights" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">8. Intellectual Property Rights</h2>
 
           <h3 className="font-headline text-xl font-bold text-on-surface mb-3 mt-6">8.1 Lyfflow's Intellectual Property</h3>
@@ -391,7 +391,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-9" className="scroll-mt-32">
+        <section id="privacy_policy_and_security" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">9. Privacy Policy and Security</h2>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light mb-4">
             This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform, website, and related services (collectively, the "Service").
@@ -560,7 +560,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-10" className="scroll-mt-32">
+        <section id="service_availability_and_maintenance" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">10. Service Availability and Maintenance</h2>
 
           <h3 className="font-headline text-xl font-bold text-on-surface mb-3 mt-6">10.1 Uptime</h3>
@@ -579,7 +579,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-11" className="scroll-mt-32">
+        <section id="suspension_and_termination" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">11. Suspension and Termination</h2>
 
           <h3 className="font-headline text-xl font-bold text-on-surface mb-3 mt-6">11.1 Termination by You</h3>
@@ -611,7 +611,7 @@ export default function LegalCenter() {
           </ul>
         </section>
 
-        <section id="sec-12" className="scroll-mt-32">
+        <section id="disclaimers_and_warranties" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">12. Disclaimers and Warranties</h2>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light mb-4 uppercase">
             THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR ACCURACY.
@@ -642,7 +642,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-13" className="scroll-mt-32">
+        <section id="limitation_of_liability" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">13. Limitation of Liability</h2>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light mb-4 uppercase">
             TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL LYFFLOW, ITS OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, OR LICENSORS BE LIABLE FOR ANY:
@@ -676,7 +676,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-14" className="scroll-mt-32">
+        <section id="dispute_resolution" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">14. Dispute Resolution</h2>
 
           <h3 className="font-headline text-xl font-bold text-on-surface mb-3 mt-6">14.1 Informal Resolution</h3>
@@ -700,14 +700,14 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-15" className="scroll-mt-32">
+        <section id="confidentiality" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">15. Confidentiality</h2>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light">
             You agree to keep confidential any non-public information about the Service, its technology, pricing, or business that is disclosed to you in the course of using the Service, and not to disclose such information to any third party without our prior written consent.
           </p>
         </section>
 
-        <section id="sec-16" className="scroll-mt-32">
+        <section id="modifications_to_terms_and_service" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">16. Modifications to Terms and Service</h2>
 
           <h3 className="font-headline text-xl font-bold text-on-surface mb-3 mt-6">16.1 Changes to Terms</h3>
@@ -721,7 +721,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-17" className="scroll-mt-32">
+        <section id="data_deletion_instructions" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">17. Data Deletion Instructions</h2>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light mb-6">
             You have the right to request deletion of your personal data that Lyfflow has collected through your use of our platform or through your interaction with a Lyfflow-powered platform.
@@ -765,7 +765,7 @@ export default function LegalCenter() {
           </p>
         </section>
 
-        <section id="sec-18" className="scroll-mt-32">
+        <section id="contact_information" className="scroll-mt-32">
           <h2 className="font-headline text-3xl font-bold text-on-surface mb-6">18. Contact Information</h2>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light mb-8">
             For questions about these Terms of Service or Privacy policies, please contact us at:
