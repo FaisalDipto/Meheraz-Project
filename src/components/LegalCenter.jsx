@@ -130,7 +130,6 @@ export default function LegalCenter() {
           </h1>
           <div className="h-1.5 w-24 bg-secondary rounded-full"></div>
           <p className="mt-6 text-on-surface-variant font-medium text-lg">
-            <strong>Brand:</strong> Lyfflow <br />
             <strong>Effective Date:</strong> April 16, 2026 <br />
             <strong>Last Updated:</strong> April 16, 2026
           </p>
