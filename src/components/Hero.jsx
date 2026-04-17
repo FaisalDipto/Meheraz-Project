@@ -324,7 +324,7 @@ export default function Hero() {
       </section>
 
       {/* ── WHAT WE DO — Feature Grid ── */}
-      <section className="py-20 sm:py-32 bg-surface-container-lowest">
+      {/* <section className="py-20 sm:py-32 bg-surface-container-lowest">
         <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <div className="text-center mb-24">
             <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-secondary mb-4 block">Our Platform</label>
@@ -362,7 +362,7 @@ export default function Hero() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <ProductShowcase />
 
