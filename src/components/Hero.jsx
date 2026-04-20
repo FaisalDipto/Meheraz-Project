@@ -186,7 +186,7 @@ export default function Hero() {
       <section className="py-20 sm:py-40 bg-surface-container-lowest">
         <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <div className="text-center mb-24 reveal">
-            <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-secondary mb-4 block">The Process</label>
+            <label className="font-label text-sm font-extrabold tracking-[0.25em] uppercase text-secondary mb-4 block">The Process</label>
             <h2 className="font-headline text-4xl md:text-5xl font-black tracking-tight text-primary">Three steps to automation</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-16">
@@ -215,113 +215,8 @@ export default function Hero() {
         </div>
       </section>
 
-      {/* Platform Synergy */}
-      <section className="py-20 sm:py-32 bg-primary text-on-primary overflow-hidden">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 flex flex-col items-center">
-          <div className="text-center max-w-2xl mb-20 reveal">
-            <h2 className="font-headline text-4xl font-bold mb-6">Omnichannel Synergy</h2>
-            <p className="text-slate-400 text-lg">A single dashboard to rule them all. No more switching apps or missing messages.</p>
-          </div>
-          <div className="relative w-full max-w-4xl flex justify-between items-center py-20 reveal">
-            <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-tertiary/40 to-transparent -translate-y-1/2"></div>
-            <div className="relative z-10 bg-slate-900 p-6 rounded-2xl border border-white/10 shadow-2xl hover:scale-110 transition-transform cursor-pointer group">
-              <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-[#00B2FF] group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-300">
-                 <path d="M12 2C6.477 2 2 6.145 2 11.26c0 2.903 1.503 5.39 3.829 7.039v3.473a.475.475 0 00.741.393l3.411-2.007c1.077.298 2.221.462 3.411.462 5.523 0 10-4.145 10-9.26C23 6.145 18.523 2 12 2zm1.096 12.016l-2.616-2.793a.476.476 0 00-.735.006l-3.322 3.882c-.313.366-.826-.068-.58-.466l3.652-5.908a1.2 1.2 0 011.69-.371l2.607 2.784a.476.476 0 00.732-.005l3.33-3.88c.313-.365.825.07.58.466l-3.649 5.914a1.2 1.2 0 01-1.69.371z"/>
-              </svg>
-            </div>
-            <div className="relative z-10 bg-tertiary p-10 rounded-[2.5rem] border-4 border-white/20 shadow-[0_0_80px_rgba(99,102,241,0.4)] animate-pulse">
-              <span className="material-symbols-outlined text-5xl text-white" data-icon="cloud_sync" data-weight="fill" style={{ fontVariationSettings: "'FILL' 1" }}>cloud_sync</span>
-            </div>
-            <div className="relative z-10 bg-slate-900 p-6 rounded-2xl border border-white/10 shadow-2xl hover:scale-110 transition-transform cursor-pointer group">
-              <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-[#E1306C] group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.869a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"/>
-              </svg>
-            </div>
-            <div className="relative z-10 bg-slate-900 p-6 rounded-2xl border border-white/10 shadow-2xl hover:scale-110 transition-transform cursor-pointer group">
-              <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-[#25D366] group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-300">
-                <path d="M11.996 0A12.001 12.001 0 000 12.004c0 2.115.553 4.148 1.583 5.952L.156 23.708l5.856-1.554c1.761.94 3.731 1.43 5.984 1.43 6.626 0 12.008-5.38 12.008-12.006A12.003 12.003 0 0011.996 0zm6.545 17.065c-.274.774-1.58 1.492-2.186 1.573-.553.076-1.272.222-4.103-.956-3.419-1.424-5.61-4.9-5.782-5.132-.17-.234-1.378-1.838-1.378-3.511 0-1.674.87-2.5 1.182-2.836.315-.34.693-.424.919-.424.225 0 .445.006.643.013.208.01.488-.077.765.592.28.675.956 2.342 1.042 2.51.084.17.14.368.026.6-.112.226-.17.368-.344.577-.17.208-.358.455-.512.593-.167.152-.34.318-.148.65.191.328.847 1.396 1.821 2.261 1.258 1.118 2.298 1.464 2.628 1.62.33.153.524.126.72-.095.195-.219.846-1.002 1.077-1.344.23-.342.459-.283.755-.17.296.11 1.875.884 2.195 1.042.32.155.534.236.611.365.077.13.077.747-.197 1.52z"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ── WHO WE ARE ── */}
-      <section id="about" className="bg-surface-container-low py-20 sm:py-32">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-20 items-center">
-          {/* Left: image + stat card */}
-          <div className="relative">
-            <div className="aspect-[4/5] rounded-[2rem] overflow-hidden bg-surface-container-highest shadow-2xl">
-              <img
-                alt="Creative team collaborating"
-                className="w-full h-full object-cover contrast-125 transition-all duration-700"
-                src={teamCorporate}
-              />
-            </div>
-            {/* Floating stat */}
-            <div className="absolute -bottom-10 -right-6 bg-white/80 backdrop-blur-xl border border-white/60 p-8 rounded-[1.5rem] shadow-xl max-w-xs hidden md:block">
-              <p className="font-headline text-primary text-4xl font-black mb-2">100M+</p>
-              <p className="text-xs font-label uppercase tracking-widest text-on-surface-variant">Messages curated daily across our global ecosystem</p>
-            </div>
-          </div>
-          {/* Right: text */}
-          <div>
-            <span className="text-secondary font-label uppercase tracking-[0.2em] text-sm mb-6 block">Who We Are</span>
-            <h2 className="font-headline text-3xl sm:text-4xl md:text-6xl font-bold mb-8 leading-tight text-primary">Eliminating the bottlenecks of human scale.</h2>
-            <div className="space-y-6 text-on-surface-variant text-lg leading-relaxed">
-              <p>We are a team of curators, engineers, and dreamers who believe that technology should amplify human connection, not replace it. Our mission is to provide the digital infrastructure that allows brands to speak with thousands while maintaining the intimacy of one.</p>
-              <p>By blending high-end editorial aesthetics with cutting-edge AI, we've built a platform that feels like a boutique agency but performs like a global enterprise.</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ── THE PROBLEM WE SOLVE ── */}
-      <section className="py-20 sm:py-32 px-5 sm:px-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-            <div className="max-w-2xl">
-              <span className="text-tertiary font-label uppercase tracking-[0.2em] text-sm mb-6 block">The Challenge</span>
-              <h2 className="font-headline text-3xl sm:text-4xl md:text-6xl font-bold leading-tight text-primary">The noise of scaling is the silence of lost revenue.</h2>
-            </div>
-            <p className="text-on-surface-variant max-w-sm pb-2 text-lg">Traditional communication tools create silos and delays. We solve the friction points that prevent growth.</p>
-          </div>
-          {/* Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            {/* Card 1 */}
-            <div className="md:col-span-7 bg-primary text-on-primary p-12 rounded-[2rem] flex flex-col justify-between min-h-[400px]">
-              <span className="material-symbols-outlined text-5xl text-secondary-fixed-dim">error_outline</span>
-              <div>
-                <h3 className="font-headline text-3xl mb-4">Fragmented Channels</h3>
-                <p className="opacity-70 text-lg">Managing customers across five platforms leads to missed messages and inconsistent brand voice. We unify the chaos into one intelligent hub.</p>
-              </div>
-            </div>
-            {/* Card 2 */}
-            <div className="md:col-span-5 bg-surface-container-high p-12 rounded-[2rem] flex flex-col justify-between min-h-[400px]">
-              <span className="material-symbols-outlined text-5xl text-primary">speed</span>
-              <div>
-                <h3 className="font-headline text-3xl mb-4 text-primary">Response Latency</h3>
-                <p className="text-on-surface-variant text-lg">In the digital age, a 10-minute delay is a lost lead. Automation ensures you are always present, even when you aren't.</p>
-              </div>
-            </div>
-            {/* Card 3 — Full width */}
-            <div className="md:col-span-12 bg-surface-container-lowest border border-outline-variant/20 p-12 rounded-[2rem] flex flex-col md:flex-row items-center gap-12">
-              <div className="flex-1">
-                <h3 className="font-headline text-3xl mb-4 text-primary">Decision Fatigue</h3>
-                <p className="text-on-surface-variant text-lg">Analyzing thousands of chats for insights is impossible for humans. Our AI does the heavy lifting, surfacing what actually matters for your bottom line.</p>
-              </div>
-              <div className="w-full md:w-1/3 aspect-video bg-surface-dim rounded-xl overflow-hidden shadow-inner">
-                <img
-                  alt="Data visualization dashboard"
-                  className="w-full h-full object-cover opacity-80 mix-blend-multiply"
-                  src={dashboardCorporate}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ── WHAT WE DO — Feature Grid ── */}
       {/* <section className="py-20 sm:py-32 bg-surface-container-lowest">
@@ -373,7 +268,7 @@ export default function Hero() {
             {/* Sticky label */}
             <div className="lg:w-1/3">
               <div className="lg:sticky lg:top-32">
-                <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-secondary mb-4 block">Our Philosophy</label>
+                <label className="font-label text-sm font-extrabold tracking-[0.25em] uppercase text-secondary mb-4 block">Our Philosophy</label>
                 <h2 className="font-headline text-4xl md:text-5xl font-black tracking-tight text-primary mb-8">Our core principles.</h2>
                 <p className="text-on-surface-variant text-lg">We don't just build software; we build a philosophy for the modern digital era of AI-first business.</p>
               </div>
@@ -412,11 +307,43 @@ export default function Hero() {
         </div>
       </section>
 
+
+
+      {/* ── WHO WE ARE ── */}
+      <section id="about" className="bg-surface-container-low py-20 sm:py-32">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-20 items-center">
+          {/* Left: image + stat card */}
+          <div className="relative">
+            <div className="aspect-[4/5] rounded-[2rem] overflow-hidden bg-surface-container-highest shadow-2xl">
+              <img
+                alt="Creative team collaborating"
+                className="w-full h-full object-cover contrast-125 transition-all duration-700"
+                src={teamCorporate}
+              />
+            </div>
+            {/* Floating stat */}
+            <div className="absolute -bottom-10 -right-6 bg-white/80 backdrop-blur-xl border border-white/60 p-8 rounded-[1.5rem] shadow-xl max-w-xs hidden md:block">
+              <p className="font-headline text-primary text-4xl font-black mb-2">100M+</p>
+              <p className="text-xs font-label uppercase tracking-widest text-on-surface-variant">Messages curated daily across our global ecosystem</p>
+            </div>
+          </div>
+          {/* Right: text */}
+          <div>
+            <span className="text-secondary font-label text-sm font-extrabold tracking-[0.25em] uppercase mb-6 block">Who We Are</span>
+            <h2 className="font-headline text-3xl sm:text-4xl md:text-6xl font-bold mb-8 leading-tight text-primary">Eliminating the bottlenecks of human scale.</h2>
+            <div className="space-y-6 text-on-surface-variant text-lg leading-relaxed">
+              <p>We are a team of curators, engineers, and dreamers who believe that technology should amplify human connection, not replace it. Our mission is to provide the digital infrastructure that allows brands to speak with thousands while maintaining the intimacy of one.</p>
+              <p>By blending high-end editorial aesthetics with cutting-edge AI, we've built a platform that feels like a boutique agency but performs like a global enterprise.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Expertise Section */}
       <section className="py-20 sm:py-40 bg-primary relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 relative">
           <div className="mb-12 sm:mb-24">
-            <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-tertiary mb-4 block">The Brains Behind the Solution</label>
+            <label className="font-label text-sm font-extrabold tracking-[0.25em] uppercase text-tertiary mb-4 block">The Brains Behind the Solution</label>
             <h2 className="font-headline text-4xl sm:text-5xl font-black tracking-tight text-white">Our Expertise</h2>
           </div>
           <div className="relative space-y-0">
@@ -464,89 +391,6 @@ export default function Hero() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Bento Grid */}
-      <section className="py-20 sm:py-40">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
-            <div className="max-w-xl">
-              <label className="font-label text-xs font-bold tracking-[0.3em] uppercase text-tertiary mb-4 block">Visual Interface</label>
-              <h2 className="font-headline text-5xl font-black tracking-tight text-primary">The Bento Dashboard</h2>
-            </div>
-            <p className="text-on-surface-variant md:w-1/3 text-lg leading-relaxed">Intelligent data collection structured for clarity and professional insight.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-12 grid-rows-auto md:grid-rows-2 gap-8 h-auto md:h-[650px]">
-            {/* Main Chat Panel */}
-            <div className="md:col-span-7 md:row-span-2 bg-slate-50 border border-slate-100 rounded-[3rem] p-10 flex flex-col overflow-hidden relative">
-              <div className="flex items-center justify-between mb-10">
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-slate-400" data-icon="forum">forum</span>
-                  <h4 className="font-bold text-lg">Live Conversations</h4>
-                </div>
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-error/40"></div>
-                  <div className="w-3 h-3 rounded-full bg-secondary/40"></div>
-                  <div className="w-3 h-3 rounded-full bg-tertiary/40"></div>
-                </div>
-              </div>
-              <div className="space-y-6 flex-1">
-                <div className="flex gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center">
-                    <span className="material-symbols-outlined text-slate-300 text-sm">person</span>
-                  </div>
-                  <div className="bg-white p-5 rounded-[1.5rem] rounded-tl-none shadow-sm max-w-[80%] border border-slate-100">
-                    <p className="text-[15px] text-slate-600">Hi! Do you have the summer collection in stock?</p>
-                  </div>
-                </div>
-                <div className="flex gap-3 justify-end">
-                  <div className="bg-tertiary text-white p-5 rounded-[1.5rem] rounded-tr-none shadow-lg shadow-tertiary/20 max-w-[80%]">
-                    <p className="text-[15px]">Yes, Sarah! We just restocked. Would you like to see the catalog?</p>
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-[10px] text-white font-bold shadow-lg shadow-primary/20">AI</div>
-                </div>
-              </div>
-              <div className="mt-10 bg-white p-5 rounded-2xl flex justify-between items-center border border-slate-100 shadow-sm">
-                <span className="text-slate-400 text-sm">Wait for visitor reply...</span>
-                <span className="material-symbols-outlined text-tertiary" data-icon="send">send</span>
-              </div>
-            </div>
-
-            {/* Lead Data */}
-            <div className="md:col-span-5 bg-gradient-to-br from-slate-900 to-primary text-white rounded-[3rem] p-10 flex flex-col justify-center relative overflow-hidden">
-              <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/5 blur-3xl rounded-full"></div>
-              <h4 className="text-slate-400 font-bold text-[10px] tracking-widest uppercase mb-8">Real-time Lead Capture</h4>
-              <div className="space-y-8">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-3xl font-bold tracking-tight">Sarah Jenkins</p>
-                    <p className="text-slate-400 font-medium">sarah.j@example.com</p>
-                  </div>
-                  <span className="bg-secondary text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg shadow-secondary/20">VIP Lead</span>
-                </div>
-                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-tertiary w-3/4 rounded-full"></div>
-                </div>
-                <div className="flex items-center gap-2 text-slate-400 text-sm">
-                  <span className="material-symbols-outlined text-secondary" data-icon="shopping_bag">shopping_bag</span>
-                  <p className="italic">Interest: Fashion, Summer Catalog</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="md:col-span-5 bg-secondary-container/30 border border-secondary-container rounded-[3rem] p-10 grid grid-cols-2 gap-8">
-              <div>
-                <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-3">Automated</p>
-                <p className="text-5xl font-headline font-black text-primary">94<span className="text-secondary">%</span></p>
-              </div>
-              <div>
-                <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-3">Saved Hours</p>
-                <p className="text-5xl font-headline font-black text-primary">128</p>
-              </div>
-            </div>
           </div>
         </div>
       </section>

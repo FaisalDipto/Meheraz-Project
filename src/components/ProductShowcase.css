@@ -32,8 +32,9 @@
 
 .showcase-eyebrow {
   display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
+  font-family: 'Epilogue', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: #10b981;

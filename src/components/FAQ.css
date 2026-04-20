@@ -1,0 +1,46 @@
+.faq-section {
+  position: relative;
+  background: linear-gradient(180deg, rgba(247, 249, 251, 0) 0%, rgba(16, 185, 129, 0.03) 100%);
+}
+
+.faq-item {
+  transform: translateZ(0);
+  will-change: transform, border-color, box-shadow;
+}
+
+.faq-answer-content {
+  white-space: pre-wrap;
+}
+
+.faq-icon {
+  backface-visibility: hidden;
+}
+
+/* Subtle entrance animation for items */
+.faq-item {
+  animation: faq-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.faq-list .faq-item:nth-child(1) { animation-delay: 0.1s; }
+.faq-list .faq-item:nth-child(2) { animation-delay: 0.15s; }
+.faq-list .faq-item:nth-child(3) { animation-delay: 0.2s; }
+.faq-list .faq-item:nth-child(4) { animation-delay: 0.25s; }
+.faq-list .faq-item:nth-child(5) { animation-delay: 0.3s; }
+.faq-list .faq-item:nth-child(6) { animation-delay: 0.35s; }
+.faq-list .faq-item:nth-child(7) { animation-delay: 0.4s; }
+.faq-list .faq-item:nth-child(8) { animation-delay: 0.45s; }
+.faq-list .faq-item:nth-child(9) { animation-delay: 0.5s; }
+.faq-list .faq-item:nth-child(10) { animation-delay: 0.55s; }
+.faq-list .faq-item:nth-child(11) { animation-delay: 0.6s; }
+.faq-list .faq-item:nth-child(12) { animation-delay: 0.65s; }
+
+@keyframes faq-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
