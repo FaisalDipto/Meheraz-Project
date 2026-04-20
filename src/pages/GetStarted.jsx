@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import './GetStarted.css';
 import logoImg from '../assets/logo1.png';
 import titleImg from '../assets/title.png';
 import LegalCenter from '../components/LegalCenter';
+import catAnimationUrl from '../../animation/catLottieJSON.json?url';
 
 // Reusable Pricing Cards for the Onboarding Modal
 const PricingCards = ({ onSelect }) => {
@@ -243,12 +245,13 @@ export default function GetStarted() {
         </div>
         
         <div className="left-panel-content">
-          <div className="graphic-placeholder">
-            <div className="colorful-shapes">
-              <div className="shape shape-circle"></div>
-              <div className="shape shape-star"></div>
-              <div className="shape shape-blob"></div>
-            </div>
+          <div className="graphic-placeholder flex justify-center items-center w-full max-w-[280px] mx-auto mb-8 relative" style={{ height: '240px' }}>
+            <DotLottieReact
+              src={catAnimationUrl}
+              loop
+              autoplay
+              style={{ width: '100%', height: '100%', transform: 'scale(1.7)', transformOrigin: 'center' }}
+            />
           </div>
           <h1 className="left-title">Connect Channel</h1>
           <p className="left-desc">Use your Facebook account to connect to LYFFLOW and start automating.</p>
@@ -263,12 +266,7 @@ export default function GetStarted() {
       <div className="right-panel">
         <div className="right-content">
           <div className="step-container fade-in">
-            <h2 className="right-title">Connect your platform</h2>
-            <p className="right-desc">
-              We'll take you to Meta to connect. Just set your permissions, and your account will be linked to LYFFLOW.
-            </p>
-            
-            <div className="flex flex-col gap-4 w-full max-sm mt-8 mb-8">
+            <div className="flex flex-col gap-2 w-full max-sm mt-4 mb-8">
               <button 
                 className={`btn-connect-meta flex items-center justify-center gap-3 w-full transition-all duration-300 ${!agreed ? 'opacity-40 cursor-not-allowed saturate-0' : ''}`} 
                 onClick={agreed ? handleConnectFacebook : undefined}
