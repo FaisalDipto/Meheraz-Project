@@ -126,6 +126,12 @@ export const apiService = {
     method: 'POST',
   }),
 
+  // Leads
+  createLead: (leadData) => apiFetch('/api/leads/create', {
+    method: 'POST',
+    body: JSON.stringify(leadData),
+  }),
+
   // Feedback
   submitFeedback: (feedbackData) => apiFetch('/api/feedback', {
     method: 'POST',

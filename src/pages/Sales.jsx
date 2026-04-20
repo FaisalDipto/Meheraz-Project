@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { apiService } from '../services/api';
 
 const FEATURES = [
   { icon: 'smart_toy', title: 'Dedicated Onboarding', desc: 'A dedicated success manager walks your team through setup from day one.' },
@@ -24,10 +25,24 @@ export default function Sales() {
 
   const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In production, POST to your backend. For now simulate success.
-    setSubmitted(true);
+    
+    // Disable submit button by checking state if needed, or just let it spin
+    try {
+      await apiService.createLead({
+        name: form.name,
+        company_name: form.company,
+        work_mail: form.email,
+        phone_number: form.phone,
+        team_size: form.teamSize,
+        message: form.message
+      });
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Failed to submit lead form:', err);
+      alert('There was an issue sending your message. Please try again.');
+    }
   };
 
   return (
