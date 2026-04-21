@@ -2,14 +2,18 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useNavigate, Link } from 'react-router-dom';
+import { apiService } from '../services/api';
 
 export default function Pricing() {
   const navigate = useNavigate();
-
-  const handleConnectFacebook = () => {
-    // Mark this user as returning so future logins skip pricing and go straight to dashboard
-    localStorage.setItem('lyfflow_ReturningUser', 'true');
-    navigate('/app/dashboard');
+  const handleSubscribe = async (planType) => {
+    try {
+      await apiService.subscribe({ subscription_type: planType, num_months: 1 });
+      localStorage.setItem('lyfflow_ReturningUser', 'true');
+      navigate('/app/dashboard');
+    } catch (e) {
+      alert("Failed to subscribe: " + e.message);
+    }
   };
 
   return (
@@ -68,7 +72,7 @@ export default function Pricing() {
                 <li className="text-sm">Basic AI replies</li>
                 <li className="text-sm">Manual knowledge base</li>
               </ul>
-              <button onClick={handleConnectFacebook} className="w-full py-4 bg-surface-container-highest text-on-surface font-bold rounded-full transition-all group-hover:bg-primary group-hover:text-on-primary">
+              <button onClick={() => handleSubscribe('FREE')} className="w-full py-4 bg-surface-container-highest text-on-surface font-bold rounded-full transition-all group-hover:bg-primary group-hover:text-on-primary">
                 Get Started
               </button>
             </div>

@@ -137,4 +137,12 @@ export const apiService = {
     method: 'POST',
     body: JSON.stringify(feedbackData),
   }),
+
+  // Subscriptions
+  getSubscription: () => apiFetch('/api/subscription'),
+  
+  subscribe: (subscriptionData) => apiFetch('/api/subscription/subscribe', {
+    method: 'POST',
+    body: JSON.stringify(subscriptionData),
+  }),
 };

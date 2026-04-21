@@ -266,7 +266,7 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
   );
 };
 
-const ConversationList = ({ pages }) => {
+const ConversationList = ({ pages, user }) => {
   const [selectedPageId, setSelectedPageId] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileVisible, setIsProfileVisible] = useState(true);
@@ -660,7 +660,7 @@ const ConversationList = ({ pages }) => {
               </h2>
               <p className="text-sm text-slate-500 font-medium mt-1">Chat Participant</p>
               <div className="flex justify-center flex-wrap gap-2 mt-4">
-                <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Pro Plan</span>
+                <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">{user?.subscription?.plan?.plan_name || 'FREE Plan'}</span>
                 {activeContact?.is_human_needed ? (
                   <span className="bg-red-100 text-red-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider animate-bounce-subtle">Needs Human</span>
                 ) : (
@@ -2540,12 +2540,21 @@ export default function Dashboard() {
       const pagesData = await apiService.getPages();
       console.log("API Pages Response:", pagesData);
       const agentsData = await apiService.getAgents();
+      let subscriptionData = null;
+      try {
+        subscriptionData = await apiService.getSubscription();
+      } catch (e) {
+        console.warn("Could not fetch subscription", e);
+      }
 
       const parsedUser = userData?.user || userData || null;
       const parsedPages = Array.isArray(pagesData) ? pagesData : (pagesData?.pages || pagesData?.data || []);
       const parsedAgents = Array.isArray(agentsData) ? agentsData : (agentsData?.agents || agentsData?.data || []);
 
-      if (parsedUser) parsedUser.agents = parsedAgents;
+      if (parsedUser) {
+        parsedUser.agents = parsedAgents;
+        parsedUser.subscription = subscriptionData;
+      }
       setUser(parsedUser);
       setPages(parsedPages);
 
@@ -2581,7 +2590,7 @@ export default function Dashboard() {
 
     switch (activeTab) {
       case 'overview': return <Overview user={user} pages={pages} onNavigate={setActiveTab} onUpdate={fetchData} />;
-      case 'conversation': return <ConversationList pages={pages} />;
+      case 'conversation': return <ConversationList pages={pages} user={user} />;
       case 'knowledge': return <Knowledge pages={pages} />;
       case 'agent': return <AgentPanel user={user} pages={pages} onUpdate={fetchData} onAgentCreated={(newAgent) => setUser(prev => prev ? { ...prev, agents: [...(prev.agents || []), newAgent] } : prev)} onAgentEdited={(id, payload) => setUser(prev => prev ? { ...prev, agents: (prev.agents || []).map(a => a.agent_id === id ? { ...a, ...payload } : a) } : prev)} />;
       case 'feedback': return <FeedbackPanel />;
