@@ -38,8 +38,8 @@ export default function Pricing() {
         </section>
 
         {/* Pricing Grid */}
-        <section className="relative px-6 pb-32 max-w-7xl mx-auto z-10 w-full overflow-x-auto lg:overflow-x-visible">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch min-w-max lg:min-w-0 pb-8 lg:pb-0">
+        <section className="relative px-6 pb-32 max-w-7xl mx-auto z-10 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             {/* Free Plan */}
             <div className="flex flex-col p-8 rounded-[1.5rem] bg-surface-container-low transition-all duration-300 hover:bg-surface-container-lowest hover:shadow-2xl shadow-on-surface/5 group border border-transparent hover:border-outline-variant/30">
               <div className="mb-8">
