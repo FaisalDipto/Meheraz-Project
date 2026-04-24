@@ -19,6 +19,7 @@ const TEAM = [
     interests: null,
     photo: meharazPhoto,
     delay: '',
+    icon: 'memory'
   },
   {
     id: 'mehedi',
@@ -29,6 +30,7 @@ const TEAM = [
     interests: null,
     photo: mehediPhoto,
     delay: '[transition-delay:100ms]',
+    icon: 'dns'
   },
   {
     id: 'faisal',
@@ -39,6 +41,7 @@ const TEAM = [
     interests: null,
     photo: faisalPhoto,
     delay: '[transition-delay:200ms]',
+    icon: 'design_services'
   },
   {
     id: 'swajan',
@@ -49,6 +52,7 @@ const TEAM = [
     interests: null,
     photo: swajanPhoto,
     delay: '[transition-delay:300ms]',
+    icon: 'database'
   },
 ];
 
@@ -189,27 +193,33 @@ export default function Hero() {
             <label className="font-label text-sm font-extrabold tracking-[0.25em] uppercase text-secondary mb-4 block">The Process</label>
             <h2 className="font-headline text-4xl md:text-5xl font-black tracking-tight text-primary">Three steps to automation</h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-16">
-            <div className="group reveal">
-              <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-10 group-hover:bg-tertiary group-hover:text-white transition-all duration-500 shadow-sm border border-slate-100 group-hover:shadow-xl group-hover:shadow-tertiary/20">
-                <span className="material-symbols-outlined text-3xl" data-icon="hub">hub</span>
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+            <div className="reveal">
+              <div className="group h-full p-8 lg:p-10 bg-gradient-to-br from-tertiary/20 to-tertiary/5 rounded-[2rem] border border-tertiary/30 hover:shadow-2xl hover:shadow-tertiary/20 transition-all duration-500 hover:-translate-y-2">
+                <div className="w-16 h-16 bg-white text-tertiary rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">
+                  <span className="material-symbols-outlined text-3xl" data-icon="hub">hub</span>
+                </div>
+                <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Connect</h3>
+                <p className="text-on-surface-variant leading-relaxed">Securely link your social profiles in seconds with our one-click integration suite.</p>
               </div>
-              <h3 className="font-headline text-2xl font-bold mb-5">Connect</h3>
-              <p className="text-on-surface-variant leading-relaxed">Securely link your social profiles in seconds with our one-click integration suite.</p>
             </div>
-            <div className="group reveal [transition-delay:150ms]">
-              <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-10 group-hover:bg-secondary group-hover:text-white transition-all duration-500 shadow-sm border border-slate-100 group-hover:shadow-xl group-hover:shadow-secondary/20">
-                <span className="material-symbols-outlined text-3xl" data-icon="auto_awesome">auto_awesome</span>
+            <div className="reveal [transition-delay:150ms]">
+              <div className="group h-full p-8 lg:p-10 bg-gradient-to-br from-secondary/20 to-secondary/5 rounded-[2rem] border border-secondary/30 hover:shadow-2xl hover:shadow-secondary/20 transition-all duration-500 hover:-translate-y-2">
+                <div className="w-16 h-16 bg-white text-secondary rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">
+                  <span className="material-symbols-outlined text-3xl" data-icon="auto_awesome">auto_awesome</span>
+                </div>
+                <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Automate</h3>
+                <p className="text-on-surface-variant leading-relaxed">Build intelligent conversation flows using our visual drag-and-drop AI architect.</p>
               </div>
-              <h3 className="font-headline text-2xl font-bold mb-5">Automate</h3>
-              <p className="text-on-surface-variant leading-relaxed">Build intelligent conversation flows using our visual drag-and-drop AI architect.</p>
             </div>
-            <div className="group reveal [transition-delay:300ms]">
-              <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-10 group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-sm border border-slate-100 group-hover:shadow-xl group-hover:shadow-primary/20">
-                <span className="material-symbols-outlined text-3xl" data-icon="trending_up">trending_up</span>
+            <div className="reveal [transition-delay:300ms]">
+              <div className="group h-full p-8 lg:p-10 bg-gradient-to-br from-primary/20 to-primary/5 rounded-[2rem] border border-primary/30 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2">
+                <div className="w-16 h-16 bg-white text-primary rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">
+                  <span className="material-symbols-outlined text-3xl" data-icon="trending_up">trending_up</span>
+                </div>
+                <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Grow</h3>
+                <p className="text-on-surface-variant leading-relaxed">Watch your lead list expand and conversion rates soar with 24/7 engagement.</p>
               </div>
-              <h3 className="font-headline text-2xl font-bold mb-5">Grow</h3>
-              <p className="text-on-surface-variant leading-relaxed">Watch your lead list expand and conversion rates soar with 24/7 engagement.</p>
             </div>
           </div>
         </div>
@@ -275,30 +285,30 @@ export default function Hero() {
             </div>
             {/* Cards */}
             <div className="lg:w-2/3 space-y-8">
-              <div className="p-10 bg-surface-container-lowest border border-outline-variant/20 rounded-[2rem] transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+              <div className="p-10 bg-primary border border-white/10 rounded-[2rem] transition-all duration-300 hover:shadow-2xl hover:shadow-primary/40 hover:-translate-y-2">
                 <div className="flex items-start gap-8">
-                  <span className="font-headline text-5xl text-primary/20 font-black flex-shrink-0">01</span>
+                  <span className="font-headline text-5xl text-white/30 font-black flex-shrink-0">01</span>
                   <div>
-                    <h3 className="font-headline text-2xl mb-4 text-primary">Simplicity</h3>
-                    <p className="text-on-surface-variant text-lg leading-relaxed">Complexity is the enemy of execution. We design every interface to be intuitive, stripping away the friction until only the essentials remain.</p>
+                    <h3 className="font-headline text-2xl mb-4 text-white">Simplicity</h3>
+                    <p className="text-white/90 text-lg leading-relaxed">Complexity is the enemy of execution. We design every interface to be intuitive, stripping away the friction until only the essentials remain.</p>
                   </div>
                 </div>
               </div>
-              <div className="p-10 bg-surface-container-lowest border border-outline-variant/20 rounded-[2rem] transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+              <div className="p-10 bg-secondary border border-white/10 rounded-[2rem] transition-all duration-300 hover:shadow-2xl hover:shadow-secondary/40 hover:-translate-y-2">
                 <div className="flex items-start gap-8">
-                  <span className="font-headline text-5xl text-secondary/25 font-black flex-shrink-0">02</span>
+                  <span className="font-headline text-5xl text-white/30 font-black flex-shrink-0">02</span>
                   <div>
-                    <h3 className="font-headline text-2xl mb-4 text-primary">Intelligence</h3>
-                    <p className="text-on-surface-variant text-lg leading-relaxed">Data without context is noise. Our AI isn't just fast; it's smart. It learns from your history to predict the needs of your future customers.</p>
+                    <h3 className="font-headline text-2xl mb-4 text-white">Intelligence</h3>
+                    <p className="text-white/90 text-lg leading-relaxed">Data without context is noise. Our AI isn't just fast; it's smart. It learns from your history to predict the needs of your future customers.</p>
                   </div>
                 </div>
               </div>
-              <div className="p-10 bg-surface-container-lowest border border-outline-variant/20 rounded-[2rem] transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+              <div className="p-10 bg-tertiary border border-white/10 rounded-[2rem] transition-all duration-300 hover:shadow-2xl hover:shadow-tertiary/40 hover:-translate-y-2">
                 <div className="flex items-start gap-8">
-                  <span className="font-headline text-5xl text-tertiary/25 font-black flex-shrink-0">03</span>
+                  <span className="font-headline text-5xl text-white/30 font-black flex-shrink-0">03</span>
                   <div>
-                    <h3 className="font-headline text-2xl mb-4 text-primary">Scalability</h3>
-                    <p className="text-on-surface-variant text-lg leading-relaxed">Growth should never be painful. Whether you're handling ten chats or ten million, Lyfflow scales horizontally to meet the demand without missing a beat.</p>
+                    <h3 className="font-headline text-2xl mb-4 text-white">Scalability</h3>
+                    <p className="text-white/90 text-lg leading-relaxed">Growth should never be painful. Whether you're handling ten chats or ten million, Lyfflow scales horizontally to meet the demand without missing a beat.</p>
                   </div>
                 </div>
               </div>
@@ -372,20 +382,28 @@ export default function Hero() {
                 <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
                   tappedMember === member.id ? 'max-h-[400px] opacity-100 mt-6' : 'max-h-0 opacity-0 mt-0'
                 }`}>
-                  <div className="flex items-start gap-5 bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
-                    <img
-                      src={member.photo}
-                      alt={member.name}
-                      className="w-24 h-24 rounded-xl object-cover flex-shrink-0 shadow-lg"
-                    />
-                    <div className="min-w-0">
-                      <p className="text-white font-bold text-base">{member.name}</p>
-                      <p className="text-tertiary text-xs font-semibold uppercase tracking-wider mb-3">{member.role}</p>
-                      <p className="text-slate-300 text-sm leading-relaxed">{member.background}</p>
+                  <div className="bg-slate-900/80 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-2xl">
+                    <div className="flex items-center gap-4 mb-5">
+                      <div className="w-12 h-12 bg-tertiary/15 rounded-xl flex items-center justify-center border border-tertiary/30 shrink-0">
+                        <span className="material-symbols-outlined text-tertiary text-2xl">{member.icon || 'terminal'}</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-bold text-lg leading-tight">{member.name}</p>
+                        <p className="text-tertiary text-[10px] font-bold uppercase tracking-widest mt-1">{member.role}</p>
+                      </div>
+                    </div>
+                    <div className="h-px bg-white/10 w-full mb-5"></div>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-slate-400 text-[10px] uppercase tracking-widest font-bold mb-1">Background</p>
+                        <p className="text-slate-200 text-sm leading-relaxed">{member.background}</p>
+                      </div>
                       {member.interests && (
-                        <p className="text-slate-400 text-xs mt-2">🎯 {member.interests}</p>
+                        <div>
+                          <p className="text-slate-400 text-[10px] uppercase tracking-widest font-bold mb-1">Focus</p>
+                          <p className="text-slate-200 text-sm leading-relaxed">{member.interests}</p>
+                        </div>
                       )}
-                      <p className="text-slate-500 text-xs mt-2 uppercase tracking-widest">{member.since}</p>
                     </div>
                   </div>
                 </div>
@@ -436,15 +454,23 @@ export default function Hero() {
             className="team-cursor-card"
             style={{ left: x, top: y }}
           >
-            <img className="team-cursor-photo" alt={member.name} src={member.photo} />
             <div className="team-cursor-info">
-              <p className="team-cursor-name">{member.name}</p>
-              <p className="team-cursor-role">{member.role}</p>
+              <div className="team-cursor-header">
+                <div className="team-cursor-icon">
+                  <span className="material-symbols-outlined">{member.icon || 'terminal'}</span>
+                </div>
+                <div>
+                  <p className="team-cursor-name">{member.name}</p>
+                  <p className="team-cursor-role">{member.role}</p>
+                </div>
+              </div>
               <div className="team-cursor-divider" />
-              <p className="team-cursor-meta"><strong>Background:</strong> <span>{member.background}</span></p>
-              {member.interests && (
-                <p className="team-cursor-meta"><strong>Interests:</strong> <span>{member.interests}</span></p>
-              )}
+              <div className="team-cursor-body">
+                <p className="team-cursor-meta"><strong>Background</strong> <span>{member.background}</span></p>
+                {member.interests && (
+                  <p className="team-cursor-meta"><strong>Focus</strong> <span>{member.interests}</span></p>
+                )}
+              </div>
             </div>
           </div>
         );
