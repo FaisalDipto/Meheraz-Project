@@ -2615,7 +2615,7 @@ export default function Dashboard() {
         fixed top-0 left-0 w-56 px-3 z-[10000]
         ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
         ${isSidebarCollapsed ? 'md:-translate-x-full md:w-0 md:px-0 md:border-none md:overflow-hidden' : 'md:translate-x-0 md:relative md:w-56 md:px-3 xl:w-64 xl:px-4 md:z-auto md:shadow-none'}`}>
-        <div className="p-0 m-0 mb-8 w-full flex items-center justify-start px-2 py-0">
+        <div className="p-0 m-0 mb-6 pb-6 w-full flex items-center justify-start px-2 border-b border-slate-200">
           <div className="flex items-center gap-[6px] px-2">
             <img src={logoImg} alt="LYFFLOW" style={{ height: '36px', width: 'auto', filter: 'brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%)' }} />
             <img src={titleImg} alt="LYFFLOW" style={{ height: '22px', width: 'auto', filter: 'brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%)' }} />
@@ -2625,11 +2625,6 @@ export default function Dashboard() {
             <X size={24} />
           </button>
         </div>
-
-        <button className="mb-8 w-full bg-[#0b0f19] text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors cursor-pointer border-none shadow-sm h-12">
-          <Plus size={20} className="text-[#38bdf8]" />
-          New Agent
-        </button>
 
         <nav className="flex-1 space-y-1">
           {[
