@@ -145,4 +145,10 @@ export const apiService = {
     method: 'POST',
     body: JSON.stringify(subscriptionData),
   }),
+
+  // Admin
+  adminLogin: (credentials) => apiFetch('/api/admin/login', {
+    method: 'POST',
+    body: JSON.stringify(credentials),
+  }),
 };

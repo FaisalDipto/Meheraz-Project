@@ -8,6 +8,8 @@ import Feedback from './pages/Feedback'
 import Legal from './pages/Legal'
 import Pricing from './pages/Pricing'
 import Sales from './pages/Sales'
+import AdminLogin from './pages/AdminLogin'
+import AdminPanel from './pages/AdminPanel'
 import { WidgetProvider } from './context/WidgetContext'
 import './App.css'
 
@@ -48,6 +50,8 @@ function App() {
         <Route path="/app/legal" element={<Legal />} />
         <Route path="/app/pricing" element={<Pricing />} />
         <Route path="/app/sales" element={<Sales />} />
+        <Route path="/app/admin/login" element={<AdminLogin />} />
+        <Route path="/app/admin" element={<AdminPanel />} />
         
         
         {/* Redirect hardcoded backend callbacks back to /app prefix */}
