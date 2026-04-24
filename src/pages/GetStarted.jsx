@@ -6,6 +6,7 @@ import logoImg from '../assets/logo1.png';
 import titleImg from '../assets/title.png';
 import LegalCenter from '../components/LegalCenter';
 import catAnimationUrl from '../../animation/catLottieJSON.json?url';
+import { apiService } from '../services/api';
 
 const PricingCards = ({ onSelect }) => {
   return (
@@ -214,7 +215,13 @@ export default function GetStarted() {
     // Legacy function, handled inline now
   };
 
-  const handleSelectPackage = (packageName) => {
+  const handleSelectPackage = async (packageName) => {
+    try {
+      // Post the selected plan to the backend
+      await apiService.subscribe({ subscription_type: packageName, num_months: 1 });
+    } catch (error) {
+      console.error("Failed to subscribe to plan:", error);
+    }
     // Mark as returning user after choosing a plan
     localStorage.setItem('lyfflow_ReturningUser', 'true');
     navigate('/app/dashboard');

@@ -162,28 +162,31 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
           const percentageColor = isEven ? "text-emerald-600" : "text-primary";
           
           return (
-            <div key={page.page_id} className={`group bg-surface-container-lowest rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border-t-4 ${cardBorder}`}>
-              <div className="flex justify-between items-start mb-6">
-                <div className={`w-14 h-14 ${iconBg} rounded-2xl flex items-center justify-center`}>
-                  <span className={`material-symbols-outlined ${iconColor} text-3xl`} data-icon={iconName}>{iconName}</span>
-                </div>
-                <button className="p-2 text-slate-300 hover:text-slate-600">
-                  <span className="material-symbols-outlined" data-icon="more_vert">more_vert</span>
-                </button>
+            <div key={page.page_id} className={`group relative bg-surface-container-lowest rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border-t-4 flex flex-col items-center text-center ${cardBorder}`}>
+              
+
+
+              <div 
+                className={`w-24 h-24 flex items-center justify-center mb-5 border-4 border-white shadow-md ${iconBg}`}
+                style={{ borderRadius: '50%' }}
+              >
+                <span className={`material-symbols-outlined ${iconColor} text-4xl`} data-icon={iconName}>{iconName}</span>
               </div>
-              <h3 className="text-2xl font-headline font-bold text-primary mb-1">{page.name}</h3>
-              <p className="text-on-surface-variant text-sm mb-6">{page.description || 'Automated agent assignments and settings for this workspace.'}</p>
-              <div className="space-y-4">
-                <div className={`flex items-center justify-between p-3 bg-surface-container-low rounded-lg border border-transparent ${assignHoverBorder} transition-colors`}>
-                  <div className="flex items-center gap-3">
-                    <span className={`material-symbols-outlined ${assignIconColor}`} data-icon={assignIconName}>{assignIconName}</span>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-outline">Assigned Agent</span>
+              
+              <h3 className="text-2xl font-headline font-bold text-primary mb-2">{page.name}</h3>
+              <p className="text-on-surface-variant text-sm mb-8 px-2 leading-relaxed">{page.description || 'Automated agent assignments for this workspace.'}</p>
+              
+              <div className="w-full mt-auto space-y-5">
+                <div className={`flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-transparent ${assignHoverBorder} transition-colors group-hover:bg-white group-hover:shadow-sm relative`}>
+                  <div className="flex items-center gap-2 mb-2 opacity-60">
+                    <span className={`material-symbols-outlined text-[14px] ${assignIconColor}`} data-icon={assignIconName}>{assignIconName}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Assigned Agent</span>
                   </div>
-                  <div className="relative custom-dropdown-container flex items-center justify-end">
+                  <div className="relative custom-dropdown-container w-full flex justify-center">
                     <button
                       onClick={() => setOpenDropdown(openDropdown === page.page_id ? null : page.page_id)}
                       disabled={assigning[page.page_id]}
-                      className={`flex items-center gap-1 bg-transparent border-none text-sm font-bold p-0 focus:ring-0 cursor-pointer hover:text-emerald-600 transition-colors ${success[page.page_id] ? 'text-green-500' : 'text-primary'}`}
+                      className={`flex items-center justify-center gap-1 bg-transparent border-none text-base font-black p-0 focus:ring-0 cursor-pointer hover:text-emerald-600 transition-colors ${success[page.page_id] ? 'text-green-500' : 'text-slate-800'}`}
                     >
                       {assigning[page.page_id] ? 'Assigning...' : (
                         agents.find(a => a.agent_id === selectedAgents[page.page_id])?.name || 
@@ -193,7 +196,7 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
                     </button>
 
                     {openDropdown === page.page_id && (
-                      <div className="absolute top-[120%] right-0 w-[200px] bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-slate-100 z-[999] overflow-hidden text-left py-1 animate-fade-in-up">
+                      <div className="absolute top-[120%] left-1/2 -translate-x-1/2 w-[220px] bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-slate-100 z-[999] overflow-hidden text-left py-1 animate-fade-in-up">
                         {agents.length === 0 ? (
                           <div className="px-4 py-3 text-sm text-slate-500 font-medium text-center">No agents available</div>
                         ) : (
@@ -240,12 +243,8 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-4 pt-2">
-                  <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div className={`h-full ${barBg}`} style={{width: barWidth}}></div>
-                  </div>
-                  <span className={`text-xs font-bold ${percentageColor}`}>{barWidth}</span>
-                </div>
+
+
               </div>
             </div>
           );
@@ -2554,6 +2553,48 @@ export default function Dashboard() {
       if (parsedUser) {
         parsedUser.agents = parsedAgents;
         parsedUser.subscription = subscriptionData;
+        
+        if (parsedUser.picture || parsedUser.avatar || parsedUser.profile_pic) {
+          parsedUser.profile_pic_url = parsedUser.picture || parsedUser.profile_pic || parsedUser.avatar;
+        } else {
+          // Fallback to the dedicated endpoint
+          const uid = parsedUser.id || parsedUser.user_id || parsedUser._id || parsedUser.uuid;
+          if (uid) {
+            try {
+              const picResponse = await fetch(`/api/user/profile_pic/${uid}`, { credentials: 'include' });
+              
+              if (picResponse.ok) {
+                const contentType = picResponse.headers.get('content-type') || '';
+                
+                if (contentType.includes('application/json')) {
+                  const data = await picResponse.json();
+                  parsedUser.profile_pic_url = data.url || data.profile_pic || data.profile_pic_url || data.image_url || null;
+                } else if (contentType.includes('image/')) {
+                  const blob = await picResponse.blob();
+                  if (blob.size > 0) {
+                    parsedUser.profile_pic_url = URL.createObjectURL(blob);
+                  }
+                } else {
+                  const text = await picResponse.text();
+                  // If it's a raw string URL
+                  if (text.startsWith('http')) {
+                    parsedUser.profile_pic_url = text;
+                  } else {
+                    try {
+                      const parsed = JSON.parse(text);
+                      parsedUser.profile_pic_url = parsed.url || parsed.profile_pic || parsed.profile_pic_url || parsed.image_url || null;
+                    } catch(e) {
+                      // Just fallback to the URL directly and hope the browser can figure it out
+                      parsedUser.profile_pic_url = `/api/user/profile_pic/${uid}`;
+                    }
+                  }
+                }
+              }
+            } catch (e) {
+              console.warn("Failed to fetch profile pic via dedicated endpoint:", e);
+            }
+          }
+        }
       }
       setUser(parsedUser);
       setPages(parsedPages);
@@ -2691,9 +2732,14 @@ export default function Dashboard() {
               className="profile-toggle-btn"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
-              <div className="contact-avatar very-small" style={{ backgroundColor: '#0ea5e9', color: 'white' }}>
-                {(user?.name || user?.username || user?.first_name || 'U').charAt(0).toUpperCase()}
-                {user?.last_name ? user.last_name.charAt(0).toUpperCase() : ''}
+              <div className="contact-avatar very-small overflow-hidden relative" style={{ backgroundColor: '#0ea5e9', color: 'white' }}>
+                {user?.profile_pic_url && (
+                  <img src={user.profile_pic_url} alt="Profile" className="absolute inset-0 w-full h-full object-cover z-10" onError={(e) => e.target.style.display='none'} />
+                )}
+                <span className="relative z-0">
+                  {(user?.name || user?.username || user?.first_name || 'U').charAt(0).toUpperCase()}
+                  {user?.last_name ? user.last_name.charAt(0).toUpperCase() : ''}
+                </span>
               </div>
               <span className="profile-name">{user?.username || user?.name || (user?.first_name ? `${user.first_name} ${user?.last_name || ''}` : '') || user?.email || 'User'}</span>
               <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotated' : ''}`} />
@@ -2711,12 +2757,22 @@ export default function Dashboard() {
             </div>
             <div className="drawer-content">
               <div className="drawer-user-info">
-                <div className="contact-avatar large" style={{ backgroundColor: '#0ea5e9', color: 'white' }}>
-                  {(user?.name || user?.username || user?.first_name || 'U').charAt(0).toUpperCase()}
-                  {user?.last_name ? user.last_name.charAt(0).toUpperCase() : ''}
+                <div className="contact-avatar large overflow-hidden relative" style={{ backgroundColor: '#0ea5e9', color: 'white', margin: '0 auto 16px auto' }}>
+                  {user?.profile_pic_url && (
+                    <img src={user.profile_pic_url} alt="Profile" className="absolute inset-0 w-full h-full object-cover z-10" onError={(e) => e.target.style.display='none'} />
+                  )}
+                  <span className="relative z-0">
+                    {(user?.name || user?.username || user?.first_name || 'U').charAt(0).toUpperCase()}
+                    {user?.last_name ? user.last_name.charAt(0).toUpperCase() : ''}
+                  </span>
                 </div>
                 <h4>{user?.username || user?.name || (user?.first_name ? `${user.first_name} ${user?.last_name || ''}` : '') || user?.email || 'User'}</h4>
                 <p>{user?.email || 'No email provided'}</p>
+                {user?.subscription?.plan?.plan_name && (
+                  <div className="mt-3 px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm">
+                    {user.subscription.plan.plan_name} Plan
+                  </div>
+                )}
               </div>
 
               <div className="drawer-menu">
