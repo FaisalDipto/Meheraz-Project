@@ -264,9 +264,9 @@
 }
 
 .onboarding-modal-container {
-  width: 90%;
-  max-width: 1050px; /* Increased for full package details */
-  height: 90%;
+  width: 90vw;
+  max-width: 90vw; /* 90% of screen width */
+  height: 90vh; /* 90% of screen height */
   background-color: var(--gs-surface);
   border-radius: 24px;
   display: flex;
@@ -329,9 +329,15 @@
 
 .pricing-modal-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2x2 grid fits best in 850px width */
+  grid-template-columns: repeat(4, 1fr); /* 4 columns for full width */
   gap: 20px;
   padding-bottom: 30px;
+}
+
+@media (max-width: 1024px) {
+  .pricing-modal-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -339,8 +345,8 @@
     grid-template-columns: 1fr;
   }
   .onboarding-modal-container {
-    width: 95%;
-    height: 95%;
+    width: 95vw;
+    height: 95vh;
   }
 }
 
