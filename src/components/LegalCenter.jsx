@@ -518,7 +518,7 @@ export default function LegalCenter() {
             </table>
           </div>
           <p className="text-lg leading-relaxed text-on-surface-variant font-light mb-6">
-            We will never use your data for purposes incompatible with those listed above without your explicit consent.
+            We will never use your data for purposes incompatible with those listed above without your explicit consent. <strong>We will also never use your private data to train our A.I. models.</strong>
           </p>
 
           <h3 className="font-headline text-xl font-bold text-on-surface mb-3 mt-8">9.4 How We Share Your Information</h3>
