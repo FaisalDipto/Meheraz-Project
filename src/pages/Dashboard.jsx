@@ -783,17 +783,20 @@ const FeedbackPanel = () => {
                 onChange={(e) => setFeedbackType(e.target.value)}
               >
                 <option disabled value="">Select feedback type</option>
-                <option value="bug">Report a Bug</option>
-                <option value="feature">Feature Request</option>
-                <option value="performance">Performance Issue</option>
-                <option value="other">Other</option>
+                <option value="Report A Bug">Report A Bug</option>
+                <option value="Feature Request">Feature Request</option>
+                <option value="General">General</option>
+                <option value="Suggest Improvement">Suggest Improvement</option>
               </select>
             </div>
           </div>
 
           {/* Title Field */}
-          <div className="space-y-3">
-            <label className="font-['Epilogue'] text-xs font-extrabold uppercase tracking-widest text-[#000000]" htmlFor="title">Title</label>
+          <div className="space-y-3 relative">
+            <div className="flex justify-between items-center">
+              <label className="font-['Epilogue'] text-xs font-extrabold uppercase tracking-widest text-[#000000]" htmlFor="title">Title</label>
+              <span className={`text-xs ${title.length >= 100 ? 'text-red-500 font-bold' : 'text-slate-400'}`}>{title.length}/100</span>
+            </div>
             <input 
               className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all placeholder:text-slate-400" 
               id="title" 
@@ -801,14 +804,18 @@ const FeedbackPanel = () => {
               placeholder="A brief summary of your feedback" 
               type="text"
               value={title}
+              maxLength={100}
               onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
 
           {/* Details Textarea */}
-          <div className="space-y-3">
-            <label className="font-['Epilogue'] text-xs font-extrabold uppercase tracking-widest text-[#000000]" htmlFor="details">Details</label>
+          <div className="space-y-3 relative">
+            <div className="flex justify-between items-center">
+              <label className="font-['Epilogue'] text-xs font-extrabold uppercase tracking-widest text-[#000000]" htmlFor="details">Details</label>
+              <span className={`text-xs ${description.length >= 1000 ? 'text-red-500 font-bold' : 'text-slate-400'}`}>{description.length}/1000</span>
+            </div>
             <textarea 
               className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all resize-none placeholder:text-slate-400" 
               id="details" 
@@ -816,6 +823,7 @@ const FeedbackPanel = () => {
               placeholder="Tell us more about your experience..." 
               rows="5"
               value={description}
+              maxLength={1000}
               onChange={(e) => setDescription(e.target.value)}
               required
             ></textarea>
