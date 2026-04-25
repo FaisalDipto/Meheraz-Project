@@ -208,7 +208,7 @@ export default function Hero() {
                 <div className="w-16 h-16 bg-white text-secondary rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">
                   <span className="material-symbols-outlined text-3xl" data-icon="auto_awesome">auto_awesome</span>
                 </div>
-                <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Automate</h3>
+                <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Create Agent & Upload Knowledge</h3>
                 <p className="text-on-surface-variant leading-relaxed">Build intelligent conversation flows using our visual drag-and-drop AI architect.</p>
               </div>
             </div>
@@ -217,7 +217,7 @@ export default function Hero() {
                 <div className="w-16 h-16 bg-white text-primary rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">
                   <span className="material-symbols-outlined text-3xl" data-icon="trending_up">trending_up</span>
                 </div>
-                <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Grow</h3>
+                <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Assign Agent</h3>
                 <p className="text-on-surface-variant leading-relaxed">Watch your lead list expand and conversion rates soar with 24/7 engagement.</p>
               </div>
             </div>
