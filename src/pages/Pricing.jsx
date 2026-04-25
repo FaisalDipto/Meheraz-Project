@@ -259,7 +259,7 @@ export default function Pricing() {
           <p className="text-on-surface-variant mb-10">Our sales team is ready to help you find the perfect fit for your workflow.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/app/sales" className="px-8 py-3 bg-on-surface text-surface rounded-full font-bold hover:bg-surface-variant hover:text-on-surface transition-colors">Contact Sales</Link>
-            <button className="px-8 py-3 border border-outline text-on-surface rounded-full font-bold hover:bg-surface-container-low transition-colors">View All FAQs</button>
+            <Link to="/app#faq" className="px-8 py-3 border border-outline text-on-surface rounded-full font-bold hover:bg-surface-container-low transition-colors">View All FAQs</Link>
           </div>
         </section>
       </main>
