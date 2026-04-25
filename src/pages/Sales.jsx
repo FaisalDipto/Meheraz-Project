@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import FAQ from '../components/FAQ';
 import { apiService } from '../services/api';
 
 const FEATURES = [
@@ -11,17 +12,9 @@ const FEATURES = [
   { icon: 'shield', title: 'SLA & Priority Support', desc: '99.9% uptime SLA with a dedicated support line and escalation path.' },
 ];
 
-const FAQS = [
-  { q: 'How quickly can I get started?', a: 'Most teams are live within 24 hours. Our onboarding team handles the heavy lifting so you can focus on growth.' },
-  { q: 'Do you offer custom pricing for agencies?', a: 'Yes. Agencies and resellers get volume discounts, white-label options, and a dedicated account manager. Fill out the form and we\'ll get back to you within one business day.' },
-  { q: 'Can LYFFLOW integrate with our existing CRM?', a: 'We support native integrations with HubSpot, Salesforce, and Zoho. Custom webhooks are available on all paid plans.' },
-  { q: 'Is there a minimum contract term?', a: 'No lock-in. We offer monthly and annual billing. Annual plans come with a 20% discount.' },
-];
-
 export default function Sales() {
   const [form, setForm] = useState({ name: '', company: '', email: '', phone: '', teamSize: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
-  const [openFaq, setOpenFaq] = useState(null);
 
   const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
@@ -232,37 +225,7 @@ export default function Sales() {
         </section>
 
         {/* ── FAQ ── */}
-        <section className="py-24 px-6">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-16">
-              <span className="text-secondary font-label text-xs font-bold tracking-[0.3em] uppercase mb-4 block">Common Questions</span>
-              <h2 className="font-headline text-4xl font-black tracking-tight text-primary">FAQ</h2>
-            </div>
-            <div className="space-y-4">
-              {FAQS.map(({ q, a }, i) => (
-                <div
-                  key={i}
-                  className="border border-slate-200 rounded-2xl overflow-hidden transition-shadow hover:shadow-md"
-                >
-                  <button
-                    className="w-full text-left px-6 py-5 flex items-center justify-between gap-4 bg-white"
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  >
-                    <span className="font-bold text-primary">{q}</span>
-                    <span className={`material-symbols-outlined text-slate-400 transition-transform duration-300 shrink-0 ${openFaq === i ? 'rotate-180' : ''}`}>
-                      expand_more
-                    </span>
-                  </button>
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ${openFaq === i ? 'max-h-40' : 'max-h-0'}`}
-                  >
-                    <p className="px-6 pb-5 text-on-surface-variant leading-relaxed text-sm">{a}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <FAQ />
 
         {/* ── BOTTOM CTA ── */}
         <section className="py-24 px-6 bg-surface-container-low text-center">
