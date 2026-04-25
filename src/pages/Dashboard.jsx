@@ -321,7 +321,7 @@ const ConversationList = ({ pages, user }) => {
                 const lastMsg = msgs[0]; // FB returns newest first
                 setContacts(prev => prev.map(c => 
                   (c.conversation_id || c.id) === cId 
-                    ? { ...c, last_message: lastMsg.message, updated_time: lastMsg.created_time || lastMsg.timestamp || Date.now() }
+                    ? { ...c, last_message: lastMsg.message, updated_time: lastMsg.created_at || lastMsg.created_time || lastMsg.timestamp || Date.now() }
                     : c
                 ));
               }
@@ -360,7 +360,8 @@ const ConversationList = ({ pages, user }) => {
     const tempMsg = {
       id: 'temp_' + Date.now(),
       message: messageText,
-      is_ai_msg: true // to render it on the right side
+      is_ai_msg: true, // to render it on the right side
+      created_at: new Date().toISOString()
     };
     setMessages(prev => [...prev, tempMsg]);
 
@@ -403,8 +404,9 @@ const ConversationList = ({ pages, user }) => {
       }
     }
 
-    const timeStr = msg.created_time || msg.timestamp 
-          ? new Date(msg.created_time || msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+    const rawTime = msg.created_at || msg.created_time || msg.timestamp;
+    const timeStr = rawTime 
+          ? new Date(rawTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
           : 'Now';
 
     if (isMe) {
@@ -415,7 +417,7 @@ const ConversationList = ({ pages, user }) => {
             <div className="bg-slate-900 text-white p-5 rounded-t-3xl rounded-bl-3xl text-[15px] leading-relaxed shadow-xl">
               {msg.message || msg.text || ''}
             </div>
-            <p className="text-[10px] text-slate-400 font-medium px-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <p className="text-[10px] text-slate-400 font-medium px-2 flex items-center gap-1 transition-opacity">
               {timeStr} <span className="material-symbols-outlined text-[12px] text-emerald-500" style={{fontVariationSettings: "'FILL' 1"}}>check_circle</span>
             </p>
           </div>
@@ -430,7 +432,7 @@ const ConversationList = ({ pages, user }) => {
             <div className="bg-slate-50 text-slate-900 p-5 rounded-t-3xl rounded-br-3xl text-[15px] leading-relaxed shadow-sm border border-slate-200">
               {msg.message || msg.text || ''}
             </div>
-            <p className="text-[10px] text-slate-400 font-medium px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <p className="text-[10px] text-slate-400 font-medium px-2 transition-opacity">
               {timeStr}
             </p>
           </div>
