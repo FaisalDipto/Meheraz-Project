@@ -102,9 +102,10 @@ function UsersSection() {
     setLoading(true);
     apiService.adminUsers({ search, status: statusFilter, cursor: cur, page_size: 20 })
       .then(r => {
-        const data = r?.data || r;
-        setUsers(Array.isArray(data) ? data : (data?.users || data?.items || []));
-        setNextCursor(r?.next_cursor || r?.cursor || null);
+        // Response: { users: [...], pagination: { next_cursor, has_more, total } }
+        const list = r?.users || r?.data?.users || r?.data || [];
+        setUsers(Array.isArray(list) ? list : []);
+        setNextCursor(r?.pagination?.next_cursor || r?.next_cursor || null);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -150,15 +151,18 @@ function UsersSection() {
             </tr></thead>
             <tbody>
               {users.map(u => (
-                <tr key={u.user_id || u.id}>
+                <tr key={u.id || u.user_id}>
                   <td><div style={{display:'flex',alignItems:'center',gap:10}}>
-                    <div className="admin-avatar">{initials(u.name || u.email)}</div>
-                    <span className="font-bold">{u.name || '—'}</span>
+                    <div className="admin-avatar">{initials(u.display_name || u.email)}</div>
+                    <div>
+                      <div className="font-bold">{u.display_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—'}</div>
+                      {(u.first_name || u.last_name) && u.display_name && <div className="text-muted">{`${u.first_name || ''} ${u.last_name || ''}`.trim()}</div>}
+                    </div>
                   </div></td>
-                  <td>{u.email}</td>
-                  <td><span className="badge badge-blue">{u.plan || u.subscription?.plan || 'Free'}</span></td>
+                  <td>{u.email || '—'}</td>
+                  <td><span className={`badge ${u.is_subscription_active ? 'badge-blue' : 'badge-slate'}`}>{u.plan_name || 'Free'}</span></td>
                   <td><Badge type={u.status} /></td>
-                  <td className="text-muted">{fmtDate(u.created_at)}</td>
+                  <td className="text-muted">{fmtDate(u.join_at || u.created_at)}</td>
                   <td>
                     <button
                       className={`btn-action ${u.status === 'active' ? 'btn-action-danger' : 'btn-action-success'}`}
