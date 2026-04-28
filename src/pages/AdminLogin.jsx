@@ -8,6 +8,7 @@ import { apiService } from '../services/api';
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ export default function AdminLogin() {
               onChange={(e) => setEmail(e.target.value)}
               required 
               disabled={isLoading}
+              style={{ width: '100%', boxSizing: 'border-box' }}
             />
           </div>
 
@@ -75,15 +77,39 @@ export default function AdminLogin() {
             <div className="label-row">
               <label htmlFor="password">Password</label>
             </div>
-            <input 
-              type="password" 
-              id="password" 
-              placeholder="••••••••" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required 
-              disabled={isLoading}
-            />
+            <div className="password-input-wrapper" style={{ position: 'relative', width: '100%' }}>
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                id="password" 
+                placeholder="••••••••" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required 
+                disabled={isLoading}
+                style={{ width: '100%', paddingRight: '45px', boxSizing: 'border-box' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '4px'
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                  {showPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="btn-login-submit" disabled={isLoading}>
