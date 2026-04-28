@@ -455,11 +455,95 @@ function SubscriptionsSection() {
 }
 
 
-const agentCols = [
-  { key: 'name', label: 'Agent Name', render: r => <span className="font-bold">{r.name || '—'}</span> },
-  { key: 'user_email', label: 'Owner', render: r => r.user_email || r.owner || '—' },
-  { key: 'created_at', label: 'Created', render: r => fmtDate(r.created_at) },
-];
+// ── Agents Section ─────────────────────────────────────
+function AgentsSection() {
+  const [agents, setAgents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [cursor, setCursor] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState('');
+
+  const load = useCallback((cur = null) => {
+    setLoading(true);
+    apiService.adminAgents({ cursor: cur, page_size: 20 })
+      .then(r => {
+        const list = r?.agents || r?.data?.agents || [];
+        setAgents(Array.isArray(list) ? list : []);
+        setNextCursor(r?.pagination?.next_cursor || null);
+        setTotal(r?.pagination?.total ?? list.length ?? 0);
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { load(null); }, [load]);
+
+  // Client-side search filter
+  const filtered = search.trim()
+    ? agents.filter(a =>
+      (a.agent_name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (a.business_name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (a.user_display_name || '').toLowerCase().includes(search.toLowerCase())
+    )
+    : agents;
+
+  return (
+    <div>
+      <div className="admin-section-header">
+        <div className="admin-section-label">Fleet</div>
+        <div className="admin-section-title">AI Agents</div>
+      </div>
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <span className="admin-card-title">All Agents{total > 0 && <span className="text-muted" style={{ fontWeight: 400, fontSize: 13, marginLeft: 8 }}>({fmt(total)} total)</span>}</span>
+          <div className="admin-filter-row">
+            <div className="admin-search-bar">
+              <span className="material-symbols-outlined">search</span>
+              <input placeholder="Search agents…" value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+          </div>
+        </div>
+        {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="smart_toy" text="No agents found." /> : (
+          <table className="admin-table">
+            <thead><tr>
+              <th>Agent</th><th>Role</th><th>Tone</th><th>Language</th><th>Business</th><th>Dialogs</th><th>Owner</th>
+            </tr></thead>
+            <tbody>
+              {filtered.map(a => (
+                <tr key={a.agent_id}>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div className="admin-avatar" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#fff' }}>smart_toy</span>
+                      </div>
+                      <span className="font-bold">{a.agent_name || '—'}</span>
+                    </div>
+                  </td>
+                  <td><span className="badge badge-blue">{a.agent_role || '—'}</span></td>
+                  <td><span className="badge badge-slate">{a.agent_tone || '—'}</span></td>
+                  <td>{a.agent_language || '—'}</td>
+                  <td>{a.business_name || '—'}</td>
+                  <td><span className="font-bold">{fmt(a.total_dialog ?? 0)}</span></td>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div className="admin-avatar" style={{ width: 26, height: 26, fontSize: 10 }}>{initials(a.user_display_name)}</div>
+                      <span>{a.user_display_name || '—'}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div className="admin-pagination">
+          <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
+          <button disabled={!nextCursor} onClick={() => { setCursor(nextCursor); load(nextCursor); }}>Next →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const pagesCols = [
   { key: 'name', label: 'Page Name', render: r => <span className="font-bold">{r.name || '—'}</span> },
@@ -530,7 +614,7 @@ export default function AdminPanel() {
       case 'users': return <UsersSection />;
       case 'subscriptions': return <SubscriptionsSection />;
       case 'revenue': return <RevenueSection />;
-      case 'agents': return <GenericListSection title="AI Agents" label="Fleet" icon="smart_toy" fetcher={apiService.adminAgents} columns={agentCols} />;
+      case 'agents': return <AgentsSection />;
       case 'pages': return <GenericListSection title="Pages" label="Connected" icon="pages" fetcher={apiService.adminPages} columns={pagesCols} />;
       case 'conversations': return <GenericListSection title="Conversations" label="Inbox" icon="chat" fetcher={apiService.adminConversations} columns={convCols} />;
       case 'feedbacks': return <GenericListSection title="Feedbacks" label="Reports" icon="feedback" fetcher={apiService.adminFeedbacks} columns={feedbackCols} />;

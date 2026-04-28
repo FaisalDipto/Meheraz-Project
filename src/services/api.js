@@ -170,10 +170,11 @@ export const apiService = {
     return apiFetch(`/api/admin/subscriptions?${q}`);
   },
   adminRevenue: () => apiFetch('/api/admin/revenue'),
-  adminAgents: ({ cursor, page_size } = {}) => {
+  adminAgents: ({ cursor, page_size, user_id } = {}) => {
     const q = new URLSearchParams();
     if (cursor) q.set('cursor', cursor);
     if (page_size) q.set('page_size', page_size);
+    if (user_id) q.set('user_id', user_id);
     return apiFetch(`/api/admin/agents?${q}`);
   },
   adminPages: ({ cursor, page_size } = {}) => {
