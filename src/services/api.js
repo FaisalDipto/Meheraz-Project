@@ -87,7 +87,7 @@ export const apiService = {
   // Agent Management
   getAgents: () => apiFetch('/api/agents'),
 
-  createAgent: (userId, agentData) => apiFetch(`/api/agent/create?user_id=${encodeURIComponent(userId)}`, {
+  createAgent: (agentData) => apiFetch('/api/agent/create', {
     method: 'POST',
     body: JSON.stringify(agentData),
   }),

@@ -39,7 +39,7 @@ function Badge({ type }) {
     failed: ['badge-red', 'cancel'],
   };
   const [cls, icon] = map[type?.toLowerCase()] || ['badge-slate', 'help'];
-  return <span className={`badge ${cls}`}><span className="material-symbols-outlined" style={{fontSize:11}}>{icon}</span>{type}</span>;
+  return <span className={`badge ${cls}`}><span className="material-symbols-outlined" style={{ fontSize: 11 }}>{icon}</span>{type}</span>;
 }
 
 // ── Dashboard Section ──────────────────────────────────
@@ -48,7 +48,7 @@ function DashboardSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiService.adminDashboard().then(r => setStats(r?.data || r)).catch(() => {}).finally(() => setLoading(false));
+    apiService.adminDashboard().then(r => setStats(r?.data || r)).catch(() => { }).finally(() => setLoading(false));
   }, []);
 
   if (loading) return <LoadingState />;
@@ -79,9 +79,9 @@ function DashboardSection() {
         {cards.map(c => <StatCard key={c.label} {...c} />)}
       </div>
       {stats.total_revenue !== undefined && (
-        <div className="admin-card" style={{padding:'24px 28px'}}>
+        <div className="admin-card" style={{ padding: '24px 28px' }}>
           <div className="admin-stat-card-label"><span className="material-symbols-outlined stat-icon">payments</span>Total Revenue</div>
-          <div className="admin-stat-card-value green" style={{fontSize:36}}>${fmt(stats.total_revenue)}</div>
+          <div className="admin-stat-card-value green" style={{ fontSize: 36 }}>${fmt(stats.total_revenue)}</div>
         </div>
       )}
     </div>
@@ -107,7 +107,7 @@ function UsersSection() {
         setUsers(Array.isArray(list) ? list : []);
         setNextCursor(r?.pagination?.next_cursor || r?.next_cursor || null);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, [search, statusFilter]);
 
@@ -152,7 +152,7 @@ function UsersSection() {
             <tbody>
               {users.map(u => (
                 <tr key={u.id || u.user_id}>
-                  <td><div style={{display:'flex',alignItems:'center',gap:10}}>
+                  <td><div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div className="admin-avatar">{initials(u.display_name || u.email)}</div>
                     <div>
                       <div className="font-bold">{u.display_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—'}</div>
@@ -169,7 +169,7 @@ function UsersSection() {
                       onClick={() => toggleStatus(u)}
                       disabled={togglingId === (u.user_id || u.id)}
                     >
-                      <span className="material-symbols-outlined" style={{fontSize:13}}>{u.status === 'active' ? 'block' : 'check_circle'}</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>{u.status === 'active' ? 'block' : 'check_circle'}</span>
                       {togglingId === (u.user_id || u.id) ? '…' : u.status === 'active' ? 'Suspend' : 'Activate'}
                     </button>
                   </td>
@@ -202,7 +202,7 @@ function GenericListSection({ title, label, icon, fetcher, columns }) {
         setItems(Array.isArray(data) ? data : (data?.items || data?.results || []));
         setNextCursor(r?.next_cursor || null);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, [fetcher]);
 
@@ -245,14 +245,14 @@ function RevenueSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiService.adminRevenue().then(r => setData(r?.data || r)).catch(() => {}).finally(() => setLoading(false));
+    apiService.adminRevenue().then(r => setData(r?.data || r)).catch(() => { }).finally(() => setLoading(false));
   }, []);
 
   if (loading) return <LoadingState />;
   if (!data) return <EmptyState text="Could not load revenue data." />;
 
-  const plans = data.plan_distribution || data.plans || [];
-  const total = plans.reduce((s, p) => s + (p.count || 0), 0) || 1;
+  const plans = data.plan_distribution || [];
+  const totalActive = data.total_active_subscriptions || plans.reduce((s, p) => s + (p.active_count || 0), 0) || 1;
 
   return (
     <div>
@@ -260,23 +260,24 @@ function RevenueSection() {
         <div className="admin-section-label">Financials</div>
         <div className="admin-section-title">Revenue</div>
       </div>
-      <div className="admin-stats-grid" style={{gridTemplateColumns:'repeat(3,1fr)',marginBottom:24}}>
-        {data.total_revenue !== undefined && <StatCard label="Total Revenue" value={`$${fmt(data.total_revenue)}`} icon="payments" color="green" />}
-        {data.mrr !== undefined && <StatCard label="Monthly Recurring" value={`$${fmt(data.mrr)}`} icon="repeat" color="blue" />}
-        {data.active_subscriptions !== undefined && <StatCard label="Active Subscriptions" value={data.active_subscriptions} icon="verified" color="" />}
+      <div className="admin-stats-grid" style={{ gridTemplateColumns: 'repeat(3,1fr)', marginBottom: 24 }}>
+        <StatCard label="Monthly Recurring (MRR)" value={`$${fmt(data.total_mrr)}`} icon="payments" color="green" />
+        <StatCard label="Active Subscriptions" value={data.total_active_subscriptions} icon="verified" color="blue" />
+        <StatCard label="Expired Subscriptions" value={data.total_expired_subscriptions} icon="history" color="slate" />
       </div>
       {plans.length > 0 && (
-        <div className="admin-card" style={{padding:'24px 28px'}}>
-          <div className="admin-card-title" style={{marginBottom:16}}>Plan Distribution</div>
+        <div className="admin-card" style={{ padding: '24px 28px' }}>
+          <div className="admin-card-title" style={{ marginBottom: 16 }}>Plan Distribution (Active)</div>
           <div className="plan-distribution">
             {plans.map((p, i) => (
               <div className="plan-card" key={i}>
-                <div className="plan-card-name">{p.plan_name || p.plan || p.name}</div>
-                <div className="plan-card-count">{fmt(p.count || p.subscribers || 0)}</div>
-                <div className="plan-card-bar-bg">
-                  <div className="plan-card-bar-fill" style={{width:`${Math.round(((p.count||0)/total)*100)}%`}} />
+                <div className="plan-card-name">{p.plan_name}</div>
+                <div className="plan-card-count">{fmt(p.active_count)} active</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#10b981', marginTop: 4 }}>${fmt(p.revenue)} rev</div>
+                <div className="plan-card-bar-bg" style={{ marginTop: 8 }}>
+                  <div className="plan-card-bar-fill" style={{ width: `${Math.round(((p.active_count || 0) / totalActive) * 100)}%` }} />
                 </div>
-                <div className="text-muted">{Math.round(((p.count||0)/total)*100)}% of total</div>
+                <div className="text-muted" style={{ marginTop: 4 }}>{Math.round(((p.active_count || 0) / totalActive) * 100)}% of active</div>
               </div>
             ))}
           </div>
@@ -305,7 +306,7 @@ function ActivitySection() {
       setStats(s?.data || s);
       const arr = d?.data || d;
       setDaily(Array.isArray(arr) ? arr : []);
-    }).catch(() => {}).finally(() => setLoading(false));
+    }).catch(() => { }).finally(() => setLoading(false));
   };
 
   useEffect(() => { load(); }, []);
@@ -318,29 +319,29 @@ function ActivitySection() {
         <div className="admin-section-label">Analytics</div>
         <div className="admin-section-title">Activity</div>
       </div>
-      <div className="admin-card" style={{padding:'20px 24px',marginBottom:20}}>
+      <div className="admin-card" style={{ padding: '20px 24px', marginBottom: 20 }}>
         <div className="date-range-picker">
-          <span style={{fontSize:13,fontWeight:600,color:'#64748b'}}>From</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>From</span>
           <input type="date" value={start} onChange={e => setStart(e.target.value)} />
-          <span style={{fontSize:13,fontWeight:600,color:'#64748b'}}>To</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>To</span>
           <input type="date" value={end} onChange={e => setEnd(e.target.value)} />
           <button className="btn-primary" onClick={load}>
-            <span className="material-symbols-outlined" style={{fontSize:15}}>refresh</span>Apply
+            <span className="material-symbols-outlined" style={{ fontSize: 15 }}>refresh</span>Apply
           </button>
         </div>
       </div>
       {loading ? <LoadingState /> : (
         <>
           {stats && (
-            <div className="admin-stats-grid" style={{marginBottom:24}}>
+            <div className="admin-stats-grid" style={{ marginBottom: 24 }}>
               {Object.entries(stats).map(([k, v]) => typeof v === 'number' && (
-                <StatCard key={k} label={k.replace(/_/g,' ')} value={v} icon="bar_chart" />
+                <StatCard key={k} label={k.replace(/_/g, ' ')} value={v} icon="bar_chart" />
               ))}
             </div>
           )}
           {daily.length > 0 && (
-            <div className="admin-card" style={{padding:'24px 28px'}}>
-              <div className="admin-card-title" style={{marginBottom:16}}>Daily Activity</div>
+            <div className="admin-card" style={{ padding: '24px 28px' }}>
+              <div className="admin-card-title" style={{ marginBottom: 16 }}>Daily Activity</div>
               <div className="daily-chart">
                 {daily.map((d, i) => {
                   const val = d.messages || d.count || d.total || 0;
@@ -348,7 +349,7 @@ function ActivitySection() {
                   const dateLabel = (d.date || d.day || '').slice(5);
                   return (
                     <div className="daily-bar-group" key={i} title={`${dateLabel}: ${val}`}>
-                      <div className="daily-bar" style={{height: h}} />
+                      <div className="daily-bar" style={{ height: h }} />
                       <div className="daily-bar-label">{dateLabel}</div>
                     </div>
                   );
@@ -362,13 +363,97 @@ function ActivitySection() {
   );
 }
 
-// ── Subscriptions columns ──────────────────────────────
-const subCols = [
-  { key: 'user_email', label: 'User', render: r => r.user_email || r.email || '—' },
-  { key: 'plan', label: 'Plan', render: r => <span className="badge badge-blue">{r.plan_name || r.plan || '—'}</span> },
-  { key: 'status', label: 'Status', render: r => <Badge type={r.status} /> },
-  { key: 'created_at', label: 'Started', render: r => fmtDate(r.created_at || r.start_date) },
-];
+// ── Subscriptions Section ─────────────────────────────
+function SubscriptionsSection() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [cursor, setCursor] = useState(null);
+  const [planFilter, setPlanFilter] = useState('');
+  const [activeOnly, setActiveOnly] = useState(false);
+
+  const load = useCallback((cur = null) => {
+    setLoading(true);
+    apiService.adminSubscriptions({ cursor: cur, page_size: 20, plan_type: planFilter || undefined, active_only: activeOnly })
+      .then(r => {
+        // Handle various response shapes
+        const list = r?.subscriptions || r?.data?.subscriptions || r?.data || r?.items || (Array.isArray(r) ? r : []);
+        setItems(list);
+        setNextCursor(r?.pagination?.next_cursor || r?.next_cursor || null);
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
+  }, [planFilter, activeOnly]);
+
+  useEffect(() => { setCursor(null); load(null); }, [planFilter, activeOnly]);
+
+  return (
+    <div>
+      <div className="admin-section-header">
+        <div className="admin-section-label">Billing</div>
+        <div className="admin-section-title">Subscriptions</div>
+      </div>
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <span className="admin-card-title">All Subscriptions</span>
+          <div className="admin-filter-row">
+            <select className="admin-filter-select" value={planFilter} onChange={e => setPlanFilter(e.target.value)}>
+              <option value="">All Plans</option>
+              <option value="starter">Starter</option>
+              <option value="professional">Professional</option>
+              <option value="enterprise">Enterprise</option>
+            </select>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#475569', cursor: 'pointer' }}>
+              <input type="checkbox" checked={activeOnly} onChange={e => setActiveOnly(e.target.checked)} style={{ accentColor: '#10b981' }} />
+              Active only
+            </label>
+          </div>
+        </div>
+        {loading ? <LoadingState /> : items.length === 0 ? <EmptyState icon="subscriptions" text="No subscriptions found." /> : (
+          <table className="admin-table">
+            <thead><tr>
+              <th>User</th><th>Email</th><th>Plan</th><th>Status</th><th>Price/mo</th><th>Tokens Used</th><th>Started</th><th>Expires</th>
+            </tr></thead>
+            <tbody>
+              {items.map(s => (
+                <tr key={s.subscription_id}>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div className="admin-avatar">{initials(s.user_display_name || s.user_email)}</div>
+                      <span className="font-bold">{s.user_display_name || '—'}</span>
+                    </div>
+                  </td>
+                  <td>{s.user_email || '—'}</td>
+                  <td>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <span className="badge badge-blue">{s.plan_name || '—'}</span>
+                      {s.plan_slug && <span className="text-muted">{s.plan_slug}</span>}
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`badge ${s.is_active ? 'badge-green' : 'badge-red'}`}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 11 }}>{s.is_active ? 'check_circle' : 'cancel'}</span>
+                      {s.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="font-bold">${fmt(s.price_per_month ?? 0)}</td>
+                  <td>{fmt(s.tokens_used ?? 0)}</td>
+                  <td className="text-muted">{fmtDate(s.started_at)}</td>
+                  <td className="text-muted">{fmtDate(s.expires_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div className="admin-pagination">
+          <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
+          <button disabled={!nextCursor} onClick={() => { setCursor(nextCursor); load(nextCursor); }}>Next →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 const agentCols = [
   { key: 'name', label: 'Agent Name', render: r => <span className="font-bold">{r.name || '—'}</span> },
@@ -426,7 +511,12 @@ export default function AdminPanel() {
   useEffect(() => {
     apiService.adminMe()
       .then(r => setAdmin(r?.data || r))
-      .catch(() => {});
+      .catch(err => {
+        // If 401/403, redirect to login
+        if (err?.status === 401 || err?.status === 403) {
+          navigate('/app/admin/login');
+        }
+      });
   }, []);
 
 
@@ -438,7 +528,7 @@ export default function AdminPanel() {
     switch (section) {
       case 'dashboard': return <DashboardSection />;
       case 'users': return <UsersSection />;
-      case 'subscriptions': return <GenericListSection title="Subscriptions" label="Billing" icon="subscriptions" fetcher={apiService.adminSubscriptions} columns={subCols} />;
+      case 'subscriptions': return <SubscriptionsSection />;
       case 'revenue': return <RevenueSection />;
       case 'agents': return <GenericListSection title="AI Agents" label="Fleet" icon="smart_toy" fetcher={apiService.adminAgents} columns={agentCols} />;
       case 'pages': return <GenericListSection title="Pages" label="Connected" icon="pages" fetcher={apiService.adminPages} columns={pagesCols} />;
@@ -474,7 +564,7 @@ export default function AdminPanel() {
         <div className="admin-sidebar-footer">
           {admin && (
             <div className="admin-profile-chip">
-              <div className="admin-avatar" style={{width:30,height:30,fontSize:11}}>{initials(admin.name || admin.email)}</div>
+              <div className="admin-avatar" style={{ width: 30, height: 30, fontSize: 11 }}>{initials(admin.name || admin.email)}</div>
               <div className="admin-profile-chip-info">
                 <span className="admin-profile-chip-name">{admin.name || 'Admin'}</span>
                 <span className="admin-profile-chip-email">{admin.email || ''}</span>
@@ -495,15 +585,15 @@ export default function AdminPanel() {
           <div className="admin-topbar-right">
             {admin && (
               <div className="admin-topbar-profile">
-                <div className="admin-avatar" style={{width:32,height:32,fontSize:12}}>{initials(admin.name || admin.email)}</div>
-                <div style={{lineHeight:1.2}}>
-                  <div style={{fontSize:13,fontWeight:700,color:'#0f172a'}}>{admin.name || 'Admin'}</div>
-                  <div style={{fontSize:11,color:'#94a3b8'}}>{admin.email || ''}</div>
+                <div className="admin-avatar" style={{ width: 32, height: 32, fontSize: 12 }}>{initials(admin.name || admin.email)}</div>
+                <div style={{ lineHeight: 1.2 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{admin.name || 'Admin'}</div>
+                  <div style={{ fontSize: 11, color: '#94a3b8' }}>{admin.email || ''}</div>
                 </div>
               </div>
             )}
             <button className="admin-logout-btn" onClick={handleLogout}>
-              <span className="material-symbols-outlined" style={{fontSize:16}}>logout</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>logout</span>
               Sign Out
             </button>
           </div>

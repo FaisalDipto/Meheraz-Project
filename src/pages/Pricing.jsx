@@ -9,7 +9,6 @@ export default function Pricing() {
   const handleSubscribe = async (planType) => {
     try {
       await apiService.subscribe({ subscription_type: planType, num_months: 1 });
-      localStorage.setItem('lyfflow_ReturningUser', 'true');
       navigate('/app/dashboard');
     } catch (e) {
       alert("Failed to subscribe: " + e.message);

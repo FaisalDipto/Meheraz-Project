@@ -1707,9 +1707,27 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
         await apiService.updateAgent(editingAgentId, payload);
         if (onAgentEdited) onAgentEdited(editingAgentId, payload);
       } else {
-        const userId = user?.email || 'default_user_session';
-        const newAgent = await apiService.createAgent(userId, payload);
-        if (onAgentCreated) onAgentCreated(newAgent);
+        try {
+          const newAgent = await apiService.createAgent(payload);
+          if (onAgentCreated) onAgentCreated(newAgent);
+        } catch (error) {
+          // If the error is about a missing subscription, try to auto-subscribe and retry once
+          if (error.status === 403 && (error.message || '').toLowerCase().includes('subscription')) {
+            try {
+              console.log("Subscription missing on create, attempting silent fix...");
+              await apiService.subscribe({ subscription_type: 'FREE', num_months: 120 });
+              // Small delay to ensure DB propagation
+              await new Promise(resolve => setTimeout(resolve, 500));
+              // Retry creation after silent fix
+              const retryAgent = await apiService.createAgent(payload);
+              if (onAgentCreated) onAgentCreated(retryAgent);
+            } catch (retryError) {
+              throw retryError; // If it still fails, let the main catch handle it
+            }
+          } else {
+            throw error;
+          }
+        }
       }
 
       setCreated(true);
@@ -2609,20 +2627,15 @@ export default function Dashboard() {
       setUser(parsedUser);
       setPages(parsedPages);
 
-      // Handle post-OAuth redirect (backend always lands on /dashboard,
-      // so we use this flag to forward new users to /app/pricing instead)
-      const postAuthRedirect = localStorage.getItem('lyfflow_postAuthRedirect');
-      if (postAuthRedirect && postAuthRedirect !== '/app/dashboard') {
-        localStorage.removeItem('lyfflow_postAuthRedirect');
-        navigate(postAuthRedirect);
-      } else {
-        localStorage.removeItem('lyfflow_postAuthRedirect');
+      // Check subscription via API — if user has no active plan, send them
+      // to the plan-selection screen so they can pick one before using the dashboard.
+      if (!subscriptionData || !subscriptionData.is_active) {
+        navigate('/app/get-started?step=pricing');
+        return;
       }
     } catch (err) {
       console.error("Failed to fetch user data:", err);
       if (err.status === 401) {
-        // Clear stale returning-user flag so the next OAuth flow treats them as new
-        localStorage.removeItem('lyfflow_ReturningUser');
         navigate('/app/get-started');
       }
     } finally {

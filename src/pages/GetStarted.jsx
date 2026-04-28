@@ -190,26 +190,47 @@ const PricingCards = ({ onSelect }) => {
 export default function GetStarted() {
   const navigate = useNavigate();
   const location = useLocation();
-  const isReturningUser = !!localStorage.getItem('lyfflow_ReturningUser');
   
-  // Steps: 'pricing' | 'connect'
-  const [currentStep, setCurrentStep] = useState(() => {
-    const query = new URLSearchParams(location.search);
-    if (query.get('step') === 'pricing') return 'pricing';
-    return 'connect';
-  });
+  // Steps: 'loading' | 'pricing' | 'connect'
+  const [currentStep, setCurrentStep] = useState('connect');
   
   const [agreed, setAgreed] = useState(false);
   const [showError, setShowError] = useState(false);
 
+  // After FB auth the user lands back here. Check their subscription
+  // via the API to decide whether to show the dashboard or the pricing step.
   useEffect(() => {
     const query = new URLSearchParams(location.search);
+
+    // Explicit pricing step (e.g. redirected from Dashboard guard)
     if (query.get('step') === 'pricing') {
       setCurrentStep('pricing');
-    } else if (isReturningUser) {
-      setCurrentStep('connect');
+      return;
     }
-  }, [location.search, isReturningUser]);
+
+    // User just came back from FB OAuth — check their subscription
+    if (query.get('check') === 'sub') {
+      setCurrentStep('loading');
+      apiService.getSubscription()
+        .then(sub => {
+          if (sub && sub.is_active) {
+            // Has an active plan → go straight to dashboard
+            navigate('/app/dashboard', { replace: true });
+          } else {
+            // No active plan → show pricing
+            setCurrentStep('pricing');
+          }
+        })
+        .catch(() => {
+          // API error (possibly not logged in yet) → show pricing
+          setCurrentStep('pricing');
+        });
+      return;
+    }
+
+    // Default — show the connect step
+    setCurrentStep('connect');
+  }, [location.search, navigate]);
 
   const handleAcceptTerms = () => {
     // Legacy function, handled inline now
@@ -219,12 +240,11 @@ export default function GetStarted() {
     try {
       // Post the selected plan to the backend
       await apiService.subscribe({ subscription_type: packageName, num_months: 1 });
+      navigate('/app/dashboard');
     } catch (error) {
-      console.error("Failed to subscribe to plan:", error);
+      console.error("Failed to subscribe to plan:", error, "Status:", error.status);
+      alert("Failed to subscribe: " + error.message + " (Status: " + (error.status || "unknown") + ")");
     }
-    // Mark as returning user after choosing a plan
-    localStorage.setItem('lyfflow_ReturningUser', 'true');
-    navigate('/app/dashboard');
   };
 
   const handleConnectFacebook = () => {
@@ -233,12 +253,9 @@ export default function GetStarted() {
       return;
     }
 
-    const nextPath = isReturningUser ? '/app/dashboard' : '/app/get-started?step=pricing';
-
-    // Save intended destination — backend will redirect to /dashboard regardless,
-    // so Dashboard will pick this up and forward the user to the right place.
-    localStorage.setItem('lyfflow_postAuthRedirect', nextPath);
-
+    // After FB auth, come back to GetStarted with ?check=sub so we can
+    // verify the subscription via the API before allowing dashboard access.
+    const nextPath = '/app/get-started?check=sub';
     const redirectUrl = encodeURIComponent(window.location.origin + nextPath);
     window.location.href = `https://www.lyfflow.com/api/auth/facebook/login?redirect_uri=${redirectUrl}&next=${nextPath}`;
   };
@@ -253,9 +270,21 @@ export default function GetStarted() {
 
   return (
     <div className="get-started-container">
+      {/* Loading state while checking subscription */}
+      {currentStep === 'loading' && (
+        <div className="onboarding-modal-overlay">
+          <div className="onboarding-modal-container fade-in bg-surface text-on-surface font-body" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+            <div className="text-center">
+              <div className="inline-block w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-6"></div>
+              <h2 className="font-headline text-2xl font-bold text-on-surface mb-2">Checking your account...</h2>
+              <p className="text-on-surface-variant text-sm">Please wait while we verify your subscription.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modals for Onboarding Flow */}
       
-
 
       {currentStep === 'pricing' && (
         <div className="onboarding-modal-overlay">
