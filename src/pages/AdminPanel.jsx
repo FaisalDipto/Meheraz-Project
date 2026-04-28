@@ -639,19 +639,195 @@ function PagesSection() {
   );
 }
 
-const convCols = [
-  { key: 'id', label: 'ID', render: r => <span className="text-muted">{(r.conversation_id || r.id || '').slice(0, 10)}…</span> },
-  { key: 'page', label: 'Page', render: r => r.page_name || r.page_id || '—' },
-  { key: 'messages', label: 'Messages', render: r => fmt(r.message_count || r.messages || 0) },
-  { key: 'updated_at', label: 'Updated', render: r => fmtDate(r.updated_at || r.last_message_at) },
-];
+// ── Conversations Section ────────────────────────────────
+function ConversationsSection() {
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [cursor, setCursor] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState('');
 
-const feedbackCols = [
-  { key: 'type', label: 'Type', render: r => <span className="badge badge-slate">{r.type}</span> },
-  { key: 'title', label: 'Title', render: r => r.title || '—' },
-  { key: 'user_email', label: 'User', render: r => r.user_email || r.email || '—' },
-  { key: 'created_at', label: 'Date', render: r => fmtDate(r.created_at) },
-];
+  const load = useCallback((cur = null) => {
+    setLoading(true);
+    apiService.adminConversations({ cursor: cur, page_size: 20 })
+      .then(r => {
+        const list = r?.conversations || r?.data?.conversations || [];
+        setConversations(Array.isArray(list) ? list : []);
+        setNextCursor(r?.pagination?.next_cursor || null);
+        setTotal(r?.pagination?.total ?? list.length ?? 0);
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { load(null); }, [load]);
+
+  // Client-side search filter
+  const filtered = search.trim()
+    ? conversations.filter(c =>
+      (c.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (c.page_name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (c.psid || '').toLowerCase().includes(search.toLowerCase())
+    )
+    : conversations;
+
+  return (
+    <div>
+      <div className="admin-section-header">
+        <div className="admin-section-label">Inbox</div>
+        <div className="admin-section-title">Conversations</div>
+      </div>
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <span className="admin-card-title">All Conversations{total > 0 && <span className="text-muted" style={{ fontWeight: 400, fontSize: 13, marginLeft: 8 }}>({fmt(total)} total)</span>}</span>
+          <div className="admin-filter-row">
+            <div className="admin-search-bar">
+              <span className="material-symbols-outlined">search</span>
+              <input placeholder="Search conversations…" value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+          </div>
+        </div>
+        {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="chat" text="No conversations found." /> : (
+          <table className="admin-table">
+            <thead><tr>
+              <th>User</th><th>Page</th><th>Messages</th><th>Human Needed</th><th>Synced</th><th>Last Updated</th>
+            </tr></thead>
+            <tbody>
+              {filtered.map(c => (
+                <tr key={c.conversation_id}>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div className="admin-avatar">{initials(c.name || 'User')}</div>
+                      <div>
+                        <div className="font-bold">{c.name || 'Unknown User'}</div>
+                        <div className="text-muted" style={{ fontSize: 11 }}>PSID: {c.psid}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="font-bold">{c.page_name || '—'}</div>
+                    <div className="text-muted" style={{ fontSize: 11 }}>ID: {c.page_id?.slice(0, 8)}…</div>
+                  </td>
+                  <td><span className="font-bold">{fmt(c.message_count ?? 0)}</span></td>
+                  <td>
+                    {c.is_human_needed && (
+                      <span className="badge badge-red">
+                        <span className="material-symbols-outlined" style={{ fontSize: 11 }}>warning</span>
+                        Yes
+                      </span>
+                    )}
+                    {!c.is_human_needed && <span className="text-muted">—</span>}
+                  </td>
+                  <td>
+                    <span className={`badge ${c.is_synced ? 'badge-green' : 'badge-slate'}`}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 11 }}>{c.is_synced ? 'sync' : 'sync_disabled'}</span>
+                      {c.is_synced ? 'Synced' : 'No'}
+                    </span>
+                  </td>
+                  <td className="text-muted">{fmtDate(c.updated_time)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div className="admin-pagination">
+          <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
+          <button disabled={!nextCursor} onClick={() => { setCursor(nextCursor); load(nextCursor); }}>Next →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Feedbacks Section ───────────────────────────────────
+function FeedbacksSection() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [cursor, setCursor] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [typeFilter, setTypeFilter] = useState('');
+  const [search, setSearch] = useState('');
+
+  const load = useCallback((cur = null) => {
+    setLoading(true);
+    apiService.adminFeedbacks({ cursor: cur, page_size: 20, type: typeFilter || undefined })
+      .then(r => {
+        const list = r?.feedbacks || r?.data?.feedbacks || [];
+        setItems(Array.isArray(list) ? list : []);
+        setNextCursor(r?.pagination?.next_cursor || null);
+        setTotal(r?.pagination?.total ?? list.length ?? 0);
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
+  }, [typeFilter]);
+
+  useEffect(() => { load(null); }, [load]);
+
+  const filtered = search.trim()
+    ? items.filter(f =>
+      (f.title || '').toLowerCase().includes(search.toLowerCase()) ||
+      (f.details || '').toLowerCase().includes(search.toLowerCase()) ||
+      (f.user_id || '').toLowerCase().includes(search.toLowerCase())
+    )
+    : items;
+
+  return (
+    <div>
+      <div className="admin-section-header">
+        <div className="admin-section-label">Reports</div>
+        <div className="admin-section-title">Feedbacks</div>
+      </div>
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <span className="admin-card-title">All Feedbacks{total > 0 && <span className="text-muted" style={{ fontWeight: 400, fontSize: 13, marginLeft: 8 }}>({fmt(total)} total)</span>}</span>
+          <div className="admin-filter-row">
+            <div className="admin-search-bar">
+              <span className="material-symbols-outlined">search</span>
+              <input placeholder="Search feedbacks…" value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+            <select className="admin-filter-select" value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
+              <option value="">All Types</option>
+              <option value="bug">Bug</option>
+              <option value="feature">Feature Request</option>
+              <option value="improvement">Improvement</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="feedback" text="No feedbacks found." /> : (
+          <table className="admin-table">
+            <thead><tr>
+              <th>Title & Details</th><th>Type</th><th>User ID</th><th>Date</th>
+            </tr></thead>
+            <tbody>
+              {filtered.map(f => (
+                <tr key={f.feedback_id}>
+                  <td style={{ maxWidth: 400 }}>
+                    <div className="font-bold">{f.title || 'No Title'}</div>
+                    <div className="text-muted" style={{ fontSize: 12, marginTop: 4, whiteSpace: 'normal' }}>{f.details || 'No details provided.'}</div>
+                  </td>
+                  <td>
+                    <span className="badge badge-slate">{f.type}</span>
+                  </td>
+                  <td>
+                    <div className="text-muted" style={{ fontSize: 11, fontFamily: 'monospace' }}>{f.user_id}</div>
+                  </td>
+                  <td className="text-muted">{fmtDate(f.created_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div className="admin-pagination">
+          <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
+          <button disabled={!nextCursor} onClick={() => { setCursor(nextCursor); load(nextCursor); }}>Next →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const leadCols = [
   { key: 'name', label: 'Name', render: r => <span className="font-bold">{r.name || '—'}</span> },
@@ -704,8 +880,8 @@ export default function AdminPanel() {
       case 'revenue': return <RevenueSection />;
       case 'agents': return <AgentsSection />;
       case 'pages': return <PagesSection />;
-      case 'conversations': return <GenericListSection title="Conversations" label="Inbox" icon="chat" fetcher={apiService.adminConversations} columns={convCols} />;
-      case 'feedbacks': return <GenericListSection title="Feedbacks" label="Reports" icon="feedback" fetcher={apiService.adminFeedbacks} columns={feedbackCols} />;
+      case 'conversations': return <ConversationsSection />;
+      case 'feedbacks': return <FeedbacksSection />;
       case 'leads': return <GenericListSection title="Leads" label="CRM" icon="contacts" fetcher={apiService.adminLeads} columns={leadCols} />;
       case 'activity': return <ActivitySection />;
       default: return null;
