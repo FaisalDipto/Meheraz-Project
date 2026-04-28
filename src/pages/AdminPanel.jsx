@@ -10,14 +10,37 @@ const fmt = (n) => (n ?? 0).toLocaleString();
 const initials = (str) => (str || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
 
+function CountUp({ end, duration = 1500, prefix = '' }) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const target = Number(end) || 0;
+    if (target === 0) { setCount(0); return; }
+    const step = (target / (duration / 16));
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [end, duration]);
+  return <span>{prefix}{fmt(count)}</span>;
+}
+
 function StatCard({ label, value, icon, color }) {
   return (
-    <div className="admin-stat-card">
-      <div className="admin-stat-card-label">
+    <div className={`admin-stat-card colored ${color || 'slate'}`}>
+      <div className="admin-stat-card-header">
         <span className="material-symbols-outlined stat-icon">{icon}</span>
-        {label}
+        <span className="admin-stat-card-label">{label}</span>
       </div>
-      <div className={`admin-stat-card-value ${color || ''}`}>{fmt(value)}</div>
+      <div className="admin-stat-card-value">
+        <CountUp end={value} />
+      </div>
     </div>
   );
 }
@@ -55,18 +78,18 @@ function DashboardSection() {
   if (!stats) return <EmptyState text="Could not load dashboard stats." />;
 
   const cards = [
-    { label: 'Total Users', value: stats.total_users, icon: 'group', color: '' },
+    { label: 'Total Users', value: stats.total_users, icon: 'group', color: 'indigo' },
     { label: 'Active Users', value: stats.active_users, icon: 'person_check', color: 'green' },
     { label: 'Suspended', value: stats.suspended_users, icon: 'person_off', color: 'red' },
     { label: 'Subscriptions', value: stats.total_subscriptions, icon: 'subscriptions', color: 'blue' },
-    { label: 'Active Subs', value: stats.active_subscriptions, icon: 'verified', color: 'green' },
-    { label: 'AI Agents', value: stats.total_agents, icon: 'smart_toy', color: '' },
-    { label: 'Pages', value: stats.total_pages, icon: 'pages', color: '' },
-    { label: 'Conversations', value: stats.total_conversations, icon: 'chat', color: 'blue' },
-    { label: 'Messages', value: stats.total_messages, icon: 'message', color: '' },
+    { label: 'Active Subs', value: stats.active_subscriptions, icon: 'verified', color: 'emerald' },
+    { label: 'AI Agents', value: stats.total_agents, icon: 'smart_toy', color: 'purple' },
+    { label: 'Pages', value: stats.total_pages, icon: 'pages', color: 'cyan' },
+    { label: 'Conversations', value: stats.total_conversations, icon: 'chat', color: 'sky' },
+    { label: 'Messages', value: stats.total_messages, icon: 'message', color: 'violet' },
     { label: 'Feedbacks', value: stats.total_feedbacks, icon: 'feedback', color: 'amber' },
-    { label: 'Leads', value: stats.total_leads, icon: 'contacts', color: '' },
-    { label: 'Tokens Used', value: stats.total_tokens_used, icon: 'data_usage', color: '' },
+    { label: 'Leads', value: stats.total_leads, icon: 'contacts', color: 'rose' },
+    { label: 'Tokens Used', value: stats.total_tokens_used, icon: 'data_usage', color: 'slate' },
   ];
 
   return (
@@ -79,9 +102,14 @@ function DashboardSection() {
         {cards.map(c => <StatCard key={c.label} {...c} />)}
       </div>
       {stats.total_revenue !== undefined && (
-        <div className="admin-card" style={{ padding: '24px 28px' }}>
-          <div className="admin-stat-card-label"><span className="material-symbols-outlined stat-icon">payments</span>Total Revenue</div>
-          <div className="admin-stat-card-value green" style={{ fontSize: 36 }}>${fmt(stats.total_revenue)}</div>
+        <div className="admin-stat-card colored emerald" style={{ marginTop: 24 }}>
+          <div className="admin-stat-card-header">
+            <span className="material-symbols-outlined stat-icon">payments</span>
+            <span className="admin-stat-card-label">Total Revenue</span>
+          </div>
+          <div className="admin-stat-card-value" style={{ fontSize: 42 }}>
+            <CountUp end={stats.total_revenue} prefix="$" />
+          </div>
         </div>
       )}
     </div>
@@ -145,38 +173,40 @@ function UsersSection() {
           </div>
         </div>
         {loading ? <LoadingState /> : users.length === 0 ? <EmptyState icon="group" text="No users found." /> : (
-          <table className="admin-table">
-            <thead><tr>
-              <th>User</th><th>Email</th><th>Plan</th><th>Status</th><th>Joined</th><th>Action</th>
-            </tr></thead>
-            <tbody>
-              {users.map(u => (
-                <tr key={u.id || u.user_id}>
-                  <td><div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div className="admin-avatar">{initials(u.display_name || u.email)}</div>
-                    <div>
-                      <div className="font-bold">{u.display_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—'}</div>
-                      {(u.first_name || u.last_name) && u.display_name && <div className="text-muted">{`${u.first_name || ''} ${u.last_name || ''}`.trim()}</div>}
-                    </div>
-                  </div></td>
-                  <td>{u.email || '—'}</td>
-                  <td><span className={`badge ${u.is_subscription_active ? 'badge-blue' : 'badge-slate'}`}>{u.plan_name || 'Free'}</span></td>
-                  <td><Badge type={u.status} /></td>
-                  <td className="text-muted">{fmtDate(u.join_at || u.created_at)}</td>
-                  <td>
-                    <button
-                      className={`btn-action ${u.status === 'active' ? 'btn-action-danger' : 'btn-action-success'}`}
-                      onClick={() => toggleStatus(u)}
-                      disabled={togglingId === (u.user_id || u.id)}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>{u.status === 'active' ? 'block' : 'check_circle'}</span>
-                      {togglingId === (u.user_id || u.id) ? '…' : u.status === 'active' ? 'Suspend' : 'Activate'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead><tr>
+                <th>User</th><th>Email</th><th>Plan</th><th>Status</th><th>Joined</th><th>Action</th>
+              </tr></thead>
+              <tbody>
+                {users.map(u => (
+                  <tr key={u.id || u.user_id}>
+                    <td><div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div className="admin-avatar">{initials(u.display_name || u.email)}</div>
+                      <div>
+                        <div className="font-bold">{u.display_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—'}</div>
+                        {(u.first_name || u.last_name) && u.display_name && <div className="text-muted">{`${u.first_name || ''} ${u.last_name || ''}`.trim()}</div>}
+                      </div>
+                    </div></td>
+                    <td>{u.email || '—'}</td>
+                    <td><span className={`badge ${u.is_subscription_active ? 'badge-blue' : 'badge-slate'}`}>{u.plan_name || 'Free'}</span></td>
+                    <td><Badge type={u.status} /></td>
+                    <td className="text-muted">{fmtDate(u.join_at || u.created_at)}</td>
+                    <td>
+                      <button
+                        className={`btn-action ${u.status === 'active' ? 'btn-action-danger' : 'btn-action-success'}`}
+                        onClick={() => toggleStatus(u)}
+                        disabled={togglingId === (u.user_id || u.id)}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 13 }}>{u.status === 'active' ? 'block' : 'check_circle'}</span>
+                        {togglingId === (u.user_id || u.id) ? '…' : u.status === 'active' ? 'Suspend' : 'Activate'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         <div className="admin-pagination">
           <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
@@ -304,14 +334,14 @@ function ActivitySection() {
       apiService.adminActivityDaily(start, end),
     ]).then(([s, d]) => {
       setStats(s?.data || s);
-      const arr = d?.data || d;
+      const arr = d?.daily_stats || d?.data?.daily_stats || d?.data || d;
       setDaily(Array.isArray(arr) ? arr : []);
     }).catch(() => { }).finally(() => setLoading(false));
   }, [start, end]);
 
   useEffect(() => { load(); }, [load]);
 
-  const maxVal = Math.max(...daily.map(d => d.messages || d.count || d.total || 0), 1);
+  const maxVal = Math.max(...daily.map(d => d.request_count || d.total_tokens || d.messages || d.count || d.total || 0), 1);
 
   // Helper to get icon for a stat key
   const getStatIcon = (key) => {
@@ -376,11 +406,12 @@ function ActivitySection() {
               </div>
               <div className="daily-chart">
                 {daily.map((d, i) => {
-                  const val = d.messages || d.count || d.total || 0;
+                  const val = d.request_count || d.total_tokens || d.messages || d.count || d.total || 0;
                   const h = Math.max(8, Math.round((val / maxVal) * 100));
                   const dateLabel = (d.date || d.day || '').slice(5);
+                  const tooltip = `Date: ${d.date || d.day}\nRequests: ${fmt(d.request_count || 0)}\nTokens: ${fmt(d.total_tokens || 0)}\nCost: $${fmt(d.total_cost || 0)}`;
                   return (
-                    <div className="daily-bar-group" key={i} title={`${d.date || d.day}: ${fmt(val)} messages`}>
+                    <div className="daily-bar-group" key={i} title={tooltip}>
                       <div className="daily-bar" style={{ height: `${h}%` }} />
                       <div className="daily-bar-label">{dateLabel}</div>
                     </div>
@@ -395,12 +426,13 @@ function ActivitySection() {
   );
 }
 
-// ── Subscriptions Section ─────────────────────────────
 function SubscriptionsSection() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [nextCursor, setNextCursor] = useState(null);
   const [cursor, setCursor] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState('');
   const [planFilter, setPlanFilter] = useState('');
   const [activeOnly, setActiveOnly] = useState(false);
 
@@ -408,10 +440,10 @@ function SubscriptionsSection() {
     setLoading(true);
     apiService.adminSubscriptions({ cursor: cur, page_size: 20, plan_type: planFilter || undefined, active_only: activeOnly })
       .then(r => {
-        // Handle various response shapes
-        const list = r?.subscriptions || r?.data?.subscriptions || r?.data || r?.items || (Array.isArray(r) ? r : []);
-        setItems(list);
-        setNextCursor(r?.pagination?.next_cursor || r?.next_cursor || null);
+        const list = r?.subscriptions || r?.data?.subscriptions || [];
+        setItems(Array.isArray(list) ? list : []);
+        setNextCursor(r?.pagination?.next_cursor || null);
+        setTotal(r?.pagination?.total ?? list.length ?? 0);
       })
       .catch(() => { })
       .finally(() => setLoading(false));
@@ -419,67 +451,128 @@ function SubscriptionsSection() {
 
   useEffect(() => { setCursor(null); load(null); }, [planFilter, activeOnly]);
 
+  const filtered = search.trim()
+    ? items.filter(s =>
+      (s.user_display_name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (s.user_email || '').toLowerCase().includes(search.toLowerCase()) ||
+      (s.plan_name || '').toLowerCase().includes(search.toLowerCase())
+    )
+    : items;
+
   return (
-    <div>
+    <div className="admin-section-content">
       <div className="admin-section-header">
-        <div className="admin-section-label">Billing</div>
+        <div className="admin-section-label">Billing Management</div>
         <div className="admin-section-title">Subscriptions</div>
       </div>
+
       <div className="admin-card">
-        <div className="admin-card-header">
-          <span className="admin-card-title">All Subscriptions</span>
-          <div className="admin-filter-row">
-            <select className="admin-filter-select" value={planFilter} onChange={e => setPlanFilter(e.target.value)}>
-              <option value="">All Plans</option>
-              <option value="starter">Starter</option>
-              <option value="professional">Professional</option>
-              <option value="enterprise">Enterprise</option>
-            </select>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#475569', cursor: 'pointer' }}>
-              <input type="checkbox" checked={activeOnly} onChange={e => setActiveOnly(e.target.checked)} style={{ accentColor: '#10b981' }} />
-              Active only
-            </label>
+        <div className="admin-toolbar">
+          <div className="admin-toolbar-group">
+            <span className="admin-card-title">All Subscriptions</span>
+            {total > 0 && <span className="admin-badge-count">{fmt(total)} total</span>}
+          </div>
+
+          <div className="admin-toolbar-actions">
+            <div className="admin-search-wrapper">
+              <span className="material-symbols-outlined">search</span>
+              <input
+                placeholder="Search by name or email…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
+
+            <div className="admin-filter-group">
+              <select
+                className="admin-select"
+                value={planFilter}
+                onChange={e => setPlanFilter(e.target.value)}
+              >
+                <option value="">All Plans</option>
+                <option value="starter">Starter</option>
+                <option value="professional">Professional</option>
+                <option value="enterprise">Enterprise</option>
+              </select>
+
+              <label className="admin-check-label">
+                <input
+                  type="checkbox"
+                  checked={activeOnly}
+                  onChange={e => setActiveOnly(e.target.checked)}
+                />
+                <span>Active Only</span>
+              </label>
+            </div>
           </div>
         </div>
-        {loading ? <LoadingState /> : items.length === 0 ? <EmptyState icon="subscriptions" text="No subscriptions found." /> : (
-          <table className="admin-table">
-            <thead><tr>
-              <th>User</th><th>Email</th><th>Plan</th><th>Status</th><th>Price/mo</th><th>Tokens Used</th><th>Started</th><th>Expires</th>
-            </tr></thead>
-            <tbody>
-              {items.map(s => (
-                <tr key={s.subscription_id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div className="admin-avatar">{initials(s.user_display_name || s.user_email)}</div>
-                      <span className="font-bold">{s.user_display_name || '—'}</span>
-                    </div>
-                  </td>
-                  <td>{s.user_email || '—'}</td>
-                  <td>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      <span className="badge badge-blue">{s.plan_name || '—'}</span>
-                      {s.plan_slug && <span className="text-muted">{s.plan_slug}</span>}
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`badge ${s.is_active ? 'badge-green' : 'badge-red'}`}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 11 }}>{s.is_active ? 'check_circle' : 'cancel'}</span>
-                      {s.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td className="font-bold">${fmt(s.price_per_month ?? 0)}</td>
-                  <td>{fmt(s.tokens_used ?? 0)}</td>
-                  <td className="text-muted">{fmtDate(s.started_at)}</td>
-                  <td className="text-muted">{fmtDate(s.expires_at)}</td>
+
+        {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="subscriptions" text="No subscriptions found." /> : (
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Plan Details</th>
+                  <th>Status</th>
+                  <th>Price</th>
+                  <th>Usage</th>
+                  <th>Billing Dates</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filtered.map(s => (
+                  <tr key={s.subscription_id}>
+                    <td>
+                      <div className="admin-user-cell">
+                        <div className="admin-avatar">{initials(s.user_display_name || s.user_email)}</div>
+                        <div className="admin-user-info">
+                          <div className="font-bold">{s.user_display_name || '—'}</div>
+                          <div className="text-muted">{s.user_email || '—'}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="admin-plan-cell">
+                        <span className="badge badge-blue">{s.plan_name || '—'}</span>
+                        <span className="text-muted" style={{ fontSize: 11 }}>{s.plan_slug}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`badge ${s.is_active ? 'badge-green' : 'badge-red'}`}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 12 }}>
+                          {s.is_active ? 'check_circle' : 'cancel'}
+                        </span>
+                        {s.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td><div className="font-bold">${fmt(s.price_per_month ?? 0)}<span className="text-muted" style={{ fontSize: 10, fontWeight: 400 }}>/mo</span></div></td>
+                    <td>
+                      <div className="admin-usage-cell">
+                        <span className="font-bold">{fmt(s.tokens_used ?? 0)}</span>
+                        <span className="text-muted" style={{ fontSize: 10 }}>tokens</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="admin-date-cell">
+                        <div><span className="text-muted" style={{ fontSize: 10, textTransform: 'uppercase' }}>Since:</span> {fmtDate(s.started_at)}</div>
+                        <div><span className="text-muted" style={{ fontSize: 10, textTransform: 'uppercase' }}>Until:</span> {fmtDate(s.expires_at)}</div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
+
         <div className="admin-pagination">
-          <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
-          <button disabled={!nextCursor} onClick={() => { setCursor(nextCursor); load(nextCursor); }}>Next →</button>
+          <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>
+            <span className="material-symbols-outlined">first_page</span> First
+          </button>
+          <button disabled={!nextCursor} onClick={() => { setCursor(nextCursor); load(nextCursor); }}>
+            Next <span className="material-symbols-outlined">last_page</span>
+          </button>
         </div>
       </div>
     </div>
@@ -537,36 +630,38 @@ function AgentsSection() {
           </div>
         </div>
         {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="smart_toy" text="No agents found." /> : (
-          <table className="admin-table">
-            <thead><tr>
-              <th>Agent</th><th>Role</th><th>Tone</th><th>Language</th><th>Business</th><th>Dialogs</th><th>Owner</th>
-            </tr></thead>
-            <tbody>
-              {filtered.map(a => (
-                <tr key={a.agent_id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div className="admin-avatar" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#fff' }}>smart_toy</span>
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead><tr>
+                <th>Agent</th><th>Role</th><th>Tone</th><th>Language</th><th>Business</th><th>Dialogs</th><th>Owner</th>
+              </tr></thead>
+              <tbody>
+                {filtered.map(a => (
+                  <tr key={a.agent_id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div className="admin-avatar" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}>
+                          <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#fff' }}>smart_toy</span>
+                        </div>
+                        <span className="font-bold">{a.agent_name || '—'}</span>
                       </div>
-                      <span className="font-bold">{a.agent_name || '—'}</span>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-blue">{a.agent_role || '—'}</span></td>
-                  <td><span className="badge badge-slate">{a.agent_tone || '—'}</span></td>
-                  <td>{a.agent_language || '—'}</td>
-                  <td>{a.business_name || '—'}</td>
-                  <td><span className="font-bold">{fmt(a.total_dialog ?? 0)}</span></td>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div className="admin-avatar" style={{ width: 26, height: 26, fontSize: 10 }}>{initials(a.user_display_name)}</div>
-                      <span>{a.user_display_name || '—'}</span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td><span className="badge badge-blue">{a.agent_role || '—'}</span></td>
+                    <td><span className="badge badge-slate">{a.agent_tone || '—'}</span></td>
+                    <td>{a.agent_language || '—'}</td>
+                    <td>{a.business_name || '—'}</td>
+                    <td><span className="font-bold">{fmt(a.total_dialog ?? 0)}</span></td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div className="admin-avatar" style={{ width: 26, height: 26, fontSize: 10 }}>{initials(a.user_display_name)}</div>
+                        <span>{a.user_display_name || '—'}</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         <div className="admin-pagination">
           <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
@@ -627,40 +722,42 @@ function PagesSection() {
           </div>
         </div>
         {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="pages" text="No pages found." /> : (
-          <table className="admin-table">
-            <thead><tr>
-              <th>Page</th><th>Category</th><th>Platform ID</th><th>Synced</th><th>Agent ID</th><th>Fan Count</th>
-            </tr></thead>
-            <tbody>
-              {filtered.map(p => (
-                <tr key={p.page_id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div className="admin-avatar" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#fff' }}>pages</span>
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead><tr>
+                <th>Page</th><th>Category</th><th>Platform ID</th><th>Synced</th><th>Agent ID</th><th>Fan Count</th>
+              </tr></thead>
+              <tbody>
+                {filtered.map(p => (
+                  <tr key={p.page_id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div className="admin-avatar" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)' }}>
+                          <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#fff' }}>pages</span>
+                        </div>
+                        <span className="font-bold">{p.page_name || '—'}</span>
                       </div>
-                      <span className="font-bold">{p.page_name || '—'}</span>
-                    </div>
-                  </td>
-                  <td><span className="badge badge-slate">{p.page_category || '—'}</span></td>
-                  <td><span className="text-muted" style={{ fontSize: 12, fontFamily: 'monospace' }}>{p.page_id_by_platform || '—'}</span></td>
-                  <td>
-                    <span className={`badge ${p.is_synced ? 'badge-green' : 'badge-red'}`}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 11 }}>{p.is_synced ? 'check_circle' : 'cancel'}</span>
-                      {p.is_synced ? 'Synced' : 'Not Synced'}
-                    </span>
-                  </td>
-                  <td>
-                    {p.agent_id
-                      ? <span className="text-muted" style={{ fontSize: 12, fontFamily: 'monospace' }}>{p.agent_id.slice(0, 8)}…</span>
-                      : <span className="badge badge-slate">Unassigned</span>
-                    }
-                  </td>
-                  <td><span className="font-bold">{fmt(p.page_fan_count ?? 0)}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td><span className="badge badge-slate">{p.page_category || '—'}</span></td>
+                    <td><span className="text-muted" style={{ fontSize: 12, fontFamily: 'monospace' }}>{p.page_id_by_platform || '—'}</span></td>
+                    <td>
+                      <span className={`badge ${p.is_synced ? 'badge-green' : 'badge-red'}`}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 11 }}>{p.is_synced ? 'check_circle' : 'cancel'}</span>
+                        {p.is_synced ? 'Synced' : 'Not Synced'}
+                      </span>
+                    </td>
+                    <td>
+                      {p.agent_id
+                        ? <span className="text-muted" style={{ fontSize: 12, fontFamily: 'monospace' }}>{p.agent_id.slice(0, 8)}…</span>
+                        : <span className="badge badge-slate">Unassigned</span>
+                      }
+                    </td>
+                    <td><span className="font-bold">{fmt(p.page_fan_count ?? 0)}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         <div className="admin-pagination">
           <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
@@ -721,47 +818,49 @@ function ConversationsSection() {
           </div>
         </div>
         {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="chat" text="No conversations found." /> : (
-          <table className="admin-table">
-            <thead><tr>
-              <th>User</th><th>Page</th><th>Messages</th><th>Human Needed</th><th>Synced</th><th>Last Updated</th>
-            </tr></thead>
-            <tbody>
-              {filtered.map(c => (
-                <tr key={c.conversation_id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div className="admin-avatar">{initials(c.name || 'User')}</div>
-                      <div>
-                        <div className="font-bold">{c.name || 'Unknown User'}</div>
-                        <div className="text-muted" style={{ fontSize: 11 }}>PSID: {c.psid}</div>
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead><tr>
+                <th>User</th><th>Page</th><th>Messages</th><th>Human Needed</th><th>Synced</th><th>Last Updated</th>
+              </tr></thead>
+              <tbody>
+                {filtered.map(c => (
+                  <tr key={c.conversation_id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div className="admin-avatar">{initials(c.name || 'User')}</div>
+                        <div>
+                          <div className="font-bold">{c.name || 'Unknown User'}</div>
+                          <div className="text-muted" style={{ fontSize: 11 }}>PSID: {c.psid}</div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="font-bold">{c.page_name || '—'}</div>
-                    <div className="text-muted" style={{ fontSize: 11 }}>ID: {c.page_id?.slice(0, 8)}…</div>
-                  </td>
-                  <td><span className="font-bold">{fmt(c.message_count ?? 0)}</span></td>
-                  <td>
-                    {c.is_human_needed && (
-                      <span className="badge badge-red">
-                        <span className="material-symbols-outlined" style={{ fontSize: 11 }}>warning</span>
-                        Yes
+                    </td>
+                    <td>
+                      <div className="font-bold">{c.page_name || '—'}</div>
+                      <div className="text-muted" style={{ fontSize: 11 }}>ID: {c.page_id?.slice(0, 8)}…</div>
+                    </td>
+                    <td><span className="font-bold">{fmt(c.message_count ?? 0)}</span></td>
+                    <td>
+                      {c.is_human_needed && (
+                        <span className="badge badge-red">
+                          <span className="material-symbols-outlined" style={{ fontSize: 11 }}>warning</span>
+                          Yes
+                        </span>
+                      )}
+                      {!c.is_human_needed && <span className="text-muted">—</span>}
+                    </td>
+                    <td>
+                      <span className={`badge ${c.is_synced ? 'badge-green' : 'badge-slate'}`}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 11 }}>{c.is_synced ? 'sync' : 'sync_disabled'}</span>
+                        {c.is_synced ? 'Synced' : 'No'}
                       </span>
-                    )}
-                    {!c.is_human_needed && <span className="text-muted">—</span>}
-                  </td>
-                  <td>
-                    <span className={`badge ${c.is_synced ? 'badge-green' : 'badge-slate'}`}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 11 }}>{c.is_synced ? 'sync' : 'sync_disabled'}</span>
-                      {c.is_synced ? 'Synced' : 'No'}
-                    </span>
-                  </td>
-                  <td className="text-muted">{fmtDate(c.updated_time)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td className="text-muted">{fmtDate(c.updated_time)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         <div className="admin-pagination">
           <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
@@ -829,28 +928,30 @@ function FeedbacksSection() {
           </div>
         </div>
         {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="feedback" text="No feedbacks found." /> : (
-          <table className="admin-table">
-            <thead><tr>
-              <th>Title & Details</th><th>Type</th><th>User ID</th><th>Date</th>
-            </tr></thead>
-            <tbody>
-              {filtered.map(f => (
-                <tr key={f.feedback_id}>
-                  <td style={{ maxWidth: 400 }}>
-                    <div className="font-bold">{f.title || 'No Title'}</div>
-                    <div className="text-muted" style={{ fontSize: 12, marginTop: 4, whiteSpace: 'normal' }}>{f.details || 'No details provided.'}</div>
-                  </td>
-                  <td>
-                    <span className="badge badge-slate">{f.type}</span>
-                  </td>
-                  <td>
-                    <div className="text-muted" style={{ fontSize: 11, fontFamily: 'monospace' }}>{f.user_id}</div>
-                  </td>
-                  <td className="text-muted">{fmtDate(f.created_at)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead><tr>
+                <th>Title & Details</th><th>Type</th><th>User ID</th><th>Date</th>
+              </tr></thead>
+              <tbody>
+                {filtered.map(f => (
+                  <tr key={f.feedback_id}>
+                    <td style={{ maxWidth: 400 }}>
+                      <div className="font-bold">{f.title || 'No Title'}</div>
+                      <div className="text-muted" style={{ fontSize: 12, marginTop: 4, whiteSpace: 'normal' }}>{f.details || 'No details provided.'}</div>
+                    </td>
+                    <td>
+                      <span className="badge badge-slate">{f.type}</span>
+                    </td>
+                    <td>
+                      <div className="text-muted" style={{ fontSize: 11, fontFamily: 'monospace' }}>{f.user_id}</div>
+                    </td>
+                    <td className="text-muted">{fmtDate(f.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         <div className="admin-pagination">
           <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
@@ -911,29 +1012,31 @@ function LeadsSection() {
           </div>
         </div>
         {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="contacts" text="No leads found." /> : (
-          <table className="admin-table">
-            <thead><tr>
-              <th>Lead</th><th>Email</th><th>Phone</th><th>Date</th>
-            </tr></thead>
-            <tbody>
-              {filtered.map((l, i) => (
-                <tr key={l.id || i}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div className="admin-avatar">{initials(l.name || 'Lead')}</div>
-                      <div>
-                        <div className="font-bold">{l.name || 'Unknown Lead'}</div>
-                        <div className="text-muted" style={{ fontSize: 11 }}>{l.company_name || 'Individual'}</div>
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead><tr>
+                <th>Lead</th><th>Email</th><th>Phone</th><th>Date</th>
+              </tr></thead>
+              <tbody>
+                {filtered.map((l, i) => (
+                  <tr key={l.id || i}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div className="admin-avatar">{initials(l.name || 'Lead')}</div>
+                        <div>
+                          <div className="font-bold">{l.name || 'Unknown Lead'}</div>
+                          <div className="text-muted" style={{ fontSize: 11 }}>{l.company_name || 'Individual'}</div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td>{l.work_mail || '—'}</td>
-                  <td>{l.phone_number || '—'}</td>
-                  <td className="text-muted">{fmtDate(l.created_at)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td>{l.work_mail || '—'}</td>
+                    <td>{l.phone_number || '—'}</td>
+                    <td className="text-muted">{fmtDate(l.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         <div className="admin-pagination">
           <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
@@ -962,6 +1065,7 @@ const NAV = [
 export default function AdminPanel() {
   const [section, setSection] = useState('dashboard');
   const [admin, setAdmin] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1024);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -997,9 +1101,9 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="admin-layout">
+    <div className={`admin-layout ${sidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`}>
       {/* Sidebar */}
-      <aside className="admin-sidebar">
+      <aside className={`admin-sidebar ${sidebarOpen ? '' : 'collapsed'}`}>
         <div className="admin-sidebar-logo">
           <img src={logoImg} alt="logo" />
           <img src={titleImg} alt="LYFFLOW" className="title-img" />
@@ -1037,7 +1141,12 @@ export default function AdminPanel() {
       {/* Main */}
       <div className="admin-main">
         <div className="admin-topbar">
-          <span className="admin-topbar-title">{currentLabel}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <span className="material-symbols-outlined">{sidebarOpen ? 'menu_open' : 'menu'}</span>
+            </button>
+            <span className="admin-topbar-title">{currentLabel}</span>
+          </div>
           <div className="admin-topbar-right">
             {admin && (
               <div className="admin-topbar-profile">
