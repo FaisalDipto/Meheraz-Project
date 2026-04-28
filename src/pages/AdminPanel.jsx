@@ -829,12 +829,88 @@ function FeedbacksSection() {
   );
 }
 
-const leadCols = [
-  { key: 'name', label: 'Name', render: r => <span className="font-bold">{r.name || '—'}</span> },
-  { key: 'email', label: 'Email', render: r => r.email || '—' },
-  { key: 'phone', label: 'Phone', render: r => r.phone || '—' },
-  { key: 'created_at', label: 'Date', render: r => fmtDate(r.created_at) },
-];
+// ── Leads Section ──────────────────────────────────────
+function LeadsSection() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [cursor, setCursor] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState('');
+
+  const load = useCallback((cur = null) => {
+    setLoading(true);
+    apiService.adminLeads({ cursor: cur, page_size: 20 })
+      .then(r => {
+        const list = r?.leads || r?.data?.leads || [];
+        setItems(Array.isArray(list) ? list : []);
+        setNextCursor(r?.pagination?.next_cursor || null);
+        setTotal(r?.pagination?.total ?? list.length ?? 0);
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { load(null); }, [load]);
+
+  const filtered = search.trim()
+    ? items.filter(l =>
+      (l.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (l.work_mail || '').toLowerCase().includes(search.toLowerCase()) ||
+      (l.phone_number || '').toLowerCase().includes(search.toLowerCase()) ||
+      (l.company_name || '').toLowerCase().includes(search.toLowerCase())
+    )
+    : items;
+
+  return (
+    <div>
+      <div className="admin-section-header">
+        <div className="admin-section-label">CRM</div>
+        <div className="admin-section-title">Leads</div>
+      </div>
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <span className="admin-card-title">All Leads{total > 0 && <span className="text-muted" style={{ fontWeight: 400, fontSize: 13, marginLeft: 8 }}>({fmt(total)} total)</span>}</span>
+          <div className="admin-filter-row">
+            <div className="admin-search-bar">
+              <span className="material-symbols-outlined">search</span>
+              <input placeholder="Search leads…" value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+          </div>
+        </div>
+        {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="contacts" text="No leads found." /> : (
+          <table className="admin-table">
+            <thead><tr>
+              <th>Lead</th><th>Email</th><th>Phone</th><th>Date</th>
+            </tr></thead>
+            <tbody>
+              {filtered.map((l, i) => (
+                <tr key={l.id || i}>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div className="admin-avatar">{initials(l.name || 'Lead')}</div>
+                      <div>
+                        <div className="font-bold">{l.name || 'Unknown Lead'}</div>
+                        <div className="text-muted" style={{ fontSize: 11 }}>{l.company_name || 'Individual'}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{l.work_mail || '—'}</td>
+                  <td>{l.phone_number || '—'}</td>
+                  <td className="text-muted">{fmtDate(l.created_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div className="admin-pagination">
+          <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
+          <button disabled={!nextCursor} onClick={() => { setCursor(nextCursor); load(nextCursor); }}>Next →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── Nav Items ──────────────────────────────────────────
 const NAV = [
@@ -882,7 +958,7 @@ export default function AdminPanel() {
       case 'pages': return <PagesSection />;
       case 'conversations': return <ConversationsSection />;
       case 'feedbacks': return <FeedbacksSection />;
-      case 'leads': return <GenericListSection title="Leads" label="CRM" icon="contacts" fetcher={apiService.adminLeads} columns={leadCols} />;
+      case 'leads': return <LeadsSection />;
       case 'activity': return <ActivitySection />;
       default: return null;
     }
