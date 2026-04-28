@@ -297,7 +297,7 @@ function ActivitySection() {
   const [start, setStart] = useState(monthAgo);
   const [end, setEnd] = useState(today);
 
-  const load = () => {
+  const load = useCallback(() => {
     setLoading(true);
     Promise.all([
       apiService.adminActivityStats(start, end),
@@ -307,49 +307,81 @@ function ActivitySection() {
       const arr = d?.data || d;
       setDaily(Array.isArray(arr) ? arr : []);
     }).catch(() => { }).finally(() => setLoading(false));
+  }, [start, end]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const maxVal = Math.max(...daily.map(d => d.messages || d.count || d.total || 0), 1);
+
+  // Helper to get icon for a stat key
+  const getStatIcon = (key) => {
+    const map = {
+      total_messages: 'message',
+      total_dialogs: 'chat',
+      total_tokens: 'data_usage',
+      active_users: 'group',
+      new_leads: 'contacts',
+      tokens_used: 'memory',
+      conversations: 'forum',
+      messages_sent: 'send',
+      messages_received: 'move_to_inbox'
+    };
+    return map[key] || 'analytics';
   };
-
-  useEffect(() => { load(); }, []);
-
-  const maxVal = Math.max(...daily.map(d => d.messages || d.count || 0), 1);
 
   return (
     <div>
       <div className="admin-section-header">
         <div className="admin-section-label">Analytics</div>
-        <div className="admin-section-title">Activity</div>
+        <div className="admin-section-title">Activity Metrics</div>
       </div>
-      <div className="admin-card" style={{ padding: '20px 24px', marginBottom: 20 }}>
+
+      <div className="admin-card" style={{ padding: '20px 24px', marginBottom: 24 }}>
         <div className="date-range-picker">
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>From</span>
-          <input type="date" value={start} onChange={e => setStart(e.target.value)} />
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>To</span>
-          <input type="date" value={end} onChange={e => setEnd(e.target.value)} />
-          <button className="btn-primary" onClick={load}>
-            <span className="material-symbols-outlined" style={{ fontSize: 15 }}>refresh</span>Apply
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#475569' }}>Range:</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <input type="date" value={start} onChange={e => setStart(e.target.value)} className="admin-filter-select" style={{ padding: '6px 12px' }} />
+              <span className="text-muted">to</span>
+              <input type="date" value={end} onChange={e => setEnd(e.target.value)} className="admin-filter-select" style={{ padding: '6px 12px' }} />
+            </div>
+          </div>
+          <button className="btn-action btn-action-success" onClick={load} style={{ marginLeft: 'auto', padding: '8px 16px' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>refresh</span>
+            Update Stats
           </button>
         </div>
       </div>
+
       {loading ? <LoadingState /> : (
         <>
           {stats && (
-            <div className="admin-stats-grid" style={{ marginBottom: 24 }}>
+            <div className="admin-stats-grid" style={{ marginBottom: 32 }}>
               {Object.entries(stats).map(([k, v]) => typeof v === 'number' && (
-                <StatCard key={k} label={k.replace(/_/g, ' ')} value={v} icon="bar_chart" />
+                <StatCard 
+                  key={k} 
+                  label={k.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} 
+                  value={v} 
+                  icon={getStatIcon(k)} 
+                />
               ))}
             </div>
           )}
+
           {daily.length > 0 && (
-            <div className="admin-card" style={{ padding: '24px 28px' }}>
-              <div className="admin-card-title" style={{ marginBottom: 16 }}>Daily Activity</div>
+            <div className="admin-card" style={{ padding: '28px' }}>
+              <div className="admin-card-header" style={{ border: 'none', padding: 0, marginBottom: 24 }}>
+                <span className="admin-card-title">Daily Activity Trend</span>
+                <span className="text-muted" style={{ fontWeight: 400, fontSize: 13 }}>Message volume over the selected period</span>
+              </div>
               <div className="daily-chart">
                 {daily.map((d, i) => {
                   const val = d.messages || d.count || d.total || 0;
                   const h = Math.max(8, Math.round((val / maxVal) * 100));
                   const dateLabel = (d.date || d.day || '').slice(5);
                   return (
-                    <div className="daily-bar-group" key={i} title={`${dateLabel}: ${val}`}>
-                      <div className="daily-bar" style={{ height: h }} />
+                    <div className="daily-bar-group" key={i} title={`${d.date || d.day}: ${fmt(val)} messages`}>
+                      <div className="daily-bar" style={{ height: `${h}%` }} />
                       <div className="daily-bar-label">{dateLabel}</div>
                     </div>
                   );
