@@ -545,11 +545,99 @@ function AgentsSection() {
   );
 }
 
-const pagesCols = [
-  { key: 'name', label: 'Page Name', render: r => <span className="font-bold">{r.name || '—'}</span> },
-  { key: 'page_id', label: 'Page ID', render: r => <span className="text-muted">{r.page_id || '—'}</span> },
-  { key: 'agent_name', label: 'Agent', render: r => r.agent_name || <span className="text-muted">Unassigned</span> },
-];
+// ── Pages Section ──────────────────────────────────────
+function PagesSection() {
+  const [pages, setPages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [cursor, setCursor] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState('');
+
+  const load = useCallback((cur = null) => {
+    setLoading(true);
+    apiService.adminPages({ cursor: cur, page_size: 20 })
+      .then(r => {
+        const list = r?.pages || r?.data?.pages || [];
+        setPages(Array.isArray(list) ? list : []);
+        setNextCursor(r?.pagination?.next_cursor || null);
+        setTotal(r?.pagination?.total ?? list.length ?? 0);
+      })
+      .catch(() => { })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { load(null); }, [load]);
+
+  // Client-side search filter
+  const filtered = search.trim()
+    ? pages.filter(p =>
+      (p.page_name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (p.page_category || '').toLowerCase().includes(search.toLowerCase()) ||
+      (p.page_id_by_platform || '').toLowerCase().includes(search.toLowerCase())
+    )
+    : pages;
+
+  return (
+    <div>
+      <div className="admin-section-header">
+        <div className="admin-section-label">Connected</div>
+        <div className="admin-section-title">Pages</div>
+      </div>
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <span className="admin-card-title">All Pages{total > 0 && <span className="text-muted" style={{ fontWeight: 400, fontSize: 13, marginLeft: 8 }}>({fmt(total)} total)</span>}</span>
+          <div className="admin-filter-row">
+            <div className="admin-search-bar">
+              <span className="material-symbols-outlined">search</span>
+              <input placeholder="Search pages…" value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+          </div>
+        </div>
+        {loading ? <LoadingState /> : filtered.length === 0 ? <EmptyState icon="pages" text="No pages found." /> : (
+          <table className="admin-table">
+            <thead><tr>
+              <th>Page</th><th>Category</th><th>Platform ID</th><th>Synced</th><th>Agent ID</th><th>Fan Count</th>
+            </tr></thead>
+            <tbody>
+              {filtered.map(p => (
+                <tr key={p.page_id}>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div className="admin-avatar" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)' }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#fff' }}>pages</span>
+                      </div>
+                      <span className="font-bold">{p.page_name || '—'}</span>
+                    </div>
+                  </td>
+                  <td><span className="badge badge-slate">{p.page_category || '—'}</span></td>
+                  <td><span className="text-muted" style={{ fontSize: 12, fontFamily: 'monospace' }}>{p.page_id_by_platform || '—'}</span></td>
+                  <td>
+                    <span className={`badge ${p.is_synced ? 'badge-green' : 'badge-red'}`}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 11 }}>{p.is_synced ? 'check_circle' : 'cancel'}</span>
+                      {p.is_synced ? 'Synced' : 'Not Synced'}
+                    </span>
+                  </td>
+                  <td>
+                    {p.agent_id
+                      ? <span className="text-muted" style={{ fontSize: 12, fontFamily: 'monospace' }}>{p.agent_id.slice(0, 8)}…</span>
+                      : <span className="badge badge-slate">Unassigned</span>
+                    }
+                  </td>
+                  <td><span className="font-bold">{fmt(p.page_fan_count ?? 0)}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div className="admin-pagination">
+          <button disabled={!cursor} onClick={() => { setCursor(null); load(null); }}>← First</button>
+          <button disabled={!nextCursor} onClick={() => { setCursor(nextCursor); load(nextCursor); }}>Next →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const convCols = [
   { key: 'id', label: 'ID', render: r => <span className="text-muted">{(r.conversation_id || r.id || '').slice(0, 10)}…</span> },
@@ -615,7 +703,7 @@ export default function AdminPanel() {
       case 'subscriptions': return <SubscriptionsSection />;
       case 'revenue': return <RevenueSection />;
       case 'agents': return <AgentsSection />;
-      case 'pages': return <GenericListSection title="Pages" label="Connected" icon="pages" fetcher={apiService.adminPages} columns={pagesCols} />;
+      case 'pages': return <PagesSection />;
       case 'conversations': return <GenericListSection title="Conversations" label="Inbox" icon="chat" fetcher={apiService.adminConversations} columns={convCols} />;
       case 'feedbacks': return <GenericListSection title="Feedbacks" label="Reports" icon="feedback" fetcher={apiService.adminFeedbacks} columns={feedbackCols} />;
       case 'leads': return <GenericListSection title="Leads" label="CRM" icon="contacts" fetcher={apiService.adminLeads} columns={leadCols} />;

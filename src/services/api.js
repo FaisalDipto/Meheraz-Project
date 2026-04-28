@@ -177,16 +177,18 @@ export const apiService = {
     if (user_id) q.set('user_id', user_id);
     return apiFetch(`/api/admin/agents?${q}`);
   },
-  adminPages: ({ cursor, page_size } = {}) => {
+  adminPages: ({ cursor, page_size, user_id } = {}) => {
     const q = new URLSearchParams();
     if (cursor) q.set('cursor', cursor);
     if (page_size) q.set('page_size', page_size);
+    if (user_id) q.set('user_id', user_id);
     return apiFetch(`/api/admin/pages?${q}`);
   },
-  adminConversations: ({ cursor, page_size } = {}) => {
+  adminConversations: ({ cursor, page_size, page_id } = {}) => {
     const q = new URLSearchParams();
     if (cursor) q.set('cursor', cursor);
     if (page_size) q.set('page_size', page_size);
+    if (page_id) q.set('page_id', page_id);
     return apiFetch(`/api/admin/conversations?${q}`);
   },
   adminFeedbacks: ({ cursor, page_size, type } = {}) => {
