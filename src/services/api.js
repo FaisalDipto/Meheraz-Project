@@ -6,10 +6,58 @@
 // In production, this might need to be an absolute URL if the frontend and backend servers differ
 const API_BASE = '';
 
+// Set to true to test frontend without a running backend
+const MOCK_MODE = window.location.search.includes('mock=true');
+
+const mockData = {
+  '/api/user/': { user: { id: 'mock_123', name: 'Demo User', email: 'demo@lyfflow.com', username: 'DemoUser' } },
+  '/api/pages': [
+    { page_id: 'page_1', name: 'Lyfflow Demo Page', category: 'Software', followers: 1250, agent_name: 'SalesBot' }
+  ],
+  '/api/agents': [
+    { agent_id: 'agent_1', name: 'SalesBot', role: 'Sales' },
+    { agent_id: 'agent_2', name: 'SupportBot', role: 'Support' }
+  ],
+  '/api/subscription': { is_active: true, plan: { plan_name: 'Enterprise', price: 99 } },
+  '/api/page/page_1': {
+    conversations: [
+      { id: 'conv_1', name: 'John Doe', snippet: 'Hello, I need help with my order.', updated_time: new Date().toISOString() },
+      { id: 'conv_2', name: 'Jane Smith', snippet: 'Is the product in stock?', updated_time: new Date().toISOString() }
+    ]
+  },
+  '/api/page/page_1/conversation/conv_1': {
+    messages: [
+      { id: 'm1', message: 'Hello, I need help with my order.', role: 'user', created_at: new Date(Date.now() - 100000).toISOString() },
+      { id: 'm2', message: 'Sure, I can help with that. What is your order number?', role: 'agent', created_at: new Date(Date.now() - 50000).toISOString() }
+    ]
+  },
+  '/api/page/page_1/conversation/conv_2': {
+    messages: [
+      { id: 'm3', message: 'Is the product in stock?', role: 'user', created_at: new Date(Date.now() - 200000).toISOString() }
+    ]
+  }
+};
+
 /**
  * Helper to perform fetch requests with default headers
  */
 const apiFetch = async (endpoint, options = {}) => {
+  if (MOCK_MODE) {
+    console.log(`[MOCK API] ${options.method || 'GET'} ${endpoint}`);
+    await new Promise(r => setTimeout(r, 400)); // Simulate latency
+    
+    // Exact match or partial match for dynamic IDs
+    const mockResponse = mockData[endpoint] || 
+                         Object.entries(mockData).find(([k]) => endpoint.startsWith(k))?.[1];
+
+    if (mockResponse) return mockResponse;
+    
+    // Default empty responses for un-mocked endpoints
+    if (endpoint.includes('conversations')) return [];
+    if (endpoint.includes('messages')) return [];
+    return { status: 'ok', message: 'Mock response' };
+  }
+
   const url = `${API_BASE}${endpoint}`;
 
   const headers = { ...options.headers };
@@ -33,7 +81,11 @@ const apiFetch = async (endpoint, options = {}) => {
     let errorMessage = 'An error occurred while fetching data';
     try {
       const errorData = await response.json();
-      errorMessage = errorData.detail || errorMessage;
+      if (Array.isArray(errorData.detail)) {
+        errorMessage = errorData.detail.map(d => `${d.loc.join('.')}: ${d.msg}`).join(' | ');
+      } else {
+        errorMessage = errorData.detail || errorMessage;
+      }
     } catch (e) {
       // Ignore parsing errors for non-JSON responses
     }

@@ -94,7 +94,7 @@ export default function Hero() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative isolate min-h-screen flex items-center pt-[96px] sm:pt-[136px] pb-[60px] sm:pb-[88px] overflow-hidden">
+      <section className="relative isolate min-h-[90vh] flex flex-col justify-start pt-24 pb-12 sm:pt-32 sm:pb-16 overflow-hidden">
         <div className="absolute inset-0 bg-background -z-30"></div>
         
           {/* Floating Background Layers — hidden on very small screens */}
@@ -200,7 +200,7 @@ export default function Hero() {
                   <span className="material-symbols-outlined text-3xl" data-icon="hub">hub</span>
                 </div>
                 <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Connect</h3>
-                <p className="text-on-surface-variant leading-relaxed">Securely link your social profiles in seconds with our one-click integration suite.</p>
+                <p className="text-on-surface-variant leading-relaxed">Seamlessly integrate your existing tech stack using our robust API or pre-built connectors to centralize your data stream.</p>
               </div>
             </div>
             <div className="reveal [transition-delay:150ms]">
@@ -209,7 +209,7 @@ export default function Hero() {
                   <span className="material-symbols-outlined text-3xl" data-icon="auto_awesome">auto_awesome</span>
                 </div>
                 <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Create Agent & Upload Knowledge</h3>
-                <p className="text-on-surface-variant leading-relaxed">Build intelligent conversation flows using our visual drag-and-drop AI architect.</p>
+                <p className="text-on-surface-variant leading-relaxed">Configure custom logic and feed your model specialized datasets to ensure high-accuracy responses tailored to your specific use case.</p>
               </div>
             </div>
             <div className="reveal [transition-delay:300ms]">
@@ -218,7 +218,7 @@ export default function Hero() {
                   <span className="material-symbols-outlined text-3xl" data-icon="trending_up">trending_up</span>
                 </div>
                 <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Assign Agent</h3>
-                <p className="text-on-surface-variant leading-relaxed">Watch your lead list expand and conversion rates soar with 24/7 engagement.</p>
+                <p className="text-on-surface-variant leading-relaxed">Deploy your finished agents across multiple channels with granular control over permissions and real-time performance monitoring.</p>
               </div>
             </div>
           </div>

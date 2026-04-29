@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { LayoutDashboard, MessageSquare, Book, UserRound, MessageCircleWarning, Settings, Plus, User, LogOut, ChevronDown, TrendingUp, Headphones, HelpCircle, Palette, Monitor, Users, Trash2, Mail, Menu, X, Edit2 } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Book, UserRound, MessageCircleWarning, Settings, Plus, User, LogOut, ChevronDown, TrendingUp, Headphones, HelpCircle, Palette, Monitor, Users, Trash2, Mail, Menu, X, Edit2, CreditCard, Zap, CheckCircle2, ShieldCheck, Clock } from 'lucide-react';
 import { useWidget } from '../context/WidgetContext';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/api';
@@ -276,10 +276,15 @@ const ConversationList = ({ pages, user }) => {
   const [loading, setLoading] = useState(false);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
   const [mobileShowChat, setMobileShowChat] = useState(false);
-  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -335,6 +340,7 @@ const ConversationList = ({ pages, user }) => {
   useEffect(() => {
     if (!selectedPageId || !activeContact) return;
     setLoadingMsgs(true);
+    setMessages([]); // Clear previous messages
     const convId = activeContact.id || activeContact.conversation_id || activeContact.id;
     apiService.getConversationDetails(selectedPageId, convId)
       .then(data => {
@@ -455,8 +461,8 @@ const ConversationList = ({ pages, user }) => {
   return (
     <div className="flex h-full w-full bg-slate-50 animate-fade-in-up flex-1 overflow-hidden">
       {/* Conversation List Column */}
-      <main className={`flex flex-col bg-slate-50 border-r border-slate-200 shrink-0 ${mobileShowChat ? 'hidden md:flex' : 'flex'} w-full md:w-96`}>
-        <div className="p-4 md:p-8">
+      <main className={`flex flex-col bg-slate-50 border-r border-slate-200 shrink-0 ${mobileShowChat ? 'hidden md:flex' : 'flex'} w-full md:w-80 lg:w-96 overflow-hidden`}>
+        <div className="p-4 md:p-6 lg:p-8">
           <header className="mb-8 flex justify-between items-start">
             <div>
               <p className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mb-2">Inbox</p>
@@ -498,9 +504,9 @@ const ConversationList = ({ pages, user }) => {
                )}
             </div>
           </header>
-          <div className="relative group">
+          <div className="relative group w-full">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors">search</span>
-            <input className="w-full bg-white border border-slate-200 shadow-sm rounded-xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition-all text-slate-900 placeholder:text-slate-400" placeholder="Search conversations..." type="text"/>
+            <input className="w-full max-w-full bg-white border border-slate-200 shadow-sm rounded-xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-slate-900 outline-none text-slate-900 placeholder:text-slate-400 box-border" placeholder="Search conversations..." type="text"/>
           </div>
         </div>
         
@@ -591,7 +597,7 @@ const ConversationList = ({ pages, user }) => {
               </div>
             </header>
 
-            <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-slate-50/20">
+            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-8 space-y-8 bg-slate-50/20">
               {loadingMsgs ? (
                 <div className="text-center text-slate-400 mt-10">Loading messages...</div>
               ) : messages.length === 0 ? (
@@ -602,7 +608,7 @@ const ConversationList = ({ pages, user }) => {
                     <span className="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase py-2 px-4 rounded-full bg-slate-100 mb-6">Chat History</span>
                   </div>
                   {messages.map(msg => renderChatMessage(msg))}
-                  <div ref={messagesEndRef} />
+
                 </>
               )}
             </div>
@@ -2531,6 +2537,357 @@ const SettingsPanel = () => {
   );
 };
 
+const SubscriptionPanel = () => {
+  const [subData, setSubData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [pendingPlan, setPendingPlan] = useState(null);
+  const plansRef = useRef(null);
+
+  const plans = [
+    { name: 'FREE', price: 0, features: ['1 Page', '1 Agent', '1,000 Tokens/mo'], color: 'slate' },
+    { name: 'STARTER', price: 29, features: ['3 Pages', '5 Agents', '10,000 Tokens/mo', 'Email Support'], color: 'blue', unavailable: true },
+    { name: 'GROWTH', price: 79, features: ['10 Pages', 'Unlimited Agents', '50,000 Tokens/mo', 'Priority Support'], color: 'emerald', unavailable: true },
+    { name: 'AGENCY', price: 199, features: ['Unlimited Pages', 'Unlimited Agents', 'Unlimited Tokens', 'Dedicated Account Manager'], color: 'purple', unavailable: true }
+  ];
+
+  const fetchSubscription = async () => {
+    try {
+      setLoading(true);
+      const data = await apiService.getSubscription();
+      setSubData(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubscription();
+  }, []);
+
+  const handleSubscribe = async (planName) => {
+    // If it's a paid plan and we haven't shown the modal yet, show it
+    if (planName !== 'FREE' && !showPaymentModal) {
+      const plan = plans.find(p => p.name === planName);
+      setPendingPlan(plan);
+      setShowPaymentModal(true);
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const subRequest = { 
+        subscription_type: planName.toUpperCase(), 
+        num_months: 1 
+      };
+      console.log("Subscribing with:", subRequest);
+      
+      await apiService.subscribe(subRequest);
+      await fetchSubscription();
+      setShowPaymentModal(false);
+      setPendingPlan(null);
+      const container = document.querySelector('.dashboard-content-wrapper');
+      if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      alert(`Subscription failed: ${err.message}`);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const scrollToPlans = () => {
+    const container = document.querySelector('.dashboard-content-wrapper');
+    if (container && plansRef.current) {
+      container.scrollTo({
+        top: plansRef.current.offsetTop - 40,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  if (loading) return <div className="p-8 text-center text-slate-400">Loading subscription details...</div>;
+
+  const currentPlan = subData?.plan || { plan_name: 'NONE' };
+  const usage = subData?.usage || { pages_used: 0, agents_used: 0, tokens_used: 0 };
+  
+  // Format dates from API response
+  const startedAt = subData?.started_at ? new Date(subData.started_at).toLocaleDateString(undefined, { 
+    year: 'numeric', month: 'short', day: 'numeric' 
+  }) : 'N/A';
+  
+  const expiresAt = subData?.expires_at ? new Date(subData.expires_at).toLocaleDateString(undefined, { 
+    year: 'numeric', month: 'short', day: 'numeric' 
+  }) : 'N/A';
+
+  const getProgress = (used, max) => {
+    if (!max || max === 0) return 0;
+    return Math.min((used / max) * 100, 100);
+  };
+
+  return (
+    <div className="dashboard-content-area space-y-8 animate-fade-in-up pb-12">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Subscription & Billing</h1>
+          <p className="text-slate-500 mt-1">Manage your plan and track your usage limits</p>
+        </div>
+        {subData?.is_active && (
+          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full border border-emerald-100 font-bold text-sm">
+            <ShieldCheck size={18} />
+            Active Subscription
+          </div>
+        )}
+      </header>
+
+      {/* Current Plan Overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col md:flex-row gap-8 items-center">
+          <div className="w-32 h-32 bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-white shrink-0 shadow-lg">
+            <span className="text-[10px] uppercase font-bold tracking-widest opacity-60 mb-1">Plan</span>
+            <span className="text-xl font-black">{currentPlan.plan_name}</span>
+          </div>
+          <div className="flex-1 space-y-4">
+            <div className="flex flex-wrap gap-6">
+              <div>
+                <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">Started On</p>
+                <p className="text-sm font-bold text-slate-700">{startedAt}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">Expires On</p>
+                <p className="text-sm font-bold text-slate-700">{expiresAt}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">Monthly Cost</p>
+                <p className="text-sm font-bold text-slate-700">${currentPlan.price_per_month}/mo</p>
+              </div>
+            </div>
+            <div className="pt-4 flex gap-3">
+              <button 
+                onClick={scrollToPlans}
+                className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:scale-105 transition-transform shadow-md"
+              >
+                Change Plan
+              </button>
+              <button className="px-6 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-slate-900 rounded-3xl p-8 text-white shadow-xl flex flex-col justify-between overflow-hidden relative group">
+          <Zap className="absolute -top-4 -right-4 w-32 h-32 text-white opacity-[0.03] rotate-12 group-hover:scale-110 transition-transform duration-700" />
+          <div>
+            <h3 className="text-lg font-bold mb-1">Usable Tokens</h3>
+            <p className="text-slate-400 text-sm mb-6">Available for AI operations</p>
+            <div className="text-4xl font-black">{subData?.usable_token?.toLocaleString() || 0}</div>
+          </div>
+          <div className="mt-8">
+            <button className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-bold transition-colors shadow-lg shadow-emerald-500/20">Buy More Tokens</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Usage Section */}
+
+
+
+      {/* Usage Section */}
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+        <h2 className="text-xl font-black text-slate-900 mb-8 flex items-center gap-2">
+          <TrendingUp className="text-blue-500" />
+          Usage Statistics
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="space-y-4">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">Pages Connected</p>
+                <p className="text-2xl font-black text-slate-900">{usage.pages_used} <span className="text-sm font-normal text-slate-400">/ {currentPlan.max_pages}</span></p>
+              </div>
+            </div>
+            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-blue-500 rounded-full transition-all duration-1000" 
+                style={{ width: `${getProgress(usage.pages_used, currentPlan.max_pages)}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">Agents Created</p>
+                <p className="text-2xl font-black text-slate-900">{usage.agents_used} <span className="text-sm font-normal text-slate-400">/ {currentPlan.max_agents}</span></p>
+              </div>
+            </div>
+            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-emerald-500 rounded-full transition-all duration-1000" 
+                style={{ width: `${getProgress(usage.agents_used, currentPlan.max_agents)}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">Tokens Used (Monthly)</p>
+                <p className="text-2xl font-black text-slate-900">{usage.tokens_used?.toLocaleString()} <span className="text-sm font-normal text-slate-400">/ {currentPlan.max_tokens_per_month?.toLocaleString()}</span></p>
+              </div>
+            </div>
+            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-purple-500 rounded-full transition-all duration-1000" 
+                style={{ width: `${getProgress(usage.tokens_used, currentPlan.max_tokens_per_month)}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Plan Selection */}
+      <div className="space-y-6" ref={plansRef}>
+        <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+          <Palette className="text-emerald-500" />
+          Choose a Plan
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {plans.map(plan => {
+            const isCurrent = plan.name === currentPlan.plan_name;
+            const colorClass = plan.color === 'emerald' ? 'border-emerald-500 ring-4 ring-emerald-500/10' : 
+                               plan.color === 'blue' ? 'border-blue-500 ring-4 ring-blue-500/10' :
+                               plan.color === 'purple' ? 'border-purple-500 ring-4 ring-purple-500/10' : 'border-slate-200 hover:border-slate-300';
+
+            return (
+              <div 
+                key={plan.name} 
+                className={`bg-white rounded-[2rem] p-8 border-2 ${isCurrent ? colorClass : 'border-slate-100'} shadow-sm flex flex-col h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group cursor-default`}
+              >
+                {isCurrent && (
+                  <div className="absolute top-0 right-0 bg-emerald-500 text-white px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest animate-fade-in">
+                    Current Plan
+                  </div>
+                )}
+                <div className="mb-6">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 group-hover:text-slate-600 transition-colors">{plan.name}</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-black text-slate-900 group-hover:scale-110 origin-left transition-transform duration-300">${plan.price}</span>
+                    <span className="text-slate-400 text-sm font-medium">/mo</span>
+                  </div>
+                </div>
+                <div className="flex-1 space-y-4 mb-8">
+                  {plan.features.map((feat, idx) => (
+                    <div key={idx} className="flex items-start gap-3 text-sm text-slate-600 group-hover:text-slate-900 transition-colors">
+                      <CheckCircle2 className={`shrink-0 mt-0.5 transition-transform duration-300 group-hover:scale-125 ${isCurrent ? 'text-emerald-500' : 'text-slate-300 group-hover:text-emerald-500'}`} size={18} />
+                      <span className="font-medium">{feat}</span>
+                    </div>
+                  ))}
+                </div>
+                <button 
+                  disabled={isCurrent || submitting || plan.unavailable}
+                  onClick={() => handleSubscribe(plan.name)}
+                  className={`w-full py-4 rounded-2xl font-black text-sm transition-all duration-200 ${
+                    isCurrent 
+                      ? 'bg-slate-100 text-slate-400 cursor-default' 
+                      : plan.unavailable
+                        ? 'bg-slate-50 text-slate-300 cursor-not-allowed'
+                        : 'bg-slate-900 text-white hover:bg-slate-800 hover:scale-[1.05] active:scale-95 shadow-xl shadow-slate-200'
+                  }`}
+                >
+                  {isCurrent ? 'Active' : plan.unavailable ? 'Unavailable' : submitting ? 'Processing...' : `Select ${plan.name}`}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Mock Payment Modal */}
+      {showPaymentModal && pendingPlan && (
+        <div className="fixed inset-0 z-[10002] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-fade-in">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up border border-white/20">
+            <div className="p-8 pb-4 flex items-center justify-between">
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center">
+                <CreditCard className="text-slate-900" size={24} />
+              </div>
+              <button onClick={() => setShowPaymentModal(false)} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-50 transition-colors">
+                <X size={20} className="text-slate-400" />
+              </button>
+            </div>
+
+            <div className="px-8 mb-8">
+              <h2 className="text-2xl font-black text-slate-900 mb-1">Complete Purchase</h2>
+              <p className="text-sm text-slate-500 font-medium">You are subscribing to the <span className="text-slate-900 font-bold">{pendingPlan.name}</span> plan.</p>
+              
+              <div className="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-0.5">Total due today</p>
+                  <p className="text-2xl font-black text-slate-900">${pendingPlan.price}.00</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-0.5">Billing cycle</p>
+                  <p className="text-sm font-bold text-slate-700">Monthly</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="px-8 space-y-4 mb-8">
+              <div className="space-y-1.5">
+                <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400 ml-1">Card details</label>
+                <div className="relative">
+                  <input type="text" placeholder="4242 4242 4242 4242" readOnly className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-slate-400 transition-colors" />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3 opacity-50" />
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-4 opacity-50" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400 ml-1">Expiry</label>
+                  <input type="text" placeholder="MM / YY" readOnly className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-slate-400 transition-colors" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400 ml-1">CVC</label>
+                  <input type="text" placeholder="•••" readOnly className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-slate-400 transition-colors" />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8 pt-0">
+              <button 
+                onClick={() => handleSubscribe(pendingPlan.name)}
+                disabled={submitting}
+                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {submitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck size={18} />
+                    Confirm & Pay ${pendingPlan.price}.00
+                  </>
+                )}
+              </button>
+              <p className="text-[10px] text-center text-slate-400 mt-4 font-medium uppercase tracking-widest flex items-center justify-center gap-1.5">
+                <ShieldCheck size={12} className="text-emerald-500" />
+                Secure Mock Checkout
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const TutorialPanel = () => {
   return (
     <div className="dashboard-content-area animate-fade-in-up" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '600px' }}>
@@ -2659,6 +3016,7 @@ export default function Dashboard() {
       case 'agent': return <AgentPanel user={user} pages={pages} onUpdate={fetchData} onAgentCreated={(newAgent) => setUser(prev => prev ? { ...prev, agents: [...(prev.agents || []), newAgent] } : prev)} onAgentEdited={(id, payload) => setUser(prev => prev ? { ...prev, agents: (prev.agents || []).map(a => a.agent_id === id ? { ...a, ...payload } : a) } : prev)} />;
       case 'feedback': return <FeedbackPanel />;
       case 'settings': return <SettingsPanel />;
+      case 'subscription': return <SubscriptionPanel />;
       case 'tutorial': return <TutorialPanel />;
       default: return <div className="dashboard-content-area"><h2>Coming Soon</h2></div>;
     }
@@ -2675,14 +3033,14 @@ export default function Dashboard() {
       )}
 
       {/* Sidebar */}
-      <aside className={`bg-slate-50 border-r border-slate-100 flex flex-col font-['Epilogue'] font-medium h-full py-8 shrink-0 transition-all duration-300
-        fixed top-0 left-0 w-56 px-3 z-[10000]
+      <aside className={`bg-slate-50 border-r border-slate-100 flex flex-col font-['Epilogue'] font-medium h-full pb-20 shrink-0 transition-all duration-300
+        fixed top-0 left-0 w-56 z-[10000] overflow-y-auto
         ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
         ${isSidebarCollapsed ? 'md:-translate-x-full md:w-0 md:px-0 md:border-none md:overflow-hidden' : 'md:translate-x-0 md:relative md:w-56 md:px-3 xl:w-64 xl:px-4 md:z-auto md:shadow-none'}`}>
-        <div className="p-0 m-0 mb-6 pb-6 w-full flex items-center justify-start px-2 border-b border-slate-200">
-          <div className="flex items-center gap-[6px] px-2">
-            <img src={logoImg} alt="LYFFLOW" style={{ height: '36px', width: 'auto', filter: 'brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%)' }} />
-            <img src={titleImg} alt="LYFFLOW" style={{ height: '22px', width: 'auto', filter: 'brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%)' }} />
+        <div className="h-16 mb-6 flex items-center justify-start px-4 border-b border-slate-100 w-full shrink-0">
+          <div className="flex items-center gap-[6px]">
+            <img src={logoImg} alt="LYFFLOW" style={{ height: '32px', width: 'auto', filter: 'brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%)' }} />
+            <img src={titleImg} alt="LYFFLOW" style={{ height: '20px', width: 'auto', filter: 'brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%)' }} />
           </div>
           {/* Mobile Close Button */}
           <button className="md:hidden ml-auto bg-transparent border-none p-0 cursor-pointer text-slate-400" onClick={() => setIsSidebarOpen(false)}>
@@ -2696,8 +3054,9 @@ export default function Dashboard() {
             { id: 'conversation', icon: MessageSquare, label: 'Conversations' },
             { id: 'knowledge', icon: Book, label: 'Knowledge' },
             { id: 'agent', icon: UserRound, label: 'Agents' },
+            { id: 'subscription', icon: CreditCard, label: 'Subscription' },
             { id: 'feedback', icon: MessageCircleWarning, label: 'Feedback' },
-            { id: 'tutorial', icon: Settings, label: 'Tutorial' }
+            { id: 'tutorial', icon: Headphones, label: 'Tutorial' }
           ].map(item => (
             <button
               key={item.id}
@@ -2716,7 +3075,7 @@ export default function Dashboard() {
           ))}
         </nav>
 
-        <div className="mt-auto pt-8 border-t border-slate-100 space-y-1">
+        <div className="mt-auto pt-8 border-t border-slate-100 space-y-1 mb-16">
           <button className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-100 transition-all rounded-lg cursor-pointer border-none bg-transparent text-left">
             <HelpCircle size={20} />
             <span className="text-[15px]">Support</span>
@@ -2724,7 +3083,7 @@ export default function Dashboard() {
           <button onClick={() => { setActiveTab('settings'); setIsSidebarOpen(false); }} 
             className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'settings' ? 'text-emerald-600 font-bold bg-[#ecfdf5]' : 'text-slate-500 hover:bg-slate-100 bg-transparent'}`}
           >
-            <Settings size={20} />
+            <span className="material-symbols-outlined text-[20px]">settings</span>
             <span className="text-[15px]">Settings</span>
           </button>
         </div>
@@ -2748,7 +3107,7 @@ export default function Dashboard() {
             >
               <Menu size={24} />
             </button>
-            <span className="workspace-name">My Workspace</span>
+            <span className="workspace-name" style={{ fontWeight: 700, fontSize: '18px', color: '#0f172a' }}>My Workspace</span>
           </div>
           <div className="top-nav-right">
             <button
@@ -2770,7 +3129,7 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <div className="dashboard-content-wrapper">
+        <div className={`dashboard-content-wrapper ${activeTab === 'conversation' ? 'no-scroll' : ''}`}>
           {renderContent()}
 
           {/* Profile Slideout Drawer */}
