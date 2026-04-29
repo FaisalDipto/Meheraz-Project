@@ -2888,6 +2888,122 @@ const SubscriptionPanel = () => {
   );
 };
 
+const SupportPanel = () => {
+  const [ticketType, setTicketType] = useState('technical');
+  
+  return (
+    <div className="dashboard-content-area animate-fade-in-up space-y-8 pb-20">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <h2 className="text-4xl font-headline font-black tracking-tighter text-slate-900 mb-2">Support Center</h2>
+          <p className="text-slate-500 font-medium max-w-lg">How can we help you today? Search our knowledge base or reach out to our team.</p>
+        </div>
+        <div className="flex items-center gap-3 bg-emerald-50 px-4 py-3 rounded-2xl border border-emerald-100">
+          <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
+          <span className="text-xs font-black text-emerald-700 uppercase tracking-widest">Support Online</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { icon: 'account_circle', title: 'Account Access', desc: 'Login issues, password resets, and profile settings.' },
+          { icon: 'payments', title: 'Billing & Plans', desc: 'Questions about subscriptions, invoices, and payment.' },
+          { icon: 'smart_toy', title: 'AI & Agents', desc: 'Configure your bots, set triggers, and manage flows.' },
+          { icon: 'code', title: 'API & Tech', desc: 'Webhooks, integration docs, and custom development.' }
+        ].map((item, idx) => (
+          <button key={idx} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all text-left group">
+            <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-slate-900 transition-colors">
+              <span className="material-symbols-outlined text-slate-400 group-hover:text-white transition-colors">{item.icon}</span>
+            </div>
+            <h3 className="font-bold text-slate-900 mb-2">{item.title}</h3>
+            <p className="text-xs text-slate-500 leading-relaxed font-medium">{item.desc}</p>
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+          <div className="p-8 border-b border-slate-50">
+            <h3 className="text-xl font-black text-slate-900">Open a Support Ticket</h3>
+            <p className="text-sm text-slate-400 font-medium">Expected response time: 2-4 business hours</p>
+          </div>
+          <div className="p-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400 ml-1">Inquiry Type</label>
+                <select 
+                  value={ticketType}
+                  onChange={(e) => setTicketType(e.target.value)}
+                  className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-slate-900 transition-colors appearance-none"
+                >
+                  <option value="technical">Technical Support</option>
+                  <option value="billing">Billing Inquiry</option>
+                  <option value="feature">Feature Request</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400 ml-1">Subject</label>
+                <input type="text" placeholder="Brief summary of your issue" className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-slate-900 transition-colors" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400 ml-1">Message Details</label>
+              <textarea placeholder="Describe your issue in detail..." rows={6} className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-slate-900 transition-colors resize-none"></textarea>
+            </div>
+            <button className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 active:scale-95">
+              Submit Ticket
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700" />
+            <div className="relative z-10">
+              <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
+                <span className="material-symbols-outlined text-white">chat</span>
+              </div>
+              <h3 className="text-xl font-black mb-2">Live Chat</h3>
+              <p className="text-slate-400 text-sm font-medium mb-6">Talk to a human expert right now for instant assistance.</p>
+              <button className="w-full py-4 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-400 transition-all active:scale-95">
+                Start Chat
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm">
+            <h4 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-slate-400" style={{fontSize: '20px'}}>contact_support</span>
+              Direct Contacts
+            </h4>
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center">
+                  <span className="material-symbols-outlined text-slate-400" style={{fontSize: '20px'}}>mail</span>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Email Us</p>
+                  <p className="text-sm font-bold text-slate-700">support@lyfflow.com</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center">
+                  <span className="material-symbols-outlined text-slate-400" style={{fontSize: '20px'}}>public</span>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Global Sales</p>
+                  <p className="text-sm font-bold text-slate-700">sales@lyfflow.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const TutorialPanel = () => {
   return (
     <div className="dashboard-content-area animate-fade-in-up" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '600px' }}>
@@ -3017,6 +3133,7 @@ export default function Dashboard() {
       case 'feedback': return <FeedbackPanel />;
       case 'settings': return <SettingsPanel />;
       case 'subscription': return <SubscriptionPanel />;
+      case 'support': return <SupportPanel />;
       case 'tutorial': return <TutorialPanel />;
       default: return <div className="dashboard-content-area"><h2>Coming Soon</h2></div>;
     }
@@ -3076,7 +3193,10 @@ export default function Dashboard() {
         </nav>
 
         <div className="mt-auto pt-8 border-t border-slate-100 space-y-1 mb-16">
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-100 transition-all rounded-lg cursor-pointer border-none bg-transparent text-left">
+          <button 
+            onClick={() => { setActiveTab('support'); setIsSidebarOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'support' ? 'text-emerald-600 font-bold bg-[#ecfdf5]' : 'text-slate-500 hover:bg-slate-100 bg-transparent'}`}
+          >
             <HelpCircle size={20} />
             <span className="text-[15px]">Support</span>
           </button>
