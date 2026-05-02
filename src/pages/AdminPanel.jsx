@@ -440,8 +440,13 @@ function SubscriptionsSection() {
     setLoading(true);
     apiService.adminSubscriptions({ cursor: cur, page_size: 20, plan_type: planFilter || undefined, active_only: activeOnly })
       .then(r => {
-        const list = r?.subscriptions || r?.data?.subscriptions || [];
-        setItems(Array.isArray(list) ? list : []);
+        let list = [];
+        if (Array.isArray(r)) list = r;
+        else if (r?.subscriptions && Array.isArray(r.subscriptions)) list = r.subscriptions;
+        else if (r?.data?.subscriptions && Array.isArray(r.data.subscriptions)) list = r.data.subscriptions;
+        else if (r && typeof r === 'object' && r.subscription_id) list = [r]; // Single object fallback
+
+        setItems(list);
         setNextCursor(r?.pagination?.next_cursor || null);
         setTotal(r?.pagination?.total ?? list.length ?? 0);
       })
@@ -452,11 +457,15 @@ function SubscriptionsSection() {
   useEffect(() => { setCursor(null); load(null); }, [planFilter, activeOnly]);
 
   const filtered = search.trim()
-    ? items.filter(s =>
-      (s.user_display_name || '').toLowerCase().includes(search.toLowerCase()) ||
-      (s.user_email || '').toLowerCase().includes(search.toLowerCase()) ||
-      (s.plan_name || '').toLowerCase().includes(search.toLowerCase())
-    )
+    ? items.filter(s => {
+        const fullName = `${s.first_name || ''} ${s.last_name || ''}`.trim();
+        const planName = s.plan_name || s.plan?.plan_name || '';
+        return (
+          fullName.toLowerCase().includes(search.toLowerCase()) ||
+          (s.email || '').toLowerCase().includes(search.toLowerCase()) ||
+          planName.toLowerCase().includes(search.toLowerCase())
+        );
+      })
     : items;
 
   return (
@@ -521,46 +530,51 @@ function SubscriptionsSection() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(s => (
-                  <tr key={s.subscription_id}>
-                    <td>
-                      <div className="admin-user-cell">
-                        <div className="admin-avatar">{initials(s.user_display_name || s.user_email)}</div>
-                        <div className="admin-user-info">
-                          <div className="font-bold">{s.user_display_name || '—'}</div>
-                          <div className="text-muted">{s.user_email || '—'}</div>
+                {filtered.map((s, idx) => {
+                  const planName = s.plan_name || s.plan?.plan_name || '—';
+                  const price = s.price_per_month ?? s.plan?.price_per_month ?? 0;
+                  const tokensUsed = s.tokens_used ?? s.usage?.tokens_used ?? 0;
+
+                  return (
+                    <tr key={s.subscription_id || idx}>
+                      <td>
+                        <div className="admin-user-cell">
+                          <div className="admin-avatar">{initials(`${s.first_name || ''} ${s.last_name || ''}`.trim() || s.email || 'Admin')}</div>
+                          <div className="admin-user-info">
+                            <div className="font-bold">{`${s.first_name || ''} ${s.last_name || ''}`.trim() || '—'}</div>
+                            <div className="text-muted">{s.email || '—'}</div>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="admin-plan-cell">
-                        <span className="badge badge-blue">{s.plan_name || '—'}</span>
-                        <span className="text-muted" style={{ fontSize: 11 }}>{s.plan_slug}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className={`badge ${s.is_active ? 'badge-green' : 'badge-red'}`}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 12 }}>
-                          {s.is_active ? 'check_circle' : 'cancel'}
+                      </td>
+                      <td>
+                        <div className="admin-plan-cell">
+                          <span className="badge badge-blue">{planName}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`badge ${s.is_active ? 'badge-green' : 'badge-red'}`}>
+                          <span className="material-symbols-outlined" style={{ fontSize: 12 }}>
+                            {s.is_active ? 'check_circle' : 'cancel'}
+                          </span>
+                          {s.is_active ? 'Active' : 'Inactive'}
                         </span>
-                        {s.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td><div className="font-bold">${fmt(s.price_per_month ?? 0)}<span className="text-muted" style={{ fontSize: 10, fontWeight: 400 }}>/mo</span></div></td>
-                    <td>
-                      <div className="admin-usage-cell">
-                        <span className="font-bold">{fmt(s.tokens_used ?? 0)}</span>
-                        <span className="text-muted" style={{ fontSize: 10 }}>tokens</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="admin-date-cell">
-                        <div><span className="text-muted" style={{ fontSize: 10, textTransform: 'uppercase' }}>Since:</span> {fmtDate(s.started_at)}</div>
-                        <div><span className="text-muted" style={{ fontSize: 10, textTransform: 'uppercase' }}>Until:</span> {fmtDate(s.expires_at)}</div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td><div className="font-bold">${fmt(price)}<span className="text-muted" style={{ fontSize: 10, fontWeight: 400 }}>/mo</span></div></td>
+                      <td>
+                        <div className="admin-usage-cell">
+                          <span className="font-bold">{fmt(tokensUsed)}</span>
+                          <span className="text-muted" style={{ fontSize: 10 }}>tokens</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="admin-date-cell">
+                          <div><span className="text-muted" style={{ fontSize: 10, textTransform: 'uppercase' }}>Since:</span> {fmtDate(s.started_at)}</div>
+                          <div><span className="text-muted" style={{ fontSize: 10, textTransform: 'uppercase' }}>Until:</span> {fmtDate(s.expires_at)}</div>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

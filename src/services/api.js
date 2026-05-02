@@ -191,6 +191,7 @@ export const apiService = {
   }),
 
   // Subscriptions
+  getPlans: () => apiFetch('/api/plans'),
   getSubscription: () => apiFetch('/api/subscription'),
 
   subscribe: (subscriptionData) => apiFetch('/api/subscription/subscribe', {

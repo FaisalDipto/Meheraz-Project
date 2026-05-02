@@ -139,8 +139,8 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
         </div>
         <div className="hidden sm:flex gap-3">
           <div className="flex -space-x-2">
-            <img alt="Team member" className="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmshpeiThC41D3oYoeWJPdOlPAZgPL4Q27QrQJqYQAk0lqbXxdOvgSHyv35ROzxQfzvc5ATVnSTUsJxi_Lr01YfpSP8hQ_5Ntk_Zpa2wIN9s0vUuGx-9geekTRAiwTnfHxLoiuUsfyimTDVFEZkrqmIJiaeehJD4un5GZv0DOqmeBI17YqzYT12OuO-ELphoCuIF0s0b_vmtjqRMich8eWky8JOxPRQGvY4wcbSc3dMYyptqBqITQtQZAR0p-TXDaZJ-FeUOugt38"/>
-            <img alt="Team member" className="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD17OerDChMrHv2dHx2sdIJRo6zgSAywzPvjIFEDcvczs-PE5Lt_tHErvdbnmvZWLkRpa1N-XUEdRbco2MftgKHV7gsnPYCFJy3YllMVT8P21etDi21ooo5rS-C_Yc0ekW6yrBRfUQtFPVdhWr62EFUpv7Z1nVJ3IPUzd7OS9y_U94KPA8aCq2NIvvt4HFN9QdlESzX7KBzxUoCTaWtnZz-m0vmJl6woSLXTGl_nuYalWAxprWDYgsU95Vlqd6Jb8rDVo8dGMNc3tU"/>
+            <img alt="Team member" className="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmshpeiThC41D3oYoeWJPdOlPAZgPL4Q27QrQJqYQAk0lqbXxdOvgSHyv35ROzxQfzvc5ATVnSTUsJxi_Lr01YfpSP8hQ_5Ntk_Zpa2wIN9s0vUuGx-9geekTRAiwTnfHxLoiuUsfyimTDVFEZkrqmIJiaeehJD4un5GZv0DOqmeBI17YqzYT12OuO-ELphoCuIF0s0b_vmtjqRMich8eWky8JOxPRQGvY4wcbSc3dMYyptqBqITQtQZAR0p-TXDaZJ-FeUOugt38" />
+            <img alt="Team member" className="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD17OerDChMrHv2dHx2sdIJRo6zgSAywzPvjIFEDcvczs-PE5Lt_tHErvdbnmvZWLkRpa1N-XUEdRbco2MftgKHV7gsnPYCFJy3YllMVT8P21etDi21ooo5rS-C_Yc0ekW6yrBRfUQtFPVdhWr62EFUpv7Z1nVJ3IPUzd7OS9y_U94KPA8aCq2NIvvt4HFN9QdlESzX7KBzxUoCTaWtnZz-m0vmJl6woSLXTGl_nuYalWAxprWDYgsU95Vlqd6Jb8rDVo8dGMNc3tU" />
             <div className="w-10 h-10 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">+4</div>
           </div>
         </div>
@@ -160,22 +160,22 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
           const barBg = isEven ? "bg-emerald-500" : "bg-primary";
           const barWidth = isEven ? "75%" : "50%";
           const percentageColor = isEven ? "text-emerald-600" : "text-primary";
-          
+
           return (
             <div key={page.page_id} className={`group relative bg-surface-container-lowest rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border-t-4 flex flex-col items-center text-center ${cardBorder}`}>
-              
 
 
-              <div 
+
+              <div
                 className={`w-24 h-24 flex items-center justify-center mb-5 border-4 border-white shadow-md ${iconBg}`}
                 style={{ borderRadius: '50%' }}
               >
                 <span className={`material-symbols-outlined ${iconColor} text-4xl`} data-icon={iconName}>{iconName}</span>
               </div>
-              
+
               <h3 className="text-2xl font-headline font-bold text-primary mb-2">{page.name}</h3>
               <p className="text-on-surface-variant text-sm mb-8 px-2 leading-relaxed">{page.description || 'Automated agent assignments for this workspace.'}</p>
-              
+
               <div className="w-full mt-auto space-y-5">
                 <div className={`flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-transparent ${assignHoverBorder} transition-colors group-hover:bg-white group-hover:shadow-sm relative`}>
                   <div className="flex items-center gap-2 mb-2 opacity-60">
@@ -189,7 +189,7 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
                       className={`flex items-center justify-center gap-1 bg-transparent border-none text-base font-black p-0 focus:ring-0 cursor-pointer hover:text-emerald-600 transition-colors ${success[page.page_id] ? 'text-green-500' : 'text-slate-800'}`}
                     >
                       {assigning[page.page_id] ? 'Assigning...' : (
-                        agents.find(a => a.agent_id === selectedAgents[page.page_id])?.name || 
+                        agents.find(a => a.agent_id === selectedAgents[page.page_id])?.name ||
                         (selectedAgents[page.page_id] && String(selectedAgents[page.page_id]).startsWith('foreign_agent_') ? `${String(selectedAgents[page.page_id]).replace('foreign_agent_', '')} (Team)` : 'Select Agent')
                       )}
                       <span className="material-symbols-outlined text-[18px]">expand_more</span>
@@ -324,13 +324,13 @@ const ConversationList = ({ pages, user }) => {
               const msgs = details?.messages?.data || details?.messages || details?.data || [];
               if (Array.isArray(msgs) && msgs.length > 0) {
                 const lastMsg = msgs[0]; // FB returns newest first
-                setContacts(prev => prev.map(c => 
-                  (c.conversation_id || c.id) === cId 
+                setContacts(prev => prev.map(c =>
+                  (c.conversation_id || c.id) === cId
                     ? { ...c, last_message: lastMsg.message, updated_time: lastMsg.created_at || lastMsg.created_time || lastMsg.timestamp || Date.now() }
                     : c
                 ));
               }
-            }).catch(() => {});
+            }).catch(() => { });
         });
       })
       .catch(err => console.error("Failed to fetch conversations", err))
@@ -411,9 +411,9 @@ const ConversationList = ({ pages, user }) => {
     }
 
     const rawTime = msg.created_at || msg.created_time || msg.timestamp;
-    const timeStr = rawTime 
-          ? new Date(rawTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-          : 'Now';
+    const timeStr = rawTime
+      ? new Date(rawTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      : 'Now';
 
     if (isMe) {
       // Sent message
@@ -424,7 +424,7 @@ const ConversationList = ({ pages, user }) => {
               {msg.message || msg.text || ''}
             </div>
             <p className="text-[10px] text-slate-400 font-medium px-2 flex items-center gap-1 transition-opacity">
-              {timeStr} <span className="material-symbols-outlined text-[12px] text-emerald-500" style={{fontVariationSettings: "'FILL' 1"}}>check_circle</span>
+              {timeStr} <span className="material-symbols-outlined text-[12px] text-emerald-500" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
             </p>
           </div>
         </div>
@@ -469,47 +469,47 @@ const ConversationList = ({ pages, user }) => {
               <h1 className="text-3xl font-black font-['Epilogue'] tracking-tighter text-slate-900">Messages</h1>
             </div>
             <div className="relative page-dropdown-container">
-               <button 
-                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                 className="flex items-center gap-2 p-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors bg-white relative z-0 cursor-pointer"
-               >
-                 <span className="material-symbols-outlined text-lg">page_info</span>
-                 <span className="text-xs font-bold truncate max-w-[80px]">
-                   {pages.find(p => p.page_id === selectedPageId)?.name || 'Select Page'}
-                 </span>
-                 <span className="material-symbols-outlined text-[16px]">expand_more</span>
-               </button>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center gap-2 p-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors bg-white relative z-0 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-lg">page_info</span>
+                <span className="text-xs font-bold truncate max-w-[80px]">
+                  {pages.find(p => p.page_id === selectedPageId)?.name || 'Select Page'}
+                </span>
+                <span className="material-symbols-outlined text-[16px]">expand_more</span>
+              </button>
 
-               {isDropdownOpen && (
-                 <div className="absolute top-[110%] right-0 w-[220px] bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-slate-100 z-[999] overflow-hidden py-1 animate-fade-in-up">
-                    <div className="px-4 py-2 border-b border-slate-50 mb-1">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Select Page</p>
-                    </div>
-                    {pages.map(p => (
-                      <button
-                        key={p.page_id}
-                        onClick={() => {
-                          setSelectedPageId(p.page_id);
-                          setIsDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-4 py-2.5 text-[13px] font-semibold hover:bg-slate-50 transition-colors flex items-center justify-between border-none cursor-pointer ${selectedPageId === p.page_id ? 'text-emerald-600 bg-emerald-50/50' : 'text-slate-700 bg-white'}`}
-                      >
-                        <span className="truncate pr-2">{p.name}</span>
-                        {selectedPageId === p.page_id && (
-                          <span className="material-symbols-outlined text-[16px] text-emerald-500 shrink-0" style={{fontVariationSettings: "'FILL' 1"}}>check_circle</span>
-                        )}
-                      </button>
-                    ))}
-                 </div>
-               )}
+              {isDropdownOpen && (
+                <div className="absolute top-[110%] right-0 w-[220px] bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-slate-100 z-[999] overflow-hidden py-1 animate-fade-in-up">
+                  <div className="px-4 py-2 border-b border-slate-50 mb-1">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Select Page</p>
+                  </div>
+                  {pages.map(p => (
+                    <button
+                      key={p.page_id}
+                      onClick={() => {
+                        setSelectedPageId(p.page_id);
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-[13px] font-semibold hover:bg-slate-50 transition-colors flex items-center justify-between border-none cursor-pointer ${selectedPageId === p.page_id ? 'text-emerald-600 bg-emerald-50/50' : 'text-slate-700 bg-white'}`}
+                    >
+                      <span className="truncate pr-2">{p.name}</span>
+                      {selectedPageId === p.page_id && (
+                        <span className="material-symbols-outlined text-[16px] text-emerald-500 shrink-0" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </header>
           <div className="relative group w-full">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors">search</span>
-            <input className="w-full max-w-full bg-white border border-slate-200 shadow-sm rounded-xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-slate-900 outline-none text-slate-900 placeholder:text-slate-400 box-border" placeholder="Search conversations..." type="text"/>
+            <input className="w-full max-w-full bg-white border border-slate-200 shadow-sm rounded-xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-slate-900 outline-none text-slate-900 placeholder:text-slate-400 box-border" placeholder="Search conversations..." type="text" />
           </div>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto px-4 pb-8 space-y-2">
           {loading ? (
             <div className="p-8 text-center text-slate-400 font-medium text-sm">Loading channels...</div>
@@ -586,7 +586,7 @@ const ConversationList = ({ pages, user }) => {
               <div className="flex items-center gap-6 text-slate-400">
                 <button className="hover:text-slate-900 transition-colors"><span className="material-symbols-outlined">call</span></button>
                 <button className="hover:text-slate-900 transition-colors"><span className="material-symbols-outlined">videocam</span></button>
-                <button 
+                <button
                   onClick={() => setIsProfileVisible(!isProfileVisible)}
                   className={`hover:text-slate-900 transition-colors ${!isProfileVisible ? 'text-emerald-600' : ''}`}
                   title={isProfileVisible ? "Hide Profile" : "Show Profile"}
@@ -618,9 +618,9 @@ const ConversationList = ({ pages, user }) => {
                 <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
                   <span className="material-symbols-outlined">attach_file</span>
                 </button>
-                <input 
-                  className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium py-3 text-slate-900 placeholder:text-slate-400 outline-none" 
-                  placeholder="Type your message..." 
+                <input
+                  className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium py-3 text-slate-900 placeholder:text-slate-400 outline-none"
+                  placeholder="Type your message..."
                   type="text"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
@@ -630,7 +630,7 @@ const ConversationList = ({ pages, user }) => {
                   <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
                     <span className="material-symbols-outlined">mood</span>
                   </button>
-                  <button 
+                  <button
                     className="bg-slate-900 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-md hover:scale-105 transition-transform"
                     onClick={handleSend}
                   >
@@ -651,86 +651,86 @@ const ConversationList = ({ pages, user }) => {
       {isProfileVisible && (
         <aside className="w-80 bg-white hidden xl:flex flex-col overflow-y-auto shrink-0 border-l border-slate-100 animate-fade-in-right">
           {activeContact ? (
-          <div className="p-8">
-            <div className="flex justify-center mb-8">
-              <div className="relative">
-                {renderAvatar(activeContact, "w-32 h-32 rounded-3xl shadow-xl")}
-                <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-xl shadow-lg">
-                  <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-center mb-10">
-              <h2 className="text-2xl font-black font-['Epilogue'] tracking-tighter text-slate-900">
-                {activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}
-              </h2>
-              <p className="text-sm text-slate-500 font-medium mt-1">Chat Participant</p>
-              <div className="flex justify-center flex-wrap gap-2 mt-4">
-                <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">{user?.subscription?.plan?.plan_name || 'FREE Plan'}</span>
-                {activeContact?.is_human_needed ? (
-                  <span className="bg-red-100 text-red-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider animate-bounce-subtle">Needs Human</span>
-                ) : (
-                  <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Managed by AI</span>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-8">
-              <div>
-                <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Information</h4>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <span className="material-symbols-outlined text-sm text-slate-400 mt-0.5">mail</span>
-                    <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">Email / Source</p>
-                      <p className="text-xs font-semibold text-slate-900 truncate max-w-[200px]">Facebook Messenger</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="material-symbols-outlined text-sm text-slate-400 mt-0.5">schedule</span>
-                    <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">Local Time</p>
-                      <p className="text-xs font-semibold text-slate-900">Current Time</p>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Shared Files</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="aspect-square bg-slate-50 rounded-xl flex flex-col items-center justify-center gap-1 group hover:bg-slate-900 transition-all cursor-pointer">
-                    <span className="material-symbols-outlined text-slate-400 group-hover:text-white">description</span>
-                    <span className="text-[9px] font-bold text-slate-400 group-hover:text-white uppercase">Report.pdf</span>
-                  </div>
-                  <div className="aspect-square bg-slate-50 rounded-xl flex flex-col items-center justify-center gap-1 group hover:bg-slate-900 transition-all cursor-pointer">
-                    <span className="material-symbols-outlined text-slate-400 group-hover:text-white">table_chart</span>
-                    <span className="text-[9px] font-bold text-slate-400 group-hover:text-white uppercase">Metrics.csv</span>
+            <div className="p-8">
+              <div className="flex justify-center mb-8">
+                <div className="relative">
+                  {renderAvatar(activeContact, "w-32 h-32 rounded-3xl shadow-xl")}
+                  <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-xl shadow-lg">
+                    <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
                   </div>
                 </div>
               </div>
 
-              <div>
-                <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Shortcuts</h4>
-                <div className="space-y-2">
-                  <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-xl flex items-center justify-between group">
-                    Block User
-                    <span className="material-symbols-outlined text-sm text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">block</span>
-                  </button>
-                  <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-xl flex items-center justify-between group">
-                    Clear Conversation
-                    <span className="material-symbols-outlined text-sm text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">delete_sweep</span>
-                  </button>
+              <div className="text-center mb-10">
+                <h2 className="text-2xl font-black font-['Epilogue'] tracking-tighter text-slate-900">
+                  {activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}
+                </h2>
+                <p className="text-sm text-slate-500 font-medium mt-1">Chat Participant</p>
+                <div className="flex justify-center flex-wrap gap-2 mt-4">
+                  <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">{user?.subscription?.plan?.plan_name || 'FREE Plan'}</span>
+                  {activeContact?.is_human_needed ? (
+                    <span className="bg-red-100 text-red-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider animate-bounce-subtle">Needs Human</span>
+                  ) : (
+                    <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Managed by AI</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-8">
+                <div>
+                  <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Information</h4>
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-3">
+                      <span className="material-symbols-outlined text-sm text-slate-400 mt-0.5">mail</span>
+                      <div>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase">Email / Source</p>
+                        <p className="text-xs font-semibold text-slate-900 truncate max-w-[200px]">Facebook Messenger</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="material-symbols-outlined text-sm text-slate-400 mt-0.5">schedule</span>
+                      <div>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase">Local Time</p>
+                        <p className="text-xs font-semibold text-slate-900">Current Time</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Shared Files</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="aspect-square bg-slate-50 rounded-xl flex flex-col items-center justify-center gap-1 group hover:bg-slate-900 transition-all cursor-pointer">
+                      <span className="material-symbols-outlined text-slate-400 group-hover:text-white">description</span>
+                      <span className="text-[9px] font-bold text-slate-400 group-hover:text-white uppercase">Report.pdf</span>
+                    </div>
+                    <div className="aspect-square bg-slate-50 rounded-xl flex flex-col items-center justify-center gap-1 group hover:bg-slate-900 transition-all cursor-pointer">
+                      <span className="material-symbols-outlined text-slate-400 group-hover:text-white">table_chart</span>
+                      <span className="text-[9px] font-bold text-slate-400 group-hover:text-white uppercase">Metrics.csv</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Shortcuts</h4>
+                  <div className="space-y-2">
+                    <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-xl flex items-center justify-between group">
+                      Block User
+                      <span className="material-symbols-outlined text-sm text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">block</span>
+                    </button>
+                    <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-xl flex items-center justify-between group">
+                      Clear Conversation
+                      <span className="material-symbols-outlined text-sm text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">delete_sweep</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ) : null}
-      </aside>
-    )}
-  </div>
-);
+          ) : null}
+        </aside>
+      )}
+    </div>
+  );
 };
 
 const FeedbackPanel = () => {
@@ -781,9 +781,9 @@ const FeedbackPanel = () => {
           <div className="space-y-3">
             <label className="font-['Epilogue'] text-xs font-extrabold uppercase tracking-widest text-[#000000]" htmlFor="category">Category</label>
             <div className="relative group">
-              <select 
-                className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all cursor-pointer" 
-                id="category" 
+              <select
+                className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all cursor-pointer"
+                id="category"
                 name="category"
                 value={feedbackType}
                 onChange={(e) => setFeedbackType(e.target.value)}
@@ -803,11 +803,11 @@ const FeedbackPanel = () => {
               <label className="font-['Epilogue'] text-xs font-extrabold uppercase tracking-widest text-[#000000]" htmlFor="title">Title</label>
               <span className={`text-xs ${title.length >= 100 ? 'text-red-500 font-bold' : 'text-slate-400'}`}>{title.length}/100</span>
             </div>
-            <input 
-              className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all placeholder:text-slate-400" 
-              id="title" 
-              name="title" 
-              placeholder="A brief summary of your feedback" 
+            <input
+              className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all placeholder:text-slate-400"
+              id="title"
+              name="title"
+              placeholder="A brief summary of your feedback"
               type="text"
               value={title}
               maxLength={100}
@@ -822,11 +822,11 @@ const FeedbackPanel = () => {
               <label className="font-['Epilogue'] text-xs font-extrabold uppercase tracking-widest text-[#000000]" htmlFor="details">Details</label>
               <span className={`text-xs ${description.length >= 1000 ? 'text-red-500 font-bold' : 'text-slate-400'}`}>{description.length}/1000</span>
             </div>
-            <textarea 
-              className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all resize-none placeholder:text-slate-400" 
-              id="details" 
-              name="details" 
-              placeholder="Tell us more about your experience..." 
+            <textarea
+              className="w-full bg-[#f2f4f6] border-none border-b-2 border-slate-300/40 focus:border-[#000000] focus:ring-0 font-['Inter'] text-base py-4 px-4 transition-all resize-none placeholder:text-slate-400"
+              id="details"
+              name="details"
+              placeholder="Tell us more about your experience..."
               rows="5"
               value={description}
               maxLength={1000}
@@ -837,8 +837,8 @@ const FeedbackPanel = () => {
 
           {/* Submit Button */}
           <div className="pt-6">
-            <button 
-              className="w-full md:w-auto bg-gradient-to-br from-violet-500 to-emerald-500 text-white font-['Epilogue'] font-bold text-lg px-12 py-5 rounded-lg shadow-xl shadow-emerald-500/10 hover:shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-3" 
+            <button
+              className="w-full md:w-auto bg-gradient-to-br from-violet-500 to-emerald-500 text-white font-['Epilogue'] font-bold text-lg px-12 py-5 rounded-lg shadow-xl shadow-emerald-500/10 hover:shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-3"
               type="submit"
               disabled={submitted}
             >
@@ -850,10 +850,6 @@ const FeedbackPanel = () => {
         </form>
       </div>
 
-      {/* Footer Meta */}
-      <div className="mt-12 text-center pb-8">
-        <p className="font-['Inter'] text-[10px] uppercase tracking-tighter text-[#76777d]">© 2024 ChatAutomate Labs. Feedback loop v4.2.0</p>
-      </div>
     </div>
   );
 };
@@ -941,7 +937,7 @@ const Knowledge = ({ pages }) => {
   const handleConfirmDelete = async () => {
     const item = deleteConfirmItem;
     if (!item) return;
-    setDeleteConfirmItem(null); 
+    setDeleteConfirmItem(null);
     const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
     const type = (item.knowledge_type === 'file' || item.file_name) ? 'file' : 'text';
 
@@ -992,9 +988,9 @@ const Knowledge = ({ pages }) => {
       setUploading(true);
       try {
         if (!name.trim() || !title.trim() || !description.trim()) {
-           setUploading(false);
-           addToast('Name, Title, and Description are required', 'error');
-           return;
+          setUploading(false);
+          addToast('Name, Title, and Description are required', 'error');
+          return;
         }
         const updateData = {
           name: name.trim(),
@@ -1005,7 +1001,7 @@ const Knowledge = ({ pages }) => {
         // Refresh list
         const updatedList = await apiService.getKnowledge(selectedPageId);
         setKnowledgeList(Array.isArray(updatedList) ? updatedList : (updatedList.results || updatedList.items || []));
-        
+
         setShowModal(false);
         setName('');
         setTitle('');
@@ -1025,88 +1021,88 @@ const Knowledge = ({ pages }) => {
 
     // For Add Knowledge, we can run it optimistically and close the modal instantly!
     if (knowledgeType === 'text') {
-        if (!name.trim() || !title.trim() || !description.trim()) {
-            addToast('Name, Title, and Description are required', 'error');
-            return;
-        }
-        const payload = {
-          documents: [{ name: name.trim(), title: title.trim(), description: description.trim() }]
-        };
-        
-        const optimisticId = 'temp_' + Date.now();
-        setKnowledgeList(prev => [...prev, {
-          id: optimisticId, name: name.trim(), title: title.trim(), description: description.trim(), knowledge_type: 'text'
-        }]);
+      if (!name.trim() || !title.trim() || !description.trim()) {
+        addToast('Name, Title, and Description are required', 'error');
+        return;
+      }
+      const payload = {
+        documents: [{ name: name.trim(), title: title.trim(), description: description.trim() }]
+      };
 
-        // Background process: Poll the backend to wait for data (Pinecone sync)
-        apiService.createKnowledge(selectedPageId, payload)
-          .then(async () => {
-             addToast('Document added successfully!', 'success');
-             for (let i = 0; i < 5; i++) {
-                 await new Promise(resolve => setTimeout(resolve, i === 0 ? 1500 : 2000));
-                 const rawList = await apiService.getKnowledge(selectedPageId);
-                 const arr = Array.isArray(rawList) ? rawList : (rawList.results || rawList.items || []);
-                 
-                 setKnowledgeList(prev => {
-                     const currentTemps = prev.filter(p => String(p.id).startsWith('temp_'));
-                     const unmatchedTemps = currentTemps.filter(t => !arr.some(k => k.name === t.name || k.file_name === t.name));
-                     return [...arr, ...unmatchedTemps];
-                 });
-                 
-                 const found = arr.some(k => k.name === name.trim() && k.title === title.trim());
-                 if (found || i === 4) break;
-             }
-          })
-          .catch(error => {
-            console.error(error);
-            addToast('Failed to add text knowledge: ' + error.message, 'error');
-            setKnowledgeList(prev => prev.filter(k => k.id !== optimisticId));
-          });
-    } else {
-        if (!selectedFiles || selectedFiles.length === 0) {
-            addToast('Please select at least one file to upload', 'error');
-            return;
-        }
-        const formData = new FormData();
-        const tempItems = [];
-        for (let i = 0; i < selectedFiles.length; i++) {
-            formData.append('files', selectedFiles[i]);
-            tempItems.push({
-              id: 'temp_file_' + Date.now() + '_' + i,
-              name: selectedFiles[i].name,
-              knowledge_type: 'file',
-              file_name: selectedFiles[i].name
+      const optimisticId = 'temp_' + Date.now();
+      setKnowledgeList(prev => [...prev, {
+        id: optimisticId, name: name.trim(), title: title.trim(), description: description.trim(), knowledge_type: 'text'
+      }]);
+
+      // Background process: Poll the backend to wait for data (Pinecone sync)
+      apiService.createKnowledge(selectedPageId, payload)
+        .then(async () => {
+          addToast('Document added successfully!', 'success');
+          for (let i = 0; i < 5; i++) {
+            await new Promise(resolve => setTimeout(resolve, i === 0 ? 1500 : 2000));
+            const rawList = await apiService.getKnowledge(selectedPageId);
+            const arr = Array.isArray(rawList) ? rawList : (rawList.results || rawList.items || []);
+
+            setKnowledgeList(prev => {
+              const currentTemps = prev.filter(p => String(p.id).startsWith('temp_'));
+              const unmatchedTemps = currentTemps.filter(t => !arr.some(k => k.name === t.name || k.file_name === t.name));
+              return [...arr, ...unmatchedTemps];
             });
-        }
-        
-        setKnowledgeList(prev => [...prev, ...tempItems]);
-        
-        // Background process: Poll the backend to wait for data (Pinecone sync)
-        apiService.uploadKnowledgeFiles(selectedPageId, formData)
-          .then(async () => {
-             addToast('File(s) uploaded successfully!', 'success');
-             for (let i = 0; i < 5; i++) {
-                 await new Promise(resolve => setTimeout(resolve, i === 0 ? 1500 : 2000));
-                 const rawList = await apiService.getKnowledge(selectedPageId);
-                 const arr = Array.isArray(rawList) ? rawList : (rawList.results || rawList.items || []);
-                 
-                 setKnowledgeList(prev => {
-                     const currentTemps = prev.filter(p => String(p.id).startsWith('temp_'));
-                     const unmatchedTemps = currentTemps.filter(t => !arr.some(k => k.name === t.name || k.file_name === t.name));
-                     return [...arr, ...unmatchedTemps];
-                 });
-                 
-                 // Check if the uploaded files are present in backend
-                 const found = tempItems.every(temp => arr.some(k => k.name === temp.name || k.file_name === temp.name || (k.title && k.title.includes(temp.name))));
-                 if (found || i === 4) break;
-             }
-          })
-          .catch(error => {
-            console.error(error);
-            addToast('Failed to upload files: ' + error.message, 'error');
-            const tempIds = tempItems.map(t => t.id);
-            setKnowledgeList(prev => prev.filter(k => !tempIds.includes(k.id)));
-          });
+
+            const found = arr.some(k => k.name === name.trim() && k.title === title.trim());
+            if (found || i === 4) break;
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          addToast('Failed to add text knowledge: ' + error.message, 'error');
+          setKnowledgeList(prev => prev.filter(k => k.id !== optimisticId));
+        });
+    } else {
+      if (!selectedFiles || selectedFiles.length === 0) {
+        addToast('Please select at least one file to upload', 'error');
+        return;
+      }
+      const formData = new FormData();
+      const tempItems = [];
+      for (let i = 0; i < selectedFiles.length; i++) {
+        formData.append('files', selectedFiles[i]);
+        tempItems.push({
+          id: 'temp_file_' + Date.now() + '_' + i,
+          name: selectedFiles[i].name,
+          knowledge_type: 'file',
+          file_name: selectedFiles[i].name
+        });
+      }
+
+      setKnowledgeList(prev => [...prev, ...tempItems]);
+
+      // Background process: Poll the backend to wait for data (Pinecone sync)
+      apiService.uploadKnowledgeFiles(selectedPageId, formData)
+        .then(async () => {
+          addToast('File(s) uploaded successfully!', 'success');
+          for (let i = 0; i < 5; i++) {
+            await new Promise(resolve => setTimeout(resolve, i === 0 ? 1500 : 2000));
+            const rawList = await apiService.getKnowledge(selectedPageId);
+            const arr = Array.isArray(rawList) ? rawList : (rawList.results || rawList.items || []);
+
+            setKnowledgeList(prev => {
+              const currentTemps = prev.filter(p => String(p.id).startsWith('temp_'));
+              const unmatchedTemps = currentTemps.filter(t => !arr.some(k => k.name === t.name || k.file_name === t.name));
+              return [...arr, ...unmatchedTemps];
+            });
+
+            // Check if the uploaded files are present in backend
+            const found = tempItems.every(temp => arr.some(k => k.name === temp.name || k.file_name === temp.name || (k.title && k.title.includes(temp.name))));
+            if (found || i === 4) break;
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          addToast('Failed to upload files: ' + error.message, 'error');
+          const tempIds = tempItems.map(t => t.id);
+          setKnowledgeList(prev => prev.filter(k => !tempIds.includes(k.id)));
+        });
     }
 
     // Instantly close modal regardless of background processing
@@ -1138,7 +1134,7 @@ const Knowledge = ({ pages }) => {
   return (
     <div className="flex-1 w-full bg-white p-8 md:p-12 overflow-y-auto animate-fade-in-up">
       <div className="max-w-6xl mx-auto space-y-12">
-        
+
         {/* Header Section */}
         <div className="flex justify-between items-start">
           <div>
@@ -1148,7 +1144,7 @@ const Knowledge = ({ pages }) => {
               Upload and manage the documents that power your agents. These resources provide the semantic context for all AI interactions.
             </p>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <select
               value={selectedPageId}
@@ -1163,8 +1159,8 @@ const Knowledge = ({ pages }) => {
             >
               {pages.map(p => <option key={p.page_id} value={p.page_id}>{p.name}</option>)}
             </select>
-            
-            <button 
+
+            <button
               className="bg-emerald-500 text-white text-sm font-bold py-3 px-6 rounded-xl flex items-center gap-2 hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 hover:-translate-y-0.5"
               onClick={() => {
                 setName('');
@@ -1191,7 +1187,7 @@ const Knowledge = ({ pages }) => {
               <div className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mt-2">Active Docs</div>
             </div>
           </div>
-          
+
           <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 flex flex-col gap-4 transition-transform hover:scale-[1.02]">
             <span className="material-symbols-outlined text-emerald-500 text-3xl">format_list_bulleted</span>
             <div>
@@ -1199,7 +1195,7 @@ const Knowledge = ({ pages }) => {
               <div className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mt-2">Storage Used</div>
             </div>
           </div>
-          
+
           <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 flex flex-col gap-4 transition-transform hover:scale-[1.02]">
             <span className="material-symbols-outlined text-emerald-500 text-3xl">sync</span>
             <div>
@@ -1218,7 +1214,7 @@ const Knowledge = ({ pages }) => {
             <div className="col-span-2 flex items-center">Status</div>
             <div className="col-span-1 text-right pr-6 flex items-center justify-end">Actions</div>
           </div>
-          
+
           <div className="divide-y divide-slate-50">
             {loading ? (
               <div className="p-12 text-center text-slate-400 font-medium text-sm">Loading documents...</div>
@@ -1228,18 +1224,18 @@ const Knowledge = ({ pages }) => {
               knowledgeList.map((item, i) => {
                 const name = item.name || item.title || item.data_source?.name || 'Unnamed Document';
                 const isFile = item.knowledge_type === 'file' || item.file_name;
-                
+
                 let extType = 'Text File';
                 if (isFile) {
                   const extMatch = name.match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
                   if (extMatch) {
-                     const ext = extMatch[1].toLowerCase();
-                     if (ext === 'pdf') extType = 'PDF Document';
-                     else if (ext === 'doc' || ext === 'docx') extType = 'Word Doc';
-                     else if (ext === 'csv') extType = 'CSV Data';
-                     else extType = ext.toUpperCase() + ' File';
+                    const ext = extMatch[1].toLowerCase();
+                    if (ext === 'pdf') extType = 'PDF Document';
+                    else if (ext === 'doc' || ext === 'docx') extType = 'Word Doc';
+                    else if (ext === 'csv') extType = 'CSV Data';
+                    else extType = ext.toUpperCase() + ' File';
                   } else {
-                     extType = 'Document';
+                    extType = 'Document';
                   }
                 }
 
@@ -1256,20 +1252,20 @@ const Knowledge = ({ pages }) => {
                   <div key={item.id || i} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50/80 transition-colors group">
                     <div className="col-span-4 flex items-center gap-4 pl-6">
                       <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
-                         <span className="material-symbols-outlined text-[20px]">{isFile ? 'description' : 'text_snippet'}</span>
+                        <span className="material-symbols-outlined text-[20px]">{isFile ? 'description' : 'text_snippet'}</span>
                       </div>
                       <span className="font-bold text-sm text-slate-900 truncate">{name}</span>
                     </div>
-                    
+
                     <div className="col-span-3 text-sm text-slate-600 font-medium">{extType}</div>
-                    
+
                     <div className="col-span-2 text-sm text-slate-600 font-medium">{displaySize}</div>
-                    
+
                     <div className="col-span-2 flex items-center gap-2">
-                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                       <span className="text-[11px] font-bold text-emerald-600">Ready</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                      <span className="text-[11px] font-bold text-emerald-600">Ready</span>
                     </div>
-                    
+
                     <div className="col-span-1 flex items-center justify-end gap-1 pr-4">
                       {!isFile && (
                         <>
@@ -1373,13 +1369,13 @@ const Knowledge = ({ pages }) => {
                 <div className="form-group" style={{ marginBottom: '20px' }}>
                   <label>Knowledge Type</label>
                   <div style={{ display: 'flex', background: '#f1f5f9', borderRadius: '8px', padding: '4px', marginTop: '10px' }}>
-                    <div 
+                    <div
                       onClick={() => setKnowledgeType('text')}
                       style={{ flex: 1, textAlign: 'center', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: knowledgeType === 'text' ? '#0f172a' : '#64748b', background: knowledgeType === 'text' ? '#ffffff' : 'transparent', boxShadow: knowledgeType === 'text' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.2s' }}
                     >
                       Raw Text
                     </div>
-                    <div 
+                    <div
                       onClick={() => setKnowledgeType('file')}
                       style={{ flex: 1, textAlign: 'center', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: knowledgeType === 'file' ? '#0f172a' : '#64748b', background: knowledgeType === 'file' ? '#ffffff' : 'transparent', boxShadow: knowledgeType === 'file' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.2s' }}
                     >
@@ -1421,12 +1417,12 @@ const Knowledge = ({ pages }) => {
                 <div className="form-group">
                   <label>Upload Files *</label>
                   <div style={{ border: '2px dashed #cbd5e1', borderRadius: '8px', padding: '40px', textAlign: 'center', marginTop: '12px', background: '#f8fafc', position: 'relative' }}>
-                    <input 
-                      type="file" 
-                      multiple 
-                      onChange={e => setSelectedFiles(e.target.files)} 
-                      style={{ 
-                        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' 
+                    <input
+                      type="file"
+                      multiple
+                      onChange={e => setSelectedFiles(e.target.files)}
+                      style={{
+                        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer'
                       }}
                       required={knowledgeType === 'file'}
                     />
@@ -1500,8 +1496,8 @@ const Knowledge = ({ pages }) => {
                 Delete "{deleteConfirmItem.name || deleteConfirmItem.title || 'this document'}"?
               </div>
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                <button onClick={() => setDeleteConfirmItem(null)} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor='#e2e8f0'} onMouseLeave={e => e.currentTarget.style.backgroundColor='#f1f5f9'}>Cancel</button>
-                <button onClick={handleConfirmDelete} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#ef4444', color: '#fff', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor='#dc2626'} onMouseLeave={e => e.currentTarget.style.backgroundColor='#ef4444'}>Yes, delete</button>
+                <button onClick={() => setDeleteConfirmItem(null)} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e2e8f0'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}>Cancel</button>
+                <button onClick={handleConfirmDelete} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#ef4444', color: '#fff', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#dc2626'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#ef4444'}>Yes, delete</button>
               </div>
             </div>
           )}
@@ -1560,7 +1556,7 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
 
   const [toasts, setToasts] = useState([]);
   const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
-  
+
   const [assignModalAgent, setAssignModalAgent] = useState(null);
   const [assigningId, setAssigningId] = useState(null);
 
@@ -1577,10 +1573,10 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
   const filteredAgents = agents.filter(agent => {
     // Role filter
     if (filters.role !== 'All' && agent.role !== filters.role) return false;
-    
+
     // Tone filter
     if (filters.tone !== 'All' && agent.tone !== filters.tone) return false;
-    
+
     // Status filter
     if (filters.status !== 'All') {
       const assignedPageId = Object.keys(activeSelectedAgents).find(key => activeSelectedAgents[key] === agent.agent_id);
@@ -1588,7 +1584,7 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
       if (filters.status === 'Active' && !isActive) return false;
       if (filters.status === 'IDLE' && isActive) return false;
     }
-    
+
     return true;
   });
 
@@ -1629,8 +1625,8 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
       await apiService.unassignAgentFromPage(pageId);
       const activeSelectedAgents = JSON.parse(localStorage.getItem('qchat_assigned_agents') || '{}');
       if (activeSelectedAgents[pageId]) {
-         delete activeSelectedAgents[pageId];
-         localStorage.setItem('qchat_assigned_agents', JSON.stringify(activeSelectedAgents));
+        delete activeSelectedAgents[pageId];
+        localStorage.setItem('qchat_assigned_agents', JSON.stringify(activeSelectedAgents));
       }
       addToast('Agent unassigned successfully', 'success');
       if (onUpdate) onUpdate();
@@ -1799,8 +1795,8 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
               Delete "{deleteConfirmItem.name}"?
             </div>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <button onClick={() => setDeleteConfirmItem(null)} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor='#e2e8f0'} onMouseLeave={e => e.currentTarget.style.backgroundColor='#f1f5f9'}>Cancel</button>
-              <button onClick={handleConfirmDelete} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#ef4444', color: '#fff', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor='#dc2626'} onMouseLeave={e => e.currentTarget.style.backgroundColor='#ef4444'}>Yes, delete</button>
+              <button onClick={() => setDeleteConfirmItem(null)} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e2e8f0'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}>Cancel</button>
+              <button onClick={handleConfirmDelete} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#ef4444', color: '#fff', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#dc2626'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#ef4444'}>Yes, delete</button>
             </div>
           </div>
         )}
@@ -1825,13 +1821,13 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px', maxHeight: '200px', overflowY: 'auto' }}>
               {pages?.length > 0 ? pages.map(p => (
-                <button 
+                <button
                   key={p.page_id}
                   onClick={() => handleAssign(assignModalAgent.agent_id, p.page_id)}
                   disabled={assigningId === assignModalAgent.agent_id}
                   style={{ textAlign: 'left', padding: '10px 14px', borderRadius: '8px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', cursor: assigningId === assignModalAgent.agent_id ? 'not-allowed' : 'pointer', fontWeight: 600, fontSize: '13px', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { if (assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor='#e0f2fe'; e.currentTarget.style.borderColor='#bae6fd'; }}
-                  onMouseLeave={e => { if (assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor='#f8fafc'; e.currentTarget.style.borderColor='#e2e8f0'; }}
+                  onMouseEnter={e => { if (assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor = '#e0f2fe'; e.currentTarget.style.borderColor = '#bae6fd'; }}
+                  onMouseLeave={e => { if (assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor = '#f8fafc'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                 >
                   {p.name} {assigningId === assignModalAgent.agent_id && '(Assigning...)'}
                 </button>
@@ -1840,12 +1836,12 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
               )}
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button 
-                onClick={() => setAssignModalAgent(null)} 
+              <button
+                onClick={() => setAssignModalAgent(null)}
                 disabled={assigningId === assignModalAgent.agent_id}
                 style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '13px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 600, transition: 'background-color 0.2s', cursor: assigningId === assignModalAgent.agent_id ? 'not-allowed' : 'pointer' }}
-                onMouseEnter={e => { if(assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor='#e2e8f0' }} 
-                onMouseLeave={e => { if(assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor='#f1f5f9' }}
+                onMouseEnter={e => { if (assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor = '#e2e8f0' }}
+                onMouseLeave={e => { if (assigningId !== assignModalAgent.agent_id) e.currentTarget.style.backgroundColor = '#f1f5f9' }}
               >
                 Cancel
               </button>
@@ -1868,96 +1864,96 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
                 <span className="font-['Inter'] text-[10px] uppercase tracking-[0.2em] text-[#45464d] mb-4 block font-bold">Fleet Management</span>
                 <h2 className="text-5xl font-extrabold tracking-tight text-primary font-['Epilogue'] mb-6">AI Agents</h2>
                 <p className="text-lg text-[#45464d] leading-relaxed">
-                    Deploy, monitor, and scale your autonomous intelligence fleet. Your agents are currently handling <span className="text-emerald-600 font-bold">84%</span> of all support traffic.
+                  Deploy, monitor, and scale your autonomous intelligence fleet. Your agents are currently handling <span className="text-emerald-600 font-bold">84%</span> of all support traffic.
                 </p>
               </div>
               <div className="flex gap-4">
-                <button 
+                <button
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all ${isFilterOpen || activeFiltersCount > 0 ? 'bg-black text-white shadow-lg shadow-black/20' : 'bg-[#e6e8ea] hover:bg-[#e0e3e5]'}`}
                 >
-                    <span className="material-symbols-outlined text-lg border-b-0" data-icon="tune">tune</span>
-                    {activeFiltersCount > 0 ? `Filters (${activeFiltersCount})` : 'Filter View'}
+                  <span className="material-symbols-outlined text-lg border-b-0" data-icon="tune">tune</span>
+                  {activeFiltersCount > 0 ? `Filters (${activeFiltersCount})` : 'Filter View'}
                 </button>
-                <button 
+                <button
                   onClick={() => setIsCreating(true)}
                   className="flex items-center gap-2 px-8 py-3 bg-[#000000] text-white rounded-xl font-bold transition-all hover:opacity-90 active:scale-95 shadow-lg shadow-black/20"
                 >
-                    <span className="material-symbols-outlined font-black" style={{fontVariationSettings: "'FILL' 1"}}>add</span>
-                    Create New Agent
+                  <span className="material-symbols-outlined font-black" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
+                  Create New Agent
                 </button>
               </div>
             </div>
-          {/* Filter Bar */}
-          <div className={`overflow-hidden transition-all duration-300 ${isFilterOpen ? 'max-h-40 opacity-100 mb-12' : 'max-h-0 opacity-0 mb-0'}`}>
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-wrap items-center gap-6">
-              <div className="flex flex-col gap-1.5 min-w-[140px]">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Status</label>
-                <select 
-                  value={filters.status}
-                  onChange={e => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-black/5"
-                >
-                  <option value="All">All Statuses</option>
-                  <option value="Active">Active</option>
-                  <option value="IDLE">IDLE</option>
-                </select>
-              </div>
+            {/* Filter Bar */}
+            <div className={`overflow-hidden transition-all duration-300 ${isFilterOpen ? 'max-h-40 opacity-100 mb-12' : 'max-h-0 opacity-0 mb-0'}`}>
+              <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-wrap items-center gap-6">
+                <div className="flex flex-col gap-1.5 min-w-[140px]">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Status</label>
+                  <select
+                    value={filters.status}
+                    onChange={e => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                    className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-black/5"
+                  >
+                    <option value="All">All Statuses</option>
+                    <option value="Active">Active</option>
+                    <option value="IDLE">IDLE</option>
+                  </select>
+                </div>
 
-              <div className="flex flex-col gap-1.5 min-w-[140px]">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Role</label>
-                <select 
-                  value={filters.role}
-                  onChange={e => setFilters(prev => ({ ...prev, role: e.target.value }))}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-black/5"
-                >
-                  <option value="All">All Roles</option>
-                  <option value="Sales Agent">Sales Agent</option>
-                  <option value="Support Agent">Support Agent</option>
-                  <option value="Q&A Agent">Q&A Agent</option>
-                </select>
-              </div>
+                <div className="flex flex-col gap-1.5 min-w-[140px]">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Role</label>
+                  <select
+                    value={filters.role}
+                    onChange={e => setFilters(prev => ({ ...prev, role: e.target.value }))}
+                    className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-black/5"
+                  >
+                    <option value="All">All Roles</option>
+                    <option value="Sales Agent">Sales Agent</option>
+                    <option value="Support Agent">Support Agent</option>
+                    <option value="Q&A Agent">Q&A Agent</option>
+                  </select>
+                </div>
 
-              <div className="flex flex-col gap-1.5 min-w-[140px]">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Personality</label>
-                <select 
-                  value={filters.tone}
-                  onChange={e => setFilters(prev => ({ ...prev, tone: e.target.value }))}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-black/5"
-                >
-                  <option value="All">All Tones</option>
-                  {TONES.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-              </div>
+                <div className="flex flex-col gap-1.5 min-w-[140px]">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Personality</label>
+                  <select
+                    value={filters.tone}
+                    onChange={e => setFilters(prev => ({ ...prev, tone: e.target.value }))}
+                    className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-black/5"
+                  >
+                    <option value="All">All Tones</option>
+                    {TONES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
 
-              {activeFiltersCount > 0 && (
-                <button 
-                  onClick={clearFilters}
-                  className="mt-5 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-[14px]">refresh</span>
-                  Clear All
-                </button>
-              )}
+                {activeFiltersCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="mt-5 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">refresh</span>
+                    Clear All
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
           </section>
 
           {/* Agents Bento Grid */}
           <div className="grid grid-cols-12 gap-6 pb-20 auto-rows-fr">
-            
+
             {/* Create Agent Card */}
-            <div 
+            <div
               onClick={() => setIsCreating(true)}
               className="col-span-12 md:col-span-6 lg:col-span-4 min-h-[360px] relative group overflow-hidden bg-[#000000] rounded-[2rem] cursor-pointer shadow-lg"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#000000] to-[#131b2e] opacity-90"></div>
               <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center border border-white/10 m-3 rounded-[1.5rem] border-dashed transition-colors group-hover:border-emerald-500/50">
-                  <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300 shadow-lg">
-                      <span className="material-symbols-outlined text-white text-3xl group-hover:text-emerald-400">add</span>
-                  </div>
-                  <h3 className="text-white text-xl font-bold mb-2 font-['Epilogue'] tracking-tight">New Intelligence</h3>
-                  <p className="text-[#bec6e0] text-sm font-medium">Deploy a custom trained model to handle specific logic.</p>
+                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300 shadow-lg">
+                  <span className="material-symbols-outlined text-white text-3xl group-hover:text-emerald-400">add</span>
+                </div>
+                <h3 className="text-white text-xl font-bold mb-2 font-['Epilogue'] tracking-tight">New Intelligence</h3>
+                <p className="text-[#bec6e0] text-sm font-medium">Deploy a custom trained model to handle specific logic.</p>
               </div>
             </div>
 
@@ -1978,36 +1974,36 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
 
               return (
                 <div key={agent.agent_id} className="col-span-12 md:col-span-6 lg:col-span-4 bg-white rounded-[2rem] p-8 flex flex-col justify-between group hover:shadow-2xl hover:shadow-black/5 transition-all duration-500 border border-[#e0e3e5] relative break-inside-avoid min-h-[360px]">
-                  
+
                   <div className="flex justify-between items-start mb-6">
                     <div className="flex gap-4">
                       {isAssigned ? (
-                         <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0 border border-emerald-100 group-hover:scale-105 transition-transform">
-                            <span className="material-symbols-outlined text-emerald-600 text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>support_agent</span>
-                         </div>
+                        <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0 border border-emerald-100 group-hover:scale-105 transition-transform">
+                          <span className="material-symbols-outlined text-emerald-600 text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>support_agent</span>
+                        </div>
                       ) : (
-                         <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 group-hover:scale-105 transition-transform">
-                            <span className="material-symbols-outlined text-slate-600 text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>psychology</span>
-                         </div>
+                        <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 group-hover:scale-105 transition-transform">
+                          <span className="material-symbols-outlined text-slate-600 text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+                        </div>
                       )}
-                      
+
                       <div className="flex flex-col justify-center min-w-0">
                         <h3 className="text-2xl font-bold text-[#000000] leading-tight font-['Epilogue'] truncate pr-4">{agent.name}</h3>
                         {isAssigned ? (
-                           <div className="flex items-center gap-2 mt-2">
-                             <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]"></span>
-                             <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Active</span>
-                           </div>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]"></span>
+                            <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Active</span>
+                          </div>
                         ) : (
-                            <div className="bg-slate-50 px-3 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 flex items-center gap-1 border border-slate-200 w-fit mt-2">
-                                <span className="material-symbols-outlined text-[14px]">pause_circle</span>
-                                IDLE
-                            </div>
+                          <div className="bg-slate-50 px-3 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 flex items-center gap-1 border border-slate-200 w-fit mt-2">
+                            <span className="material-symbols-outlined text-[14px]">pause_circle</span>
+                            IDLE
+                          </div>
                         )}
                       </div>
                     </div>
-                    
-                    <button 
+
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteAgent(agent);
@@ -2049,7 +2045,7 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1">
                         {isAssigned ? (
-                          <button 
+                          <button
                             onClick={() => handleUnassign(agent.agent_id, assignedPageId)}
                             disabled={unassigningId === agent.agent_id}
                             className="text-[13px] font-bold text-red-500 flex items-center gap-1.5 transition-all px-3 py-1.5 hover:bg-red-50 rounded-lg disabled:opacity-50 whitespace-nowrap"
@@ -2057,14 +2053,14 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
                             {unassigningId === agent.agent_id ? 'Wait...' : 'Unassign'}
                           </button>
                         ) : (
-                          <button 
+                          <button
                             onClick={() => setAssignModalAgent(agent)}
                             className="text-[13px] font-bold text-blue-600 flex items-center gap-1.5 transition-all px-3 py-1.5 hover:bg-blue-50 rounded-lg whitespace-nowrap"
                           >
                             Assign
                           </button>
                         )}
-                        <button 
+                        <button
                           onClick={() => handleEditClick(agent)}
                           className="text-[13px] font-bold text-emerald-600 flex items-center gap-1.5 hover:gap-2 transition-all px-3 py-1.5 hover:bg-emerald-50 rounded-lg whitespace-nowrap"
                         >
@@ -2076,7 +2072,7 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
                 </div>
               );
             })}
-            
+
           </div>
         </div>
         {overlays}
@@ -2544,14 +2540,8 @@ const SubscriptionPanel = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [pendingPlan, setPendingPlan] = useState(null);
-  const plansRef = useRef(null);
-
-  const plans = [
-    { name: 'FREE', price: 0, features: ['1 Page', '1 Agent', '1,000 Tokens/mo'], color: 'slate' },
-    { name: 'STARTER', price: 29, features: ['3 Pages', '5 Agents', '10,000 Tokens/mo', 'Email Support'], color: 'blue', unavailable: true },
-    { name: 'GROWTH', price: 79, features: ['10 Pages', 'Unlimited Agents', '50,000 Tokens/mo', 'Priority Support'], color: 'emerald', unavailable: true },
-    { name: 'AGENCY', price: 199, features: ['Unlimited Pages', 'Unlimited Agents', 'Unlimited Tokens', 'Dedicated Account Manager'], color: 'purple', unavailable: true }
-  ];
+  const [plans, setPlans] = useState([]);
+  const [showPlansModal, setShowPlansModal] = useState(false);
 
   const fetchSubscription = async () => {
     try {
@@ -2565,8 +2555,36 @@ const SubscriptionPanel = () => {
     }
   };
 
+  const fetchPlans = async () => {
+    try {
+      const data = await apiService.getPlans();
+      const formattedPlans = data.map(apiPlan => {
+        let color = 'slate';
+        if (apiPlan.plan_level === 1) color = 'blue';
+        if (apiPlan.plan_level === 2) color = 'emerald';
+        if (apiPlan.plan_level >= 3) color = 'purple';
+
+        return {
+          name: apiPlan.plan_name,
+          price: apiPlan.price_per_month,
+          color: color,
+          features: [
+            `${apiPlan.max_pages === -1 ? 'Unlimited' : apiPlan.max_pages} Pages`,
+            `${apiPlan.max_agents === -1 ? 'Unlimited' : apiPlan.max_agents} Agents`,
+            `${apiPlan.max_tokens_per_month === -1 ? 'Unlimited Tokens' : (apiPlan.max_tokens_per_month >= 1000000 ? (apiPlan.max_tokens_per_month / 1000000) + 'M Tokens/mo' : (apiPlan.max_tokens_per_month / 1000) + 'K Tokens/mo')}`,
+            `${apiPlan.max_storage_bytes === -1 ? 'Unlimited Storage' : (apiPlan.max_storage_bytes >= 1073741824 ? (apiPlan.max_storage_bytes / 1073741824) + ' GB Storage' : (apiPlan.max_storage_bytes / 1048576) + ' MB Storage')}`
+          ]
+        };
+      });
+      setPlans(formattedPlans);
+    } catch (err) {
+      console.error("Failed to fetch plans", err);
+    }
+  };
+
   useEffect(() => {
     fetchSubscription();
+    fetchPlans();
   }, []);
 
   const handleSubscribe = async (planName) => {
@@ -2580,12 +2598,12 @@ const SubscriptionPanel = () => {
 
     try {
       setSubmitting(true);
-      const subRequest = { 
-        subscription_type: planName.toUpperCase(), 
-        num_months: 1 
+      const subRequest = {
+        subscription_type: planName.toUpperCase(),
+        num_months: 1
       };
       console.log("Subscribing with:", subRequest);
-      
+
       await apiService.subscribe(subRequest);
       await fetchSubscription();
       setShowPaymentModal(false);
@@ -2599,28 +2617,20 @@ const SubscriptionPanel = () => {
     }
   };
 
-  const scrollToPlans = () => {
-    const container = document.querySelector('.dashboard-content-wrapper');
-    if (container && plansRef.current) {
-      container.scrollTo({
-        top: plansRef.current.offsetTop - 40,
-        behavior: 'smooth'
-      });
-    }
-  };
+
 
   if (loading) return <div className="p-8 text-center text-slate-400">Loading subscription details...</div>;
 
   const currentPlan = subData?.plan || { plan_name: 'NONE' };
   const usage = subData?.usage || { pages_used: 0, agents_used: 0, tokens_used: 0 };
-  
+
   // Format dates from API response
-  const startedAt = subData?.started_at ? new Date(subData.started_at).toLocaleDateString(undefined, { 
-    year: 'numeric', month: 'short', day: 'numeric' 
+  const startedAt = subData?.started_at ? new Date(subData.started_at).toLocaleDateString(undefined, {
+    year: 'numeric', month: 'short', day: 'numeric'
   }) : 'N/A';
-  
-  const expiresAt = subData?.expires_at ? new Date(subData.expires_at).toLocaleDateString(undefined, { 
-    year: 'numeric', month: 'short', day: 'numeric' 
+
+  const expiresAt = subData?.expires_at ? new Date(subData.expires_at).toLocaleDateString(undefined, {
+    year: 'numeric', month: 'short', day: 'numeric'
   }) : 'N/A';
 
   const getProgress = (used, max) => {
@@ -2666,11 +2676,11 @@ const SubscriptionPanel = () => {
               </div>
             </div>
             <div className="pt-4 flex gap-3">
-              <button 
-                onClick={scrollToPlans}
+              <button
+                onClick={() => setShowPlansModal(true)}
                 className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:scale-105 transition-transform shadow-md"
               >
-                Change Plan
+                Upgrade Plan
               </button>
               <button className="px-6 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors">Cancel</button>
             </div>
@@ -2709,8 +2719,8 @@ const SubscriptionPanel = () => {
               </div>
             </div>
             <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-blue-500 rounded-full transition-all duration-1000" 
+              <div
+                className="h-full bg-blue-500 rounded-full transition-all duration-1000"
                 style={{ width: `${getProgress(usage.pages_used, currentPlan.max_pages)}%` }}
               />
             </div>
@@ -2724,8 +2734,8 @@ const SubscriptionPanel = () => {
               </div>
             </div>
             <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-emerald-500 rounded-full transition-all duration-1000" 
+              <div
+                className="h-full bg-emerald-500 rounded-full transition-all duration-1000"
                 style={{ width: `${getProgress(usage.agents_used, currentPlan.max_agents)}%` }}
               />
             </div>
@@ -2739,8 +2749,8 @@ const SubscriptionPanel = () => {
               </div>
             </div>
             <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-purple-500 rounded-full transition-all duration-1000" 
+              <div
+                className="h-full bg-purple-500 rounded-full transition-all duration-1000"
                 style={{ width: `${getProgress(usage.tokens_used, currentPlan.max_tokens_per_month)}%` }}
               />
             </div>
@@ -2748,62 +2758,75 @@ const SubscriptionPanel = () => {
         </div>
       </div>
 
-      {/* Plan Selection */}
-      <div className="space-y-6" ref={plansRef}>
-        <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
-          <Palette className="text-emerald-500" />
-          Choose a Plan
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {plans.map(plan => {
-            const isCurrent = plan.name === currentPlan.plan_name;
-            const colorClass = plan.color === 'emerald' ? 'border-emerald-500 ring-4 ring-emerald-500/10' : 
-                               plan.color === 'blue' ? 'border-blue-500 ring-4 ring-blue-500/10' :
-                               plan.color === 'purple' ? 'border-purple-500 ring-4 ring-purple-500/10' : 'border-slate-200 hover:border-slate-300';
+      {/* Plan Selection Modal */}
+      {showPlansModal && (
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-7xl overflow-hidden relative my-8 border border-white/20 animate-fade-in-up">
+            <div className="absolute top-6 right-6 z-50">
+              <button onClick={() => setShowPlansModal(false)} className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-8 md:p-16">
+              <h2 className="text-4xl font-black text-slate-900 flex items-center justify-center gap-3 mb-4 text-center">
+                Upgrade Your Plan
+              </h2>
+              <p className="text-center text-slate-500 font-medium mb-12 max-w-2xl mx-auto">
+                Scale your customer interactions with intelligent AI agents that grow with your business.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                {plans.map(plan => {
+                  const isCurrent = plan.name === currentPlan.plan_name;
+                  const colorClass = plan.color === 'emerald' ? 'border-emerald-500 ring-4 ring-emerald-500/10' :
+                    plan.color === 'blue' ? 'border-blue-500 ring-4 ring-blue-500/10' :
+                      plan.color === 'purple' ? 'border-purple-500 ring-4 ring-purple-500/10' : 'border-slate-200 hover:border-slate-300';
 
-            return (
-              <div 
-                key={plan.name} 
-                className={`bg-white rounded-[2rem] p-8 border-2 ${isCurrent ? colorClass : 'border-slate-100'} shadow-sm flex flex-col h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group cursor-default`}
-              >
-                {isCurrent && (
-                  <div className="absolute top-0 right-0 bg-emerald-500 text-white px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest animate-fade-in">
-                    Current Plan
-                  </div>
-                )}
-                <div className="mb-6">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 group-hover:text-slate-600 transition-colors">{plan.name}</h3>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-black text-slate-900 group-hover:scale-110 origin-left transition-transform duration-300">${plan.price}</span>
-                    <span className="text-slate-400 text-sm font-medium">/mo</span>
-                  </div>
-                </div>
-                <div className="flex-1 space-y-4 mb-8">
-                  {plan.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-start gap-3 text-sm text-slate-600 group-hover:text-slate-900 transition-colors">
-                      <CheckCircle2 className={`shrink-0 mt-0.5 transition-transform duration-300 group-hover:scale-125 ${isCurrent ? 'text-emerald-500' : 'text-slate-300 group-hover:text-emerald-500'}`} size={18} />
-                      <span className="font-medium">{feat}</span>
+                  return (
+                    <div
+                      key={plan.name}
+                      className={`bg-slate-50 rounded-[2rem] p-8 border-2 ${isCurrent ? colorClass : 'border-slate-100'} shadow-sm flex flex-col h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden group cursor-default`}
+                    >
+                      {isCurrent && (
+                        <div className="absolute top-0 right-0 bg-emerald-500 text-white px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest animate-fade-in">
+                          Current Plan
+                        </div>
+                      )}
+                      <div className="mb-6">
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 group-hover:text-slate-600 transition-colors">{plan.name}</h3>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-3xl font-black text-slate-900 group-hover:scale-110 origin-left transition-transform duration-300">${plan.price}</span>
+                          <span className="text-slate-400 text-sm font-medium">/mo</span>
+                        </div>
+                      </div>
+                      <div className="flex-1 space-y-4 mb-8">
+                        {plan.features.map((feat, idx) => (
+                          <div key={idx} className="flex items-start gap-3 text-sm text-slate-600 group-hover:text-slate-900 transition-colors">
+                            <CheckCircle2 className={`shrink-0 mt-0.5 transition-transform duration-300 group-hover:scale-125 ${isCurrent ? 'text-emerald-500' : 'text-slate-300 group-hover:text-emerald-500'}`} size={18} />
+                            <span className="font-medium">{feat}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        disabled={isCurrent || submitting}
+                        onClick={() => {
+                          setShowPlansModal(false);
+                          handleSubscribe(plan.name);
+                        }}
+                        className={`w-full py-4 rounded-2xl font-black text-sm transition-all duration-200 ${isCurrent
+                            ? 'bg-slate-200 text-slate-400 cursor-default'
+                            : 'bg-slate-900 text-white hover:bg-slate-800 hover:scale-[1.05] active:scale-95 shadow-xl shadow-slate-200'
+                          }`}
+                      >
+                        {isCurrent ? 'Active' : submitting ? 'Processing...' : `Select ${plan.name}`}
+                      </button>
                     </div>
-                  ))}
-                </div>
-                <button 
-                  disabled={isCurrent || submitting || plan.unavailable}
-                  onClick={() => handleSubscribe(plan.name)}
-                  className={`w-full py-4 rounded-2xl font-black text-sm transition-all duration-200 ${
-                    isCurrent 
-                      ? 'bg-slate-100 text-slate-400 cursor-default' 
-                      : plan.unavailable
-                        ? 'bg-slate-50 text-slate-300 cursor-not-allowed'
-                        : 'bg-slate-900 text-white hover:bg-slate-800 hover:scale-[1.05] active:scale-95 shadow-xl shadow-slate-200'
-                  }`}
-                >
-                  {isCurrent ? 'Active' : plan.unavailable ? 'Unavailable' : submitting ? 'Processing...' : `Select ${plan.name}`}
-                </button>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Mock Payment Modal */}
       {showPaymentModal && pendingPlan && (
@@ -2821,7 +2844,7 @@ const SubscriptionPanel = () => {
             <div className="px-8 mb-8">
               <h2 className="text-2xl font-black text-slate-900 mb-1">Complete Purchase</h2>
               <p className="text-sm text-slate-500 font-medium">You are subscribing to the <span className="text-slate-900 font-bold">{pendingPlan.name}</span> plan.</p>
-              
+
               <div className="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
                 <div>
                   <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-0.5">Total due today</p>
@@ -2859,7 +2882,7 @@ const SubscriptionPanel = () => {
             </div>
 
             <div className="p-8 pt-0">
-              <button 
+              <button
                 onClick={() => handleSubscribe(pendingPlan.name)}
                 disabled={submitting}
                 className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
@@ -2890,7 +2913,7 @@ const SubscriptionPanel = () => {
 
 const SupportPanel = () => {
   const [ticketType, setTicketType] = useState('technical');
-  
+
   return (
     <div className="dashboard-content-area animate-fade-in-up space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -2931,7 +2954,7 @@ const SupportPanel = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400 ml-1">Inquiry Type</label>
-                <select 
+                <select
                   value={ticketType}
                   onChange={(e) => setTicketType(e.target.value)}
                   className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-slate-900 transition-colors appearance-none"
@@ -2974,13 +2997,13 @@ const SupportPanel = () => {
 
           <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm">
             <h4 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-slate-400" style={{fontSize: '20px'}}>contact_support</span>
+              <span className="material-symbols-outlined text-slate-400" style={{ fontSize: '20px' }}>contact_support</span>
               Direct Contacts
             </h4>
             <div className="space-y-6">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center">
-                  <span className="material-symbols-outlined text-slate-400" style={{fontSize: '20px'}}>mail</span>
+                  <span className="material-symbols-outlined text-slate-400" style={{ fontSize: '20px' }}>mail</span>
                 </div>
                 <div>
                   <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Email Us</p>
@@ -2989,7 +3012,7 @@ const SupportPanel = () => {
               </div>
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center">
-                  <span className="material-symbols-outlined text-slate-400" style={{fontSize: '20px'}}>public</span>
+                  <span className="material-symbols-outlined text-slate-400" style={{ fontSize: '20px' }}>public</span>
                 </div>
                 <div>
                   <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Global Sales</p>
@@ -3054,7 +3077,7 @@ export default function Dashboard() {
       if (parsedUser) {
         parsedUser.agents = parsedAgents;
         parsedUser.subscription = subscriptionData;
-        
+
         if (parsedUser.picture || parsedUser.avatar || parsedUser.profile_pic) {
           parsedUser.profile_pic_url = parsedUser.picture || parsedUser.profile_pic || parsedUser.avatar;
         } else {
@@ -3063,10 +3086,10 @@ export default function Dashboard() {
           if (uid) {
             try {
               const picResponse = await fetch(`/api/user/profile_pic/${uid}`, { credentials: 'include' });
-              
+
               if (picResponse.ok) {
                 const contentType = picResponse.headers.get('content-type') || '';
-                
+
                 if (contentType.includes('application/json')) {
                   const data = await picResponse.json();
                   parsedUser.profile_pic_url = data.url || data.profile_pic || data.profile_pic_url || data.image_url || null;
@@ -3084,7 +3107,7 @@ export default function Dashboard() {
                     try {
                       const parsed = JSON.parse(text);
                       parsedUser.profile_pic_url = parsed.url || parsed.profile_pic || parsed.profile_pic_url || parsed.image_url || null;
-                    } catch(e) {
+                    } catch (e) {
                       // Just fallback to the URL directly and hope the browser can figure it out
                       parsedUser.profile_pic_url = `/api/user/profile_pic/${uid}`;
                     }
@@ -3178,11 +3201,10 @@ export default function Dashboard() {
             <button
               key={item.id}
               onClick={() => { setActiveTab(item.id); setIsSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all cursor-pointer border-none text-left ${
-                activeTab === item.id 
-                  ? 'text-emerald-600 font-bold border-l-0 border-r-4 border-emerald-500 bg-[#ecfdf5] rounded-r-none pl-[16px] pr-[12px]' 
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all cursor-pointer border-none text-left ${activeTab === item.id
+                  ? 'text-emerald-600 font-bold border-l-0 border-r-4 border-emerald-500 bg-[#ecfdf5] rounded-r-none pl-[16px] pr-[12px]'
                   : 'text-slate-500 hover:bg-slate-100 bg-transparent'
-              }`}
+                }`}
             >
               {item.id === 'tutorial'
                 ? <span className="material-symbols-outlined text-[20px]">school</span>
@@ -3193,14 +3215,14 @@ export default function Dashboard() {
         </nav>
 
         <div className="mt-auto pt-8 border-t border-slate-100 space-y-1 mb-16">
-          <button 
+          <button
             onClick={() => { setActiveTab('support'); setIsSidebarOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'support' ? 'text-emerald-600 font-bold bg-[#ecfdf5]' : 'text-slate-500 hover:bg-slate-100 bg-transparent'}`}
           >
             <HelpCircle size={20} />
             <span className="text-[15px]">Support</span>
           </button>
-          <button onClick={() => { setActiveTab('settings'); setIsSidebarOpen(false); }} 
+          <button onClick={() => { setActiveTab('settings'); setIsSidebarOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'settings' ? 'text-emerald-600 font-bold bg-[#ecfdf5]' : 'text-slate-500 hover:bg-slate-100 bg-transparent'}`}
           >
             <span className="material-symbols-outlined text-[20px]">settings</span>
@@ -3236,7 +3258,7 @@ export default function Dashboard() {
             >
               <div className="contact-avatar very-small overflow-hidden relative" style={{ backgroundColor: '#0ea5e9', color: 'white' }}>
                 {user?.profile_pic_url && (
-                  <img src={user.profile_pic_url} alt="Profile" className="absolute inset-0 w-full h-full object-cover z-10" onError={(e) => e.target.style.display='none'} />
+                  <img src={user.profile_pic_url} alt="Profile" className="absolute inset-0 w-full h-full object-cover z-10" onError={(e) => e.target.style.display = 'none'} />
                 )}
                 <span className="relative z-0">
                   {(user?.name || user?.username || user?.first_name || 'U').charAt(0).toUpperCase()}
@@ -3261,7 +3283,7 @@ export default function Dashboard() {
               <div className="drawer-user-info">
                 <div className="contact-avatar large overflow-hidden relative" style={{ backgroundColor: '#0ea5e9', color: 'white', margin: '0 auto 16px auto' }}>
                   {user?.profile_pic_url && (
-                    <img src={user.profile_pic_url} alt="Profile" className="absolute inset-0 w-full h-full object-cover z-10" onError={(e) => e.target.style.display='none'} />
+                    <img src={user.profile_pic_url} alt="Profile" className="absolute inset-0 w-full h-full object-cover z-10" onError={(e) => e.target.style.display = 'none'} />
                   )}
                   <span className="relative z-0">
                     {(user?.name || user?.username || user?.first_name || 'U').charAt(0).toUpperCase()}
@@ -3304,16 +3326,16 @@ export default function Dashboard() {
                     <p className="text-sm text-slate-500 font-medium">Are you sure you want to exit your workspace?</p>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-3 mt-8">
-                  <button 
+                  <button
                     onClick={() => setIsLogoutModalOpen(false)}
                     disabled={isLoggingOut}
                     className="flex-1 py-3 px-4 rounded-xl font-bold border-2 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50"
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     onClick={async () => {
                       setIsLoggingOut(true);
                       await apiService.logout().catch(() => { });
