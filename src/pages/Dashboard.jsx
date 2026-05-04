@@ -352,6 +352,36 @@ const ConversationList = ({ pages, user }) => {
       .finally(() => setLoadingMsgs(false));
   }, [selectedPageId, activeContact]);
 
+  const handleToggleAIPause = async () => {
+    if (!selectedPageId || !activeContact) return;
+    const convId = activeContact.conversation_id || activeContact.id;
+    // Determine current status: if is_paused is explicitly set use it, otherwise fall back to is_human_needed or false.
+    const currentStatus = activeContact.is_paused !== undefined ? activeContact.is_paused : (activeContact.is_human_needed || false);
+    const newStatus = !currentStatus;
+
+    // Optimistically update
+    setContacts(prev => prev.map(c => 
+      (c.conversation_id || c.id) === convId 
+        ? { ...c, is_paused: newStatus, is_human_needed: newStatus }
+        : c
+    ));
+    setActiveContact(prev => ({ ...prev, is_paused: newStatus, is_human_needed: newStatus }));
+
+    try {
+      await apiService.setConversationPauseStatus(selectedPageId, convId, newStatus);
+    } catch (err) {
+      console.error("Failed to toggle AI pause status:", err);
+      // Revert on error
+      setContacts(prev => prev.map(c => 
+        (c.conversation_id || c.id) === convId 
+          ? { ...c, is_paused: currentStatus, is_human_needed: currentStatus }
+          : c
+      ));
+      setActiveContact(prev => ({ ...prev, is_paused: currentStatus, is_human_needed: currentStatus }));
+      alert("Failed to change AI pause status. Please try again.");
+    }
+  };
+
   const handleSend = async () => {
     if (!inputText.trim()) return;
 
@@ -572,20 +602,20 @@ const ConversationList = ({ pages, user }) => {
                     {activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}
                   </h2>
                   <div className="flex items-center gap-2">
-                    {activeContact?.is_human_needed ? (
+                    {(activeContact?.is_paused !== undefined ? activeContact.is_paused : activeContact?.is_human_needed) ? (
                       <p className="text-[10px] text-red-500 font-black tracking-widest uppercase flex items-center gap-1">
                         <span className="material-symbols-outlined text-[10px] animate-pulse">warning</span>
-                        Manual Support Needed
+                        Manual Support Needed (AI Paused)
                       </p>
                     ) : (
-                      <p className="text-[10px] text-emerald-600 font-bold tracking-widest uppercase">Autonomous Mode</p>
+                      <p className="text-[10px] text-emerald-600 font-bold tracking-widest uppercase">Autonomous Mode (AI Active)</p>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-6 text-slate-400">
-                <button className="hover:text-slate-900 transition-colors"><span className="material-symbols-outlined">call</span></button>
-                <button className="hover:text-slate-900 transition-colors"><span className="material-symbols-outlined">videocam</span></button>
+              <div className="flex items-center gap-4 md:gap-6 text-slate-400">
+                <button className="hover:text-slate-900 transition-colors hidden md:block"><span className="material-symbols-outlined">call</span></button>
+                <button className="hover:text-slate-900 transition-colors hidden md:block"><span className="material-symbols-outlined">videocam</span></button>
                 <button
                   onClick={() => setIsProfileVisible(!isProfileVisible)}
                   className={`hover:text-slate-900 transition-colors ${!isProfileVisible ? 'text-emerald-600' : ''}`}
@@ -674,6 +704,22 @@ const ConversationList = ({ pages, user }) => {
                     <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Managed by AI</span>
                   )}
                 </div>
+              </div>
+
+              <div className="flex justify-center w-full mb-8">
+                <button 
+                  onClick={handleToggleAIPause}
+                  className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 ${
+                    (activeContact?.is_paused !== undefined ? activeContact.is_paused : activeContact?.is_human_needed) 
+                      ? 'bg-gradient-to-r from-emerald-400 to-emerald-600 text-white shadow-emerald-500/30' 
+                      : 'bg-gradient-to-r from-rose-500 to-red-500 text-white shadow-red-500/30'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {(activeContact?.is_paused !== undefined ? activeContact.is_paused : activeContact?.is_human_needed) ? 'play_circle' : 'pause_circle'}
+                  </span>
+                  {(activeContact?.is_paused !== undefined ? activeContact.is_paused : activeContact?.is_human_needed) ? 'Resume AI Agent' : 'Pause AI Agent'}
+                </button>
               </div>
 
               <div className="space-y-8">

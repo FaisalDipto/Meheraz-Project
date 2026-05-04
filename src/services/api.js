@@ -172,6 +172,10 @@ export const apiService = {
     method: 'POST',
     body: JSON.stringify({ message }),
   }),
+  setConversationPauseStatus: (pageId, conversationId, pauseStatus) => apiFetch(`/api/agent/page/${pageId}/conversation/${conversationId}/pause`, {
+    method: 'PATCH',
+    body: JSON.stringify({ pause_status: pauseStatus }),
+  }),
 
   // General AI Chat
   aiChat: (prompt) => apiFetch(`/api/chat?prompt=${encodeURIComponent(prompt)}`, {
