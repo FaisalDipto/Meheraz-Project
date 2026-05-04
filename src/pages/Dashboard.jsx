@@ -2100,13 +2100,13 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
         style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '22px' }}
       >
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <div className="form-group">
-            <label>Agent Name *</label>
-            <input type="text" placeholder="e.g. Sales Bot" value={agentName} onChange={(e) => setAgentName(e.target.value)} required />
+          <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'hidden' }}>
+            <label style={{ fontSize: '14px', fontWeight: 600 }}>Agent Name *</label>
+            <input type="text" placeholder="e.g. Sales Bot" value={agentName} onChange={(e) => setAgentName(e.target.value)} required style={{ width: '100%', padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', backgroundColor: '#fff', fontSize: '14px', boxSizing: 'border-box' }} />
           </div>
-          <div className="form-group">
-            <label>Business Name *</label>
-            <input type="text" placeholder="Your Company Ltd" value={businessName} onChange={(e) => setBusinessName(e.target.value)} required />
+          <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'hidden' }}>
+            <label style={{ fontSize: '14px', fontWeight: 600 }}>Business Name *</label>
+            <input type="text" placeholder="Your Company Ltd" value={businessName} onChange={(e) => setBusinessName(e.target.value)} required style={{ width: '100%', padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', backgroundColor: '#fff', fontSize: '14px', boxSizing: 'border-box' }} />
           </div>
         </div>
 
@@ -2129,23 +2129,23 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <div className="form-group">
-            <label>Tone *</label>
-            <select value={tone} onChange={e => setTone(e.target.value)} style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', backgroundColor: '#fff', fontSize: '14px' }}>
+          <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'hidden' }}>
+            <label style={{ fontSize: '14px', fontWeight: 600 }}>Tone *</label>
+            <select value={tone} onChange={e => setTone(e.target.value)} style={{ width: '100%', padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', backgroundColor: '#fff', fontSize: '14px', boxSizing: 'border-box' }}>
               {TONES.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
-          <div className="form-group">
-            <label>Language *</label>
-            <select value={language} onChange={e => setLanguage(e.target.value)} style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', backgroundColor: '#fff', fontSize: '14px' }}>
+          <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'hidden' }}>
+            <label style={{ fontSize: '14px', fontWeight: 600 }}>Language *</label>
+            <select value={language} onChange={e => setLanguage(e.target.value)} style={{ width: '100%', padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', backgroundColor: '#fff', fontSize: '14px', boxSizing: 'border-box' }}>
               {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
             </select>
           </div>
         </div>
 
-        <div className="form-group">
-          <label>Business Description *</label>
-          <textarea placeholder="What does your business do? How should the agent ground its suggestions?" value={businessDesc} onChange={(e) => setBusinessDesc(e.target.value)} rows="3" style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', fontFamily: 'inherit', resize: 'vertical' }} required />
+        <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'hidden' }}>
+          <label style={{ fontSize: '14px', fontWeight: 600 }}>Business Description *</label>
+          <textarea placeholder="What does your business do? How should the agent ground its suggestions?" value={businessDesc} onChange={(e) => setBusinessDesc(e.target.value)} rows="3" style={{ width: '100%', padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} required />
         </div>
 
         <div className="form-group">
