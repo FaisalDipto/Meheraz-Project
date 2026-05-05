@@ -166,8 +166,20 @@ export const apiService = {
   getProfilePic: (userId) => apiFetch(`/api/user/profile_pic/${userId}`),
 
   // Conversations
-  getPageDetails: (pageId) => apiFetch(`/api/page/${pageId}`),
-  getConversationDetails: (pageId, conversationId) => apiFetch(`/api/page/${pageId}/conversation/${conversationId}`),
+  getPageDetails: (pageId, cursor = null, page_size = null) => {
+    const q = new URLSearchParams();
+    if (cursor) q.set('cursor', cursor);
+    if (page_size) q.set('page_size', page_size);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return apiFetch(`/api/page/${pageId}${qs}`);
+  },
+  getConversationDetails: (pageId, conversationId, cursor = null, page_size = null) => {
+    const q = new URLSearchParams();
+    if (cursor) q.set('cursor', cursor);
+    if (page_size) q.set('page_size', page_size);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return apiFetch(`/api/page/${pageId}/conversation/${conversationId}${qs}`);
+  },
   replyToConversation: (pageId, conversationId, message) => apiFetch(`/api/facebook/${pageId}/messenger/${conversationId}/reply`, {
     method: 'POST',
     body: JSON.stringify({ message }),

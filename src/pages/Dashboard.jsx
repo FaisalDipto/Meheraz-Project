@@ -265,6 +265,56 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
   );
 };
 
+const formatMessageTime = (rawTime) => {
+  if (!rawTime) return 'Now';
+  const date = new Date(rawTime);
+  const today = new Date();
+  
+  const isToday = date.getDate() === today.getDate() && 
+                  date.getMonth() === today.getMonth() && 
+                  date.getFullYear() === today.getFullYear();
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday = date.getDate() === yesterday.getDate() && 
+                      date.getMonth() === yesterday.getMonth() && 
+                      date.getFullYear() === yesterday.getFullYear();
+
+  const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  if (isToday) {
+    return timeStr;
+  } else if (isYesterday) {
+    return `Yesterday, ${timeStr}`;
+  } else {
+    return `${date.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${timeStr}`;
+  }
+};
+
+const formatListTime = (rawTime) => {
+  if (!rawTime) return '';
+  const date = new Date(rawTime);
+  const today = new Date();
+  
+  const isToday = date.getDate() === today.getDate() && 
+                  date.getMonth() === today.getMonth() && 
+                  date.getFullYear() === today.getFullYear();
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday = date.getDate() === yesterday.getDate() && 
+                      date.getMonth() === yesterday.getMonth() && 
+                      date.getFullYear() === yesterday.getFullYear();
+
+  if (isToday) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } else if (isYesterday) {
+    return `Yesterday`;
+  } else {
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+};
+
 const ConversationList = ({ pages, user }) => {
   const [selectedPageId, setSelectedPageId] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -278,12 +328,24 @@ const ConversationList = ({ pages, user }) => {
   const [mobileShowChat, setMobileShowChat] = useState(false);
   const messagesContainerRef = useRef(null);
 
+  const [conversationsPagination, setConversationsPagination] = useState(null);
+  const [messagesPagination, setMessagesPagination] = useState(null);
+  const [loadingMoreContacts, setLoadingMoreContacts] = useState(false);
+  const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
+  const isLoadingOlderMsgsRef = useRef(false);
+
   useEffect(() => {
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTo({
-        top: messagesContainerRef.current.scrollHeight,
-        behavior: 'smooth'
-      });
+      if (isLoadingOlderMsgsRef.current) {
+        isLoadingOlderMsgsRef.current = false;
+      } else {
+        // Use a short timeout to ensure DOM has fully calculated heights
+        setTimeout(() => {
+          if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+          }
+        }, 50);
+      }
     }
   }, [messages]);
 
@@ -306,12 +368,20 @@ const ConversationList = ({ pages, user }) => {
   useEffect(() => {
     if (!selectedPageId) return;
     setLoading(true);
+    setContacts([]);
     apiService.getPageDetails(selectedPageId)
       .then(data => {
         // Handle FB Graph variations
         const convs = data?.conversations?.data || data?.conversations || data?.data || [];
         const normalized = Array.isArray(convs) ? convs : [];
         setContacts(normalized);
+        
+        if (data?.pagination) {
+          setConversationsPagination(data.pagination);
+        } else {
+          setConversationsPagination(null);
+        }
+
         if (normalized.length > 0) setActiveContact(normalized[0]);
         else setActiveContact(null);
 
@@ -347,10 +417,113 @@ const ConversationList = ({ pages, user }) => {
         const msgs = data?.messages?.data || data?.messages || data?.data || [];
         // Typically Facebook returns newest first, reverse for chat UI
         setMessages(Array.isArray(msgs) ? msgs.reverse() : []);
+        
+        if (data?.pagination) {
+          setMessagesPagination(data.pagination);
+        } else {
+          setMessagesPagination(null);
+        }
       })
       .catch(err => console.error("Failed to fetch messages", err))
       .finally(() => setLoadingMsgs(false));
   }, [selectedPageId, activeContact]);
+
+  const handleLoadMoreConversations = () => {
+    if (!selectedPageId || !conversationsPagination?.has_more || !conversationsPagination?.next_cursor) return;
+    setLoadingMoreContacts(true);
+    apiService.getPageDetails(selectedPageId, conversationsPagination.next_cursor)
+      .then(data => {
+        const convs = data?.conversations?.data || data?.conversations || data?.data || [];
+        const normalized = Array.isArray(convs) ? convs : [];
+        
+        setContacts(prev => {
+          const newContacts = [...prev];
+          normalized.forEach(c => {
+            if (!newContacts.find(existing => (existing.conversation_id || existing.id) === (c.conversation_id || c.id))) {
+              newContacts.push(c);
+            }
+          });
+          return newContacts;
+        });
+
+        if (data?.pagination) {
+          setConversationsPagination(data.pagination);
+        } else {
+          setConversationsPagination(null);
+        }
+
+        normalized.forEach(conv => {
+          const cId = conv.conversation_id || conv.id;
+          if (!cId) return;
+          apiService.getConversationDetails(selectedPageId, cId)
+            .then(details => {
+              const msgs = details?.messages?.data || details?.messages || details?.data || [];
+              if (Array.isArray(msgs) && msgs.length > 0) {
+                const lastMsg = msgs[0];
+                setContacts(prev => prev.map(c =>
+                  (c.conversation_id || c.id) === cId
+                    ? { ...c, last_message: lastMsg.message, updated_time: lastMsg.created_at || lastMsg.created_time || lastMsg.timestamp || Date.now() }
+                    : c
+                ));
+              }
+            }).catch(() => { });
+        });
+      })
+      .catch(err => console.error("Failed to load more conversations", err))
+      .finally(() => setLoadingMoreContacts(false));
+  };
+
+  const handleScrollMessages = (e) => {
+    const { scrollTop } = e.target;
+    if (scrollTop < 50 && messagesPagination?.has_more && !loadingMoreMessages) {
+      handleLoadMoreMessages();
+    }
+  };
+
+  const handleLoadMoreMessages = () => {
+    if (!selectedPageId || !activeContact || !messagesPagination?.has_more || !messagesPagination?.next_cursor || loadingMoreMessages) return;
+    setLoadingMoreMessages(true);
+    isLoadingOlderMsgsRef.current = true;
+    const convId = activeContact.id || activeContact.conversation_id || activeContact.id;
+    
+    const container = messagesContainerRef.current;
+    const oldScrollHeight = container ? container.scrollHeight : 0;
+
+    apiService.getConversationDetails(selectedPageId, convId, messagesPagination.next_cursor)
+      .then(data => {
+        const msgs = data?.messages?.data || data?.messages || data?.data || [];
+        const newMsgs = Array.isArray(msgs) ? msgs.reverse() : [];
+        
+        setMessages(prev => {
+           const all = [...newMsgs, ...prev];
+           const unique = [];
+           const seen = new Set();
+           all.forEach(m => {
+             const id = m.id || m.message_id || m.created_at;
+             if (!seen.has(id)) {
+               seen.add(id);
+               unique.push(m);
+             }
+           });
+           return unique;
+        });
+        
+        if (data?.pagination) {
+          setMessagesPagination(data.pagination);
+        } else {
+          setMessagesPagination(null);
+        }
+        
+        setTimeout(() => {
+          if (container) {
+            const newScrollHeight = container.scrollHeight;
+            container.scrollTop = newScrollHeight - oldScrollHeight;
+          }
+        }, 0);
+      })
+      .catch(err => console.error("Failed to fetch more messages", err))
+      .finally(() => setLoadingMoreMessages(false));
+  };
 
   const handleToggleAIPause = async () => {
     if (!selectedPageId || !activeContact) return;
@@ -391,6 +564,8 @@ const ConversationList = ({ pages, user }) => {
 
     if (!selectedPageId || !activeContact) return;
     const convId = activeContact.conversation_id || activeContact.id;
+
+    isLoadingOlderMsgsRef.current = false; // ensure we scroll down on send
 
     // Optimistically add message
     const tempMsg = {
@@ -441,9 +616,7 @@ const ConversationList = ({ pages, user }) => {
     }
 
     const rawTime = msg.created_at || msg.created_time || msg.timestamp;
-    const timeStr = rawTime
-      ? new Date(rawTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      : 'Now';
+    const timeStr = formatMessageTime(rawTime);
 
     if (isMe) {
       // Sent message
@@ -549,7 +722,7 @@ const ConversationList = ({ pages, user }) => {
             const contactName = contact.name || contact.senders?.data?.[0]?.name || contact.participants?.data?.[0]?.name || `User ${i}`;
             const snippet = contact.snippet || contact.last_message || contact.messages?.data?.[0]?.message || contact.messages?.[0]?.message || 'No messages';
             const updatedTimeValue = contact.updated_time || contact.last_message_at || contact.updated;
-            const updated = updatedTimeValue ? new Date(updatedTimeValue).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+            const updated = formatListTime(updatedTimeValue);
             const id = contact.conversation_id || contact.id || i;
             const isActive = (activeContact?.id || activeContact?.conversation_id) === id;
 
@@ -577,6 +750,17 @@ const ConversationList = ({ pages, user }) => {
               </div>
             );
           })}
+          {conversationsPagination?.has_more && (
+            <div className="flex justify-center pt-2 pb-4">
+              <button 
+                onClick={handleLoadMoreConversations}
+                disabled={loadingMoreContacts}
+                className="px-4 py-2 text-xs font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-700 rounded-lg transition-colors border-none cursor-pointer"
+              >
+                {loadingMoreContacts ? 'Loading...' : 'Load More'}
+              </button>
+            </div>
+          )}
         </div>
       </main>
 
@@ -627,13 +811,25 @@ const ConversationList = ({ pages, user }) => {
               </div>
             </header>
 
-            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-8 space-y-8 bg-slate-50/20">
+            <div 
+              ref={messagesContainerRef} 
+              className="flex-1 overflow-y-auto p-8 space-y-8 bg-slate-50/20"
+              onScroll={handleScrollMessages}
+            >
               {loadingMsgs ? (
                 <div className="text-center text-slate-400 mt-10">Loading messages...</div>
               ) : messages.length === 0 ? (
                 <div className="text-center text-slate-400 mt-10">No messages available.</div>
               ) : (
                 <>
+                  {loadingMoreMessages && (
+                    <div className="flex justify-center mb-6">
+                      <div className="px-4 py-2 text-[10px] font-bold text-slate-400 bg-slate-100 rounded-full flex items-center gap-2 shadow-sm">
+                        <span className="material-symbols-outlined text-[14px] animate-spin">sync</span>
+                        Loading older messages...
+                      </div>
+                    </div>
+                  )}
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase py-2 px-4 rounded-full bg-slate-100 mb-6">Chat History</span>
                   </div>
@@ -679,13 +875,13 @@ const ConversationList = ({ pages, user }) => {
 
       {/* Profile Right Sidebar - hidden on mobile */}
       {isProfileVisible && (
-        <aside className="w-80 bg-white hidden xl:flex flex-col overflow-y-auto shrink-0 border-l border-slate-100 animate-fade-in-right">
+        <aside className="w-80 bg-slate-50 hidden xl:flex flex-col overflow-y-auto shrink-0 border-l border-slate-200 animate-fade-in-right">
           {activeContact ? (
             <div className="p-8">
               <div className="flex justify-center mb-8">
                 <div className="relative">
                   {renderAvatar(activeContact, "w-32 h-32 rounded-3xl shadow-xl")}
-                  <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-xl shadow-lg">
+                  <div className="absolute -bottom-2 -right-2 bg-slate-50 p-2 rounded-xl shadow-lg border border-white">
                     <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
                   </div>
                 </div>
@@ -746,11 +942,11 @@ const ConversationList = ({ pages, user }) => {
                 <div>
                   <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Shared Files</h4>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="aspect-square bg-slate-50 rounded-xl flex flex-col items-center justify-center gap-1 group hover:bg-slate-900 transition-all cursor-pointer">
+                    <div className="aspect-square bg-white rounded-xl flex flex-col items-center justify-center gap-1 group hover:bg-slate-900 transition-all cursor-pointer shadow-sm">
                       <span className="material-symbols-outlined text-slate-400 group-hover:text-white">description</span>
                       <span className="text-[9px] font-bold text-slate-400 group-hover:text-white uppercase">Report.pdf</span>
                     </div>
-                    <div className="aspect-square bg-slate-50 rounded-xl flex flex-col items-center justify-center gap-1 group hover:bg-slate-900 transition-all cursor-pointer">
+                    <div className="aspect-square bg-white rounded-xl flex flex-col items-center justify-center gap-1 group hover:bg-slate-900 transition-all cursor-pointer shadow-sm">
                       <span className="material-symbols-outlined text-slate-400 group-hover:text-white">table_chart</span>
                       <span className="text-[9px] font-bold text-slate-400 group-hover:text-white uppercase">Metrics.csv</span>
                     </div>
@@ -758,13 +954,13 @@ const ConversationList = ({ pages, user }) => {
                 </div>
 
                 <div>
-                  <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Shortcuts</h4>
+                  <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-200 pb-2">Shortcuts</h4>
                   <div className="space-y-2">
-                    <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-xl flex items-center justify-between group">
+                    <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-white rounded-xl flex items-center justify-between group shadow-sm bg-transparent border-none cursor-pointer">
                       Block User
                       <span className="material-symbols-outlined text-sm text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">block</span>
                     </button>
-                    <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-xl flex items-center justify-between group">
+                    <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-white rounded-xl flex items-center justify-between group shadow-sm bg-transparent border-none cursor-pointer">
                       Clear Conversation
                       <span className="material-symbols-outlined text-sm text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">delete_sweep</span>
                     </button>
@@ -3219,11 +3415,11 @@ export default function Dashboard() {
       )}
 
       {/* Sidebar */}
-      <aside className={`bg-slate-50 border-r border-slate-100 flex flex-col font-['Epilogue'] font-medium h-full pb-20 shrink-0 transition-all duration-300
+      <aside className={`bg-slate-900 border-r border-slate-800 flex flex-col font-['Epilogue'] font-medium h-full pb-20 shrink-0 transition-all duration-300
         fixed top-0 left-0 w-56 z-[10000] overflow-y-auto
         ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
         ${isSidebarCollapsed ? 'md:-translate-x-full md:w-0 md:px-0 md:border-none md:overflow-hidden' : 'md:translate-x-0 md:relative md:w-56 md:px-3 xl:w-64 xl:px-4 md:z-auto md:shadow-none'}`}>
-        <div className="h-16 mb-6 flex items-center justify-start px-4 border-b border-slate-100 w-full shrink-0">
+        <div className="h-16 mb-6 flex items-center justify-start px-4 border-b border-slate-800 w-full shrink-0">
           <div className="flex items-center gap-[6px]">
             <img src={logoImg} alt="LYFFLOW" style={{ height: '32px', width: 'auto', filter: 'brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%)' }} />
             <img src={titleImg} alt="LYFFLOW" style={{ height: '20px', width: 'auto', filter: 'brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(450%) hue-rotate(100deg) brightness(95%) contrast(90%)' }} />
@@ -3248,8 +3444,8 @@ export default function Dashboard() {
               key={item.id}
               onClick={() => { setActiveTab(item.id); setIsSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all cursor-pointer border-none text-left ${activeTab === item.id
-                  ? 'text-emerald-600 font-bold border-l-0 border-r-4 border-emerald-500 bg-[#ecfdf5] rounded-r-none pl-[16px] pr-[12px]'
-                  : 'text-slate-500 hover:bg-slate-100 bg-transparent'
+                  ? 'text-emerald-400 font-bold border-l-0 border-r-4 border-emerald-500 bg-emerald-500/10 rounded-r-none pl-[16px] pr-[12px]'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 bg-transparent'
                 }`}
             >
               {item.id === 'tutorial'
@@ -3263,13 +3459,13 @@ export default function Dashboard() {
         <div className="mt-auto pt-8 border-t border-slate-100 space-y-1 mb-16">
           <button
             onClick={() => { setActiveTab('support'); setIsSidebarOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'support' ? 'text-emerald-600 font-bold bg-[#ecfdf5]' : 'text-slate-500 hover:bg-slate-100 bg-transparent'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'support' ? 'text-emerald-400 font-bold bg-emerald-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 bg-transparent'}`}
           >
             <HelpCircle size={20} />
             <span className="text-[15px]">Support</span>
           </button>
           <button onClick={() => { setActiveTab('settings'); setIsSidebarOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'settings' ? 'text-emerald-600 font-bold bg-[#ecfdf5]' : 'text-slate-500 hover:bg-slate-100 bg-transparent'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 transition-all rounded-lg cursor-pointer border-none text-left ${activeTab === 'settings' ? 'text-emerald-400 font-bold bg-emerald-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 bg-transparent'}`}
           >
             <span className="material-symbols-outlined text-[20px]">settings</span>
             <span className="text-[15px]">Settings</span>
