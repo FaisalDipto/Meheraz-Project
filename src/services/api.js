@@ -132,7 +132,7 @@ export const apiService = {
     body: JSON.stringify(updateData),
   }),
 
-  deleteKnowledge: (pageId, knowledgeId, type = 'text') => apiFetch(`/api/knowledge/${pageId}/${type}/${knowledgeId}`, {
+  deleteKnowledge: (pageId, knowledgeId) => apiFetch(`/api/knowledge/${pageId}/${knowledgeId}`, {
     method: 'DELETE',
   }),
 

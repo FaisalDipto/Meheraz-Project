@@ -334,6 +334,41 @@ const ConversationList = ({ pages, user }) => {
   const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
   const isLoadingOlderMsgsRef = useRef(false);
 
+  const currentPageName = pages?.find(p => p.page_id === selectedPageId)?.name || '';
+
+  const resolveContactName = (contactObj, fallback = 'User') => {
+    if (!contactObj) return fallback;
+    
+    const isBadName = (n) => !n || n.toLowerCase() === 'facebook user' || n.toLowerCase() === 'instagram user';
+    const isPageName = (n) => currentPageName && n && n.toLowerCase() === currentPageName.toLowerCase();
+
+    let resolvedName = null;
+
+    if (contactObj.senders?.data) {
+      const validSender = contactObj.senders.data.find(s => !isBadName(s.name) && !isPageName(s.name));
+      if (validSender) {
+        resolvedName = validSender.name;
+      }
+    }
+    
+    if (!resolvedName && contactObj.participants?.data) {
+      const validParticipant = contactObj.participants.data.find(p => !isBadName(p.name) && !isPageName(p.name));
+      if (validParticipant) {
+        resolvedName = validParticipant.name;
+      }
+    }
+    
+    if (!resolvedName && !isBadName(contactObj.name) && !isPageName(contactObj.name)) {
+      resolvedName = contactObj.name;
+    }
+    
+    if (!resolvedName) {
+      resolvedName = contactObj.name || contactObj.senders?.data?.[0]?.name || contactObj.participants?.data?.[0]?.name || fallback;
+    }
+    
+    return resolvedName;
+  };
+
   useEffect(() => {
     if (messagesContainerRef.current) {
       if (isLoadingOlderMsgsRef.current) {
@@ -590,7 +625,7 @@ const ConversationList = ({ pages, user }) => {
   };
 
   const renderAvatar = (contactObj, extraClass = "") => {
-    const name = contactObj?.senders?.data?.[0]?.name || contactObj?.participants?.data?.[0]?.name || contactObj?.name || 'U';
+    const name = resolveContactName(contactObj, 'U');
     const initial = name.charAt(0).toUpperCase();
     return (
       <img
@@ -719,7 +754,7 @@ const ConversationList = ({ pages, user }) => {
           ) : contacts.length === 0 ? (
             <div className="p-8 text-center text-slate-400 font-medium text-sm">No ongoing conversations.</div>
           ) : contacts.map((contact, i) => {
-            const contactName = contact.name || contact.senders?.data?.[0]?.name || contact.participants?.data?.[0]?.name || `User ${i}`;
+            const contactName = resolveContactName(contact, `User ${i}`);
             const snippet = contact.snippet || contact.last_message || contact.messages?.data?.[0]?.message || contact.messages?.[0]?.message || 'No messages';
             const updatedTimeValue = contact.updated_time || contact.last_message_at || contact.updated;
             const updated = formatListTime(updatedTimeValue);
@@ -783,7 +818,7 @@ const ConversationList = ({ pages, user }) => {
                 </div>
                 <div>
                   <h2 className="font-['Epilogue'] font-bold text-lg text-slate-900 tracking-tight">
-                    {activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}
+                    {resolveContactName(activeContact, 'User')}
                   </h2>
                   <div className="flex items-center gap-2">
                     {(activeContact?.is_paused !== undefined ? activeContact.is_paused : activeContact?.is_human_needed) ? (
@@ -1126,7 +1161,7 @@ const Knowledge = ({ pages }) => {
   };
 
   const handleViewClick = async (item) => {
-    const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
+    const actualId = item.knowledge_usage_id || item.id || item.knowledge_id || item.knowledgeId || item.uuid;
     if (!actualId || String(actualId).startsWith('temp_')) {
       addToast('Wait for the item to be fully saved in the database before viewing', 'error');
       return;
@@ -1145,7 +1180,7 @@ const Knowledge = ({ pages }) => {
   };
 
   const handleEditClick = async (item) => {
-    const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
+    const actualId = item.knowledge_usage_id || item.id || item.knowledge_id || item.knowledgeId || item.uuid;
     if (String(actualId).startsWith('temp_')) return alert('Wait for the item to be fully saved before editing');
 
     setName(item.name || item.data_source?.name || '');
@@ -1168,7 +1203,7 @@ const Knowledge = ({ pages }) => {
   };
 
   const handleRequestDelete = (item) => {
-    const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
+    const actualId = item.knowledge_usage_id || item.id || item.knowledge_id || item.knowledgeId || item.uuid;
     if (!actualId || String(actualId).startsWith('temp_')) {
       addToast('Cannot delete item without a valid ID. Wait for save to complete.', 'error');
       return;
@@ -1180,19 +1215,19 @@ const Knowledge = ({ pages }) => {
     const item = deleteConfirmItem;
     if (!item) return;
     setDeleteConfirmItem(null);
-    const actualId = item.id || item.knowledge_id || item.knowledgeId || item.uuid;
+    const actualId = item.knowledge_usage_id || item.id || item.knowledge_id || item.knowledgeId || item.uuid;
     const type = (item.knowledge_type === 'file' || item.file_name) ? 'file' : 'text';
 
     console.log('--- DELETION DEBUG ---');
     console.log('Page ID:', selectedPageId);
     console.log('Knowledge type evaluated as:', type);
     console.log('Deleting ID:', actualId);
-    console.log('Endpoint called:', `/api/knowledge/${selectedPageId}/${type}/${actualId}`);
+    console.log('Endpoint called:', `/api/knowledge/${selectedPageId}/${actualId}`);
     console.log('----------------------');
 
     try {
-      await apiService.deleteKnowledge(selectedPageId, actualId, type);
-      setKnowledgeList(prev => prev.filter(k => (k.id || k.knowledge_id || k.knowledgeId || k.uuid) !== actualId));
+      await apiService.deleteKnowledge(selectedPageId, actualId);
+      setKnowledgeList(prev => prev.filter(k => (k.knowledge_usage_id || k.id || k.knowledge_id || k.knowledgeId || k.uuid) !== actualId));
       addToast('Knowledge deleted successfully', 'delete');
     } catch (error) {
       console.error(error);
@@ -1235,7 +1270,6 @@ const Knowledge = ({ pages }) => {
           return;
         }
         const updateData = {
-          name: name.trim(),
           title: title.trim(),
           description: description.trim()
         };
@@ -1491,7 +1525,7 @@ const Knowledge = ({ pages }) => {
                 }
 
                 return (
-                  <div key={item.id || i} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50/80 transition-colors group">
+                  <div key={item.knowledge_usage_id || item.id || i} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50/80 transition-colors group">
                     <div className="col-span-4 flex items-center gap-4 pl-6">
                       <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
                         <span className="material-symbols-outlined text-[20px]">{isFile ? 'description' : 'text_snippet'}</span>
