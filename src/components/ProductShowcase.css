@@ -92,7 +92,7 @@
   position: relative;
   overflow: hidden;
   transition: border-color 0.3s, background 0.3s;
-  width: 100%;
+  box-sizing: border-box;
 }
 
 .showcase-tab:hover { border-color: #334155; background: #131f35; }

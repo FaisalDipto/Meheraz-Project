@@ -1809,6 +1809,14 @@ const PERSONAS = [
     title: 'Q&A Bot',
     desc: 'Answers questions based on your knowledge base.',
   },
+  {
+    id: 'general',
+    icon: Settings,
+    iconColor: '#f59e0b',
+    iconBg: 'rgba(245,158,11,0.1)',
+    title: 'General Agent',
+    desc: 'Handles general queries and varied tasks.',
+  },
 ];
 
 const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) => {
@@ -1835,6 +1843,7 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
 
   const [assignModalAgent, setAssignModalAgent] = useState(null);
   const [assigningId, setAssigningId] = useState(null);
+  const [creationError, setCreationError] = useState(null);
 
   // Filter State
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -1946,7 +1955,7 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
   const TONES = ["Professional", "Friendly", "Formal", "Casual", "Persuasive", "Empathetic", "Confident"];
   const LANGUAGES = ["Mimic User Language", "English", "Arabic", "Spanish", "French", "German", "Portuguese", "Hindi", "Bengali"];
 
-  const REVERSE_ROLE_MAP = { 'Sales Agent': 'sales', 'Support Agent': 'support', 'Q&A Agent': 'qa' };
+  const REVERSE_ROLE_MAP = { 'Sales Agent': 'sales', 'Support Agent': 'support', 'Q&A Agent': 'qa', 'General Agent': 'general' };
 
   const handleEditClick = (agent) => {
     setIsEditing(true);
@@ -1969,7 +1978,7 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
 
     setLoading(true);
     try {
-      const roleMap = { 'sales': 'Sales Agent', 'support': 'Support Agent', 'qa': 'Q&A Agent' };
+      const roleMap = { 'sales': 'Sales Agent', 'support': 'Support Agent', 'qa': 'Q&A Agent', 'general': 'General Agent' };
       const payload = {
         name: agentName,
         role: roleMap[selectedPersona],
@@ -1980,6 +1989,8 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
         instructions: instructions.trim() || null,
         fallback_message: fallbackMessage.trim() || null
       };
+
+      console.log("Create Agent Payload:", JSON.stringify(payload, null, 2));
 
       if (isEditing) {
         await apiService.updateAgent(editingAgentId, payload);
@@ -2023,7 +2034,7 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
       }, 3000);
     } catch (error) {
       console.error('Failed to create agent:', error);
-      alert('Failed to create agent: ' + error.message);
+      setCreationError(error.message || 'An unknown error occurred while creating the agent.');
     } finally {
       setLoading(false);
     }
@@ -2124,6 +2135,45 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
             </div>
           </div>
         )}
+        {creationError && (
+          <div style={{
+            animation: 'slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            padding: '24px',
+            borderRadius: '16px',
+            color: '#0f172a',
+            fontWeight: 500,
+            fontSize: '15px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+            minWidth: '340px',
+            maxWidth: '420px',
+            pointerEvents: 'auto',
+            backgroundColor: '#ffffff',
+            borderTop: '4px solid #ef4444'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span className="material-symbols-outlined text-[24px]" style={{ color: '#ef4444' }}>error</span>
+              </div>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>Creation Failed</h4>
+                <p style={{ margin: 0, fontSize: '12px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Action Required</p>
+              </div>
+            </div>
+            <p style={{ margin: '0 0 24px 0', fontSize: '14.5px', color: '#475569', lineHeight: '1.6' }}>
+              {creationError}
+            </p>
+            <button
+              onClick={() => setCreationError(null)}
+              style={{ width: '100%', padding: '12px', borderRadius: '10px', fontSize: '14px', backgroundColor: '#0f172a', color: '#ffffff', fontWeight: 700, transition: 'all 0.2s', cursor: 'pointer', border: 'none' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1e293b'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#0f172a'}
+            >
+              Okay, got it
+            </button>
+          </div>
+        )}
       </div>
     </div>,
     document.body
@@ -2187,6 +2237,7 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
                     <option value="Sales Agent">Sales Agent</option>
                     <option value="Support Agent">Support Agent</option>
                     <option value="Q&A Agent">Q&A Agent</option>
+                    <option value="General Agent">General Agent</option>
                   </select>
                 </div>
 
@@ -2247,6 +2298,10 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
               // Read assigned agents state globally
               const assignedPageId = Object.keys(activeSelectedAgents).find(key => activeSelectedAgents[key] === agent.agent_id);
               const isAssigned = !!assignedPageId;
+
+              const totalDialog = agent.total_dialog || 0;
+              const handoverCount = agent.handover_count || 0;
+              const successRate = totalDialog > 0 ? (((totalDialog - handoverCount) / totalDialog) * 100).toFixed(1) + '%' : 'N/A';
 
               return (
                 <div key={agent.agent_id} className="col-span-12 md:col-span-6 lg:col-span-4 bg-white rounded-[2rem] p-8 flex flex-col justify-between group hover:shadow-2xl hover:shadow-black/5 transition-all duration-500 border border-[#e0e3e5] relative break-inside-avoid min-h-[360px]">
@@ -2309,11 +2364,11 @@ const AgentPanel = ({ user, pages, onUpdate, onAgentCreated, onAgentEdited }) =>
                     <div className="flex gap-6 sm:gap-8 justify-start">
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#76777d] block mb-1">Dialogues</span>
-                        <span className="text-lg font-bold text-[#000000]">12,402</span>
+                        <span className="text-lg font-bold text-[#000000]">{totalDialog.toLocaleString()}</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#76777d] block mb-1">Success</span>
-                        <span className="text-lg font-bold text-[#000000]">94.2%</span>
+                        <span className="text-lg font-bold text-[#000000]">{successRate}</span>
                       </div>
                     </div>
 

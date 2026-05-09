@@ -94,7 +94,7 @@ export default function Hero() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative isolate min-h-[90vh] flex flex-col justify-start pt-24 pb-12 sm:pt-32 sm:pb-16 overflow-hidden">
+      <section className="relative isolate min-h-[90vh] flex flex-col justify-center py-12 sm:py-16 overflow-hidden">
         <div className="absolute inset-0 bg-background -z-30"></div>
         
           {/* Floating Background Layers — hidden on very small screens */}
@@ -115,14 +115,14 @@ export default function Hero() {
           </div>
 
         {/* CONTENT LAYER */}
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center relative z-10 w-full">
-          <div className="space-y-8 animate-fade-up">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center relative z-10 w-full overflow-x-hidden sm:overflow-visible">
+          <div className="space-y-8 animate-fade-up min-w-0 w-full max-w-full">
             <span className="inline-block px-4 py-1.5 bg-secondary text-white text-[10px] font-bold tracking-[0.2em] uppercase rounded-full shadow-lg shadow-secondary/20">Automate Everything</span>
-            <h1 className="font-headline text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] text-primary">
-              Automate Conversations on <span className="text-tertiary">
-                <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom left'}}>Facebook,</span>{' '}
-                <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom center'}}>Instagram</span>{' '}
-                <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom center'}}>&amp;</span>{' '}
+            <h1 className="font-headline text-3xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter leading-[1.1] text-primary break-words">
+              Automate Conversations on <span className="text-tertiary flex flex-wrap items-center gap-x-1.5 sm:gap-x-3 gap-y-2 mt-2 sm:mt-3">
+                <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom left'}}>Facebook,</span>
+                <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom center'}}>Instagram</span>
+                <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom center'}}>&amp;</span>
                 <span className="animate-stretch-shrink" style={{transformOrigin: 'bottom right'}}>WhatsApp</span>
               </span>
             </h1>
@@ -193,7 +193,7 @@ export default function Hero() {
             <label className="font-label text-sm font-extrabold tracking-[0.25em] uppercase text-secondary mb-4 block">The Process</label>
             <h2 className="font-headline text-4xl md:text-5xl font-black tracking-tight text-primary">Three steps to automation</h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+          <div className="flex flex-col md:grid md:grid-cols-3 gap-12 md:gap-8 lg:gap-12">
             <div className="reveal">
               <div className="group h-full p-8 lg:p-10 bg-gradient-to-br from-tertiary/20 to-tertiary/5 rounded-[2rem] border border-tertiary/30 hover:shadow-2xl hover:shadow-tertiary/20 transition-all duration-500 hover:-translate-y-2">
                 <div className="w-16 h-16 bg-white text-tertiary rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">

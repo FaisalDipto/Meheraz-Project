@@ -114,19 +114,21 @@ export default function FAQ() {
                 }`}
               >
                 <button
-                  className="faq-question w-full text-left flex justify-between items-center p-6 focus:outline-none"
+                  className="faq-question w-full text-left focus:outline-none"
                   onClick={() => toggleFAQ(faq.id)}
                   aria-expanded={isOpen}
                 >
-                  <span className={`text-lg font-bold font-body transition-colors duration-300 ${isOpen ? 'text-secondary' : 'text-on-surface'}`}>
-                    {faq.question}
-                  </span>
-                  <div className={`faq-icon flex-shrink-0 ml-4 rounded-full w-8 h-8 flex items-center justify-center transition-all duration-300 ${
-                    isOpen ? 'bg-secondary text-white transform rotate-180' : 'bg-surface-container-high text-on-surface-variant'
-                  }`}>
-                    <span className="material-symbols-outlined text-xl">
-                      expand_more
+                  <div className="flex justify-between items-center p-6 w-full box-border">
+                    <span className={`text-lg font-bold font-body transition-colors duration-300 pr-4 ${isOpen ? 'text-secondary' : 'text-on-surface'}`}>
+                      {faq.question}
                     </span>
+                    <div className={`faq-icon flex-shrink-0 ml-4 rounded-full w-8 h-8 flex items-center justify-center transition-all duration-300 ${
+                      isOpen ? 'bg-secondary text-white transform rotate-180' : 'bg-surface-container-high text-on-surface-variant'
+                    }`}>
+                      <span className="material-symbols-outlined text-xl">
+                        expand_more
+                      </span>
+                    </div>
                   </div>
                 </button>
                 
