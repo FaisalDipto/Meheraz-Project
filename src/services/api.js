@@ -189,6 +189,9 @@ export const apiService = {
     body: JSON.stringify({ pause_status: pauseStatus }),
   }),
 
+  // Auth / Reauth
+  getFacebookReauthUrl: () => apiFetch('/api/auth/facebook/reauth'),
+
   // General AI Chat
   aiChat: (prompt) => apiFetch(`/api/chat?prompt=${encodeURIComponent(prompt)}`, {
     method: 'POST',
