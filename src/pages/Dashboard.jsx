@@ -12,6 +12,7 @@ import titleImg from '../assets/title.png';
 const Overview = ({ user, pages, onNavigate, onUpdate }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isPlatformModalOpen, setIsPlatformModalOpen] = useState(false);
+  const [showInstaComingSoon, setShowInstaComingSoon] = useState(false);
   const [assigning, setAssigning] = useState({}); // {pageId: boolean}
   const [success, setSuccess] = useState({}); // {pageId: boolean}
   const [selectedAgents, setSelectedAgents] = useState(() => {
@@ -139,8 +140,7 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
       console.log("Hitting endpoint for Add New Page: /api/auth/facebook/reauth");
       window.location.href = '/api/auth/facebook/reauth';
     } else {
-      alert('Instagram integration is coming soon! Please use Facebook to connect your Instagram Business account for now.');
-      setIsPlatformModalOpen(false);
+      setShowInstaComingSoon(true);
     }
   };
 
@@ -321,6 +321,27 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
                 <span className="font-bold text-slate-700 group-hover:text-[#E1306C] transition-colors">Instagram</span>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Instagram Coming Soon Modal */}
+      {showInstaComingSoon && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 animate-scale-in relative border border-slate-100 text-center">
+            <div className="w-16 h-16 bg-[#E1306C]/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-[#E1306C]">
+              <span className="material-symbols-outlined text-4xl">construction</span>
+            </div>
+            <h2 className="text-2xl font-headline font-black tracking-tight text-slate-900 mb-4">Coming Soon!</h2>
+            <p className="text-slate-500 mb-8 leading-relaxed">
+              Direct Instagram integration is currently under development. For now, please use the <strong>Facebook</strong> option to connect your Instagram Business account.
+            </p>
+            <button
+              onClick={() => setShowInstaComingSoon(false)}
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition-colors cursor-pointer border-none text-sm"
+            >
+              Got it, thanks!
+            </button>
           </div>
         </div>
       )}

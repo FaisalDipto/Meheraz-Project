@@ -77,6 +77,13 @@ const apiFetch = async (endpoint, options = {}) => {
   const response = await fetch(url, mergedOptions);
 
   if (!response.ok) {
+    if (response.status === 429) {
+      window.dispatchEvent(new Event('lyfflow-api-rate-limit'));
+      const error = new Error('Too many requests. Please slow down and try again later.');
+      error.status = 429;
+      throw error;
+    }
+
     // Attempt to extract JSON error message if provided by FastAPI
     let errorMessage = 'An error occurred while fetching data';
     try {
