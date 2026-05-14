@@ -3331,6 +3331,22 @@ const SupportPanel = () => {
 
   return (
     <div className="dashboard-content-area animate-fade-in-up space-y-8 pb-20">
+      <div className="max-w-3xl mx-auto space-y-8 mt-12 text-center bg-white p-12 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <span className="material-symbols-outlined text-4xl">contact_support</span>
+        </div>
+        <h2 className="text-4xl font-headline font-black tracking-tighter text-slate-900">Support Center</h2>
+        <article className="text-slate-500 font-medium text-lg leading-relaxed max-w-xl mx-auto">
+          If you need help or have any questions about LYFFLOW, our support team is here for you. 
+          Please reach out to us via email, and we will get back to you as soon as possible.
+        </article>
+        <div className="inline-flex items-center gap-3 bg-slate-50 px-6 py-4 rounded-2xl border border-slate-200 mt-4">
+          <span className="material-symbols-outlined text-slate-400">mail</span>
+          <a href="mailto:support@lyfflow.com" className="text-slate-900 font-bold text-lg hover:text-emerald-600 transition-colors">support@lyfflow.com</a>
+        </div>
+      </div>
+
+      {/* 
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h2 className="text-4xl font-headline font-black tracking-tighter text-slate-900 mb-2">Support Center</h2>
@@ -3438,6 +3454,7 @@ const SupportPanel = () => {
           </div>
         </div>
       </div>
+      */}
     </div>
   );
 };
