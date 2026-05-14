@@ -10,7 +10,7 @@ const API_BASE = '';
 const MOCK_MODE = window.location.search.includes('mock=true');
 
 const mockData = {
-  '/api/user/': { user: { id: 'mock_123', name: 'Demo User', email: 'demo@lyfflow.com', username: 'DemoUser' } },
+  '/api/user/': { user: { id: 'mock_123', first_name: 'Demo', last_name: 'User', display_name: 'Demo User', email: 'demo@lyfflow.com' } },
   '/api/pages': [
     { page_id: 'page_1', name: 'Lyfflow Demo Page', category: 'Software', followers: 1250, agent_name: 'SalesBot' }
   ],

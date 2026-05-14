@@ -3676,11 +3676,11 @@ export default function Dashboard() {
                   <img src={user.profile_pic_url} alt="Profile" className="absolute inset-0 w-full h-full object-cover z-10" onError={(e) => e.target.style.display = 'none'} />
                 )}
                 <span className="relative z-0">
-                  {(user?.name || user?.username || user?.first_name || 'U').charAt(0).toUpperCase()}
+                  {(user?.display_name || user?.first_name || user?.name || user?.username || 'U').charAt(0).toUpperCase()}
                   {user?.last_name ? user.last_name.charAt(0).toUpperCase() : ''}
                 </span>
               </div>
-              <span className="profile-name">{user?.username || user?.name || (user?.first_name ? `${user.first_name} ${user?.last_name || ''}` : '') || user?.email || 'User'}</span>
+              <span className="profile-name">{user?.display_name || (user?.first_name ? `${user.first_name} ${user?.last_name || ''}`.trim() : null) || user?.username || user?.name || user?.email || 'User'}</span>
               <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotated' : ''}`} />
             </button>
           </div>
@@ -3701,11 +3701,11 @@ export default function Dashboard() {
                     <img src={user.profile_pic_url} alt="Profile" className="absolute inset-0 w-full h-full object-cover z-10" onError={(e) => e.target.style.display = 'none'} />
                   )}
                   <span className="relative z-0">
-                    {(user?.name || user?.username || user?.first_name || 'U').charAt(0).toUpperCase()}
+                    {(user?.display_name || user?.first_name || user?.name || user?.username || 'U').charAt(0).toUpperCase()}
                     {user?.last_name ? user.last_name.charAt(0).toUpperCase() : ''}
                   </span>
                 </div>
-                <h4>{user?.username || user?.name || (user?.first_name ? `${user.first_name} ${user?.last_name || ''}` : '') || user?.email || 'User'}</h4>
+                <h4>{user?.display_name || (user?.first_name ? `${user.first_name} ${user?.last_name || ''}`.trim() : null) || user?.username || user?.name || user?.email || 'User'}</h4>
                 <p>{user?.email || 'No email provided'}</p>
                 {user?.subscription?.plan?.plan_name && (
                   <div className="mt-3 px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm">
