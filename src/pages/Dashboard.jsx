@@ -402,7 +402,7 @@ const formatListTime = (rawTime) => {
 const ConversationList = ({ pages, user }) => {
   const [selectedPageId, setSelectedPageId] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isProfileVisible, setIsProfileVisible] = useState(true);
+  const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [contacts, setContacts] = useState([]);
   const [activeContact, setActiveContact] = useState(null);
   const [messages, setMessages] = useState([]);
