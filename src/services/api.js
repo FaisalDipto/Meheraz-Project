@@ -171,6 +171,10 @@ export const apiService = {
 
   // Profile
   getProfilePic: (userId) => apiFetch(`/api/user/profile_pic/${userId}`),
+  updateUserProfile: (profileData) => apiFetch('/api/user/profile/update', {
+    method: 'PATCH',
+    body: JSON.stringify(profileData),
+  }),
 
   // Conversations
   getPageDetails: (pageId, cursor = null, page_size = null) => {

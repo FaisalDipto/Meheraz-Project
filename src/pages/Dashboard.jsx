@@ -2,14 +2,14 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { LayoutDashboard, MessageSquare, Book, UserRound, MessageCircleWarning, Settings, Plus, User, LogOut, ChevronDown, TrendingUp, Headphones, HelpCircle, Palette, Monitor, Users, Trash2, Mail, Menu, X, Edit2, CreditCard, Zap, CheckCircle2, ShieldCheck, Clock } from 'lucide-react';
 import { useWidget } from '../context/WidgetContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { apiService } from '../services/api';
 import './Dashboard.css';
 import logoImg from '../assets/logo1.png';
 import titleImg from '../assets/title.png';
 
 // Sub-components
-const Overview = ({ user, pages, onNavigate, onUpdate }) => {
+const Overview = ({ user, pages, onNavigate, onUpdate, onAddPage }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isPlatformModalOpen, setIsPlatformModalOpen] = useState(false);
   const [showInstaComingSoon, setShowInstaComingSoon] = useState(false);
@@ -137,8 +137,12 @@ const Overview = ({ user, pages, onNavigate, onUpdate }) => {
 
   const handlePlatformSelect = (platform) => {
     if (platform === 'facebook') {
-      console.log("Hitting endpoint for Add New Page: /api/auth/facebook/reauth");
-      window.location.href = '/api/auth/facebook/reauth';
+      setIsPlatformModalOpen(false);
+      if (onAddPage) {
+        onAddPage(); // Show the pre-warning modal in parent
+      } else {
+        window.location.href = '/api/auth/facebook/reauth';
+      }
     } else {
       setShowInstaComingSoon(true);
     }
@@ -1008,7 +1012,7 @@ const ConversationList = ({ pages, user }) => {
 
               <div className="text-center mb-10">
                 <h2 className="text-2xl font-black font-['Epilogue'] tracking-tighter text-slate-900">
-                  {activeContact?.senders?.data?.[0]?.name || activeContact?.name || 'User'}
+                  {resolveContactName(activeContact, 'Chat Participant')}
                 </h2>
                 <p className="text-sm text-slate-500 font-medium mt-1">Chat Participant</p>
                 <div className="flex justify-center flex-wrap gap-2 mt-4">
@@ -1042,17 +1046,37 @@ const ConversationList = ({ pages, user }) => {
                   <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-100 pb-2">Information</h4>
                   <ul className="space-y-4">
                     <li className="flex items-start gap-3">
+                      <span className="material-symbols-outlined text-sm text-slate-400 mt-0.5">person</span>
+                      <div>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase">Name</p>
+                        <p className="text-xs font-semibold text-slate-900">{resolveContactName(activeContact, 'Unknown')}</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
                       <span className="material-symbols-outlined text-sm text-slate-400 mt-0.5">mail</span>
                       <div>
                         <p className="text-[10px] text-slate-400 font-bold uppercase">Email / Source</p>
                         <p className="text-xs font-semibold text-slate-900 truncate max-w-[200px]">Facebook Messenger</p>
                       </div>
                     </li>
+                    {(activeContact?.conversation_id || activeContact?.id) && (
+                      <li className="flex items-start gap-3">
+                        <span className="material-symbols-outlined text-sm text-slate-400 mt-0.5">tag</span>
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase">Conversation ID</p>
+                          <p className="text-xs font-semibold text-slate-900 truncate max-w-[200px] font-mono">{activeContact?.conversation_id || activeContact?.id}</p>
+                        </div>
+                      </li>
+                    )}
                     <li className="flex items-start gap-3">
                       <span className="material-symbols-outlined text-sm text-slate-400 mt-0.5">schedule</span>
                       <div>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase">Local Time</p>
-                        <p className="text-xs font-semibold text-slate-900">Current Time</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase">Last Active</p>
+                        <p className="text-xs font-semibold text-slate-900">
+                          {activeContact?.updated_time || activeContact?.last_message_at
+                            ? new Date(activeContact.updated_time || activeContact.last_message_at).toLocaleString()
+                            : 'Unknown'}
+                        </p>
                       </div>
                     </li>
                   </ul>
@@ -2600,8 +2624,45 @@ const INITIAL_TEAM = [
   { id: 3, name: 'Bob Reyes', email: 'bob.reyes@company.com', role: 'Agent', avatar: 'BR', color: '#10b981' },
 ];
 
-const SettingsPanel = () => {
-  const [activeSettings, setActiveSettings] = useState('themes');
+const SettingsPanel = ({ user, onUpdate }) => {
+  const [activeSettings, setActiveSettings] = useState('profile');
+
+  // ── Profile state ──
+  const [firstName, setFirstName] = useState(user?.first_name || '');
+  const [lastName, setLastName] = useState(user?.last_name || '');
+  const [displayName, setDisplayName] = useState(user?.display_name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.first_name || '');
+      setLastName(user.last_name || '');
+      setDisplayName(user.display_name || '');
+      setEmail(user.email || '');
+    }
+  }, [user]);
+
+  const handleProfileSave = async (e) => {
+    e.preventDefault();
+    setProfileSaving(true);
+    try {
+      await apiService.updateUserProfile({
+        first_name: firstName,
+        last_name: lastName,
+        display_name: displayName,
+        email: email
+      });
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 2500);
+      if (onUpdate) onUpdate();
+    } catch (err) {
+      alert("Failed to update profile: " + err.message);
+    } finally {
+      setProfileSaving(false);
+    }
+  };
 
   // ── Themes state ──
   const [selectedTheme, setSelectedTheme] = useState('sky');
@@ -2654,6 +2715,7 @@ const SettingsPanel = () => {
   };
 
   const settingsTabs = [
+    { id: 'profile', icon: User, label: 'Profile' },
     { id: 'themes', icon: Palette, label: 'Themes' },
     { id: 'widget', icon: Monitor, label: 'Widget Appearance' },
     { id: 'team', icon: Users, label: 'Team Members' },
@@ -2688,6 +2750,44 @@ const SettingsPanel = () => {
       </div>
 
       <div style={{ padding: '32px', maxWidth: '600px' }}>
+
+        {/* ── PROFILE ── */}
+        {activeSettings === 'profile' && (
+          <form onSubmit={handleProfileSave}>
+            <h3 style={{ fontWeight: 700, fontSize: '17px', marginBottom: '6px' }}>Profile Information</h3>
+            <p style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '24px' }}>Update your account details and how you appear to others.</p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label style={{ fontSize: '13.5px', fontWeight: 600 }}>First Name</label>
+                <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', outline: 'none' }} required />
+              </div>
+              <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label style={{ fontSize: '13.5px', fontWeight: 600 }}>Last Name</label>
+                <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', outline: 'none' }} required />
+              </div>
+            </div>
+
+            <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+              <label style={{ fontSize: '13.5px', fontWeight: 600 }}>Display Name</label>
+              <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', outline: 'none' }} required />
+              <small style={{ color: '#94a3b8', fontSize: '12px' }}>This is how your name will appear across the platform.</small>
+            </div>
+
+            <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+              <label style={{ fontSize: '13.5px', fontWeight: 600 }}>Email Address</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', outline: 'none' }} required />
+            </div>
+
+            <button
+              type="submit"
+              disabled={profileSaving}
+              style={{ marginTop: '16px', backgroundColor: profileSaved ? '#22c55e' : 'var(--text-primary)', color: '#fff', border: 'none', borderRadius: '8px', padding: '12px 28px', fontWeight: 700, fontSize: '14px', cursor: profileSaving ? 'not-allowed' : 'pointer', transition: 'background-color 0.25s' }}
+            >
+              {profileSaving ? 'Saving...' : profileSaved ? '✓ Profile Updated!' : 'Save Changes'}
+            </button>
+          </form>
+        )}
 
         {/* ── THEMES ── */}
         {activeSettings === 'themes' && (
@@ -3483,7 +3583,15 @@ export default function Dashboard() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Revoked pages warning (shown after returning from Facebook OAuth)
+  const [revokedPagesModal, setRevokedPagesModal] = useState(null); // { pages: string[] }
+
+  // Pre-warning modal (shown before sending user to Facebook OAuth)
+  const [preReauthModal, setPreReauthModal] = useState(false);
+
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [user, setUser] = useState(null);
   const [pages, setPages] = useState([]);
@@ -3575,18 +3683,39 @@ export default function Dashboard() {
     fetchData();
   }, [fetchData]);
 
+  // Parse reauth URL params on mount and clean up URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const reauth = params.get('reauth');
+    const reason = params.get('reason');
+    const pagesParam = params.get('pages');
+
+    console.log('[Reauth Debug] location.search:', location.search);
+    console.log('[Reauth Debug] reauth:', reauth, '| reason:', reason, '| pages:', pagesParam);
+
+    if ((reauth === 'error' || reauth === 'warning') && reason === 'revoked_pages' && pagesParam) {
+      const revokedList = pagesParam.split(',').map(p => p.trim()).filter(Boolean);
+      setRevokedPagesModal({ pages: revokedList });
+      // Clean up the URL via React Router so it doesn't re-trigger
+      navigate(location.pathname, { replace: true });
+    } else if (reauth === 'success') {
+      navigate(location.pathname, { replace: true });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const renderContent = () => {
     if (loading) {
       return <div className="dashboard-content-area"><h2>Loading workspace...</h2></div>;
     }
 
     switch (activeTab) {
-      case 'overview': return <Overview user={user} pages={pages} onNavigate={setActiveTab} onUpdate={fetchData} />;
+      case 'overview': return <Overview user={user} pages={pages} onNavigate={setActiveTab} onUpdate={fetchData} onAddPage={() => setPreReauthModal(true)} />;
       case 'conversation': return <ConversationList pages={pages} user={user} />;
       case 'knowledge': return <Knowledge pages={pages} />;
       case 'agent': return <AgentPanel user={user} pages={pages} onUpdate={fetchData} onAgentCreated={(newAgent) => setUser(prev => prev ? { ...prev, agents: [...(prev.agents || []), newAgent] } : prev)} onAgentEdited={(id, payload) => setUser(prev => prev ? { ...prev, agents: (prev.agents || []).map(a => a.agent_id === id ? { ...a, ...payload } : a) } : prev)} />;
       case 'feedback': return <FeedbackPanel />;
-      case 'settings': return <SettingsPanel />;
+      case 'settings': return <SettingsPanel user={user} onUpdate={fetchData} />;
       case 'subscription': return <SubscriptionPanel />;
       case 'support': return <SupportPanel />;
       case 'tutorial': return <TutorialPanel />;
@@ -3732,7 +3861,10 @@ export default function Dashboard() {
               </div>
 
               <div className="drawer-menu">
-                <button className="drawer-menu-item">
+                <button className="drawer-menu-item" onClick={() => {
+                  setActiveTab('settings');
+                  setIsProfileOpen(false);
+                }}>
                   <User size={18} /> Account Settings
                 </button>
                 <button className="drawer-menu-item" onClick={() => {
@@ -3744,6 +3876,136 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+          {/* ── Revoked Pages Warning Modal (post-reauth) ── */}
+          {revokedPagesModal && (
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fade-in p-4">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up border border-slate-100">
+                {/* Header */}
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100 px-6 py-5 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-amber-500 text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 font-['Epilogue']">Pages Disconnected</h3>
+                    <p className="text-xs font-semibold text-amber-600 mt-0.5">Action required to keep your AI agents running</p>
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div className="px-6 py-6">
+                  <p className="text-sm text-slate-600 leading-relaxed mb-5">
+                    During your Facebook re-authorization, you removed access to the following page{revokedPagesModal.pages.length > 1 ? 's' : ''}:
+                  </p>
+
+                  <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 mb-5 space-y-2">
+                    {revokedPagesModal.pages.map((page, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <div className="w-7 h-7 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
+                          <span className="material-symbols-outlined text-red-500 text-[16px]">link_off</span>
+                        </div>
+                        <span className="text-sm font-bold text-slate-800">{page}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
+                    <span className="material-symbols-outlined text-amber-500 text-[18px] mt-0.5 shrink-0">info</span>
+                    <p className="text-xs text-amber-800 font-semibold leading-relaxed">
+                      If you do not grant access to these pages, the AI agent will no longer work for them. They will be deactivated and disappear from your dashboard.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="px-6 pb-6 flex gap-3">
+                  <button
+                    onClick={() => setRevokedPagesModal(null)}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold border-2 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors text-sm"
+                  >
+                    Back to Dashboard
+                  </button>
+                  <button
+                    onClick={() => {
+                      setRevokedPagesModal(null);
+                      window.location.href = '/api/auth/facebook/reauth';
+                    }}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm text-sm flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>refresh</span>
+                    Re-authorize Pages
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Pre-Reauth Warning Modal (before going to Facebook) ── */}
+          {preReauthModal && (
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fade-in p-4">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up border border-slate-100">
+                {/* Header */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100 px-6 py-5 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-blue-500 text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>tips_and_updates</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 font-['Epilogue']">Before Continuing</h3>
+                    <p className="text-xs font-semibold text-blue-600 mt-0.5">Keep your existing pages checked</p>
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div className="px-6 py-6">
+                  <p className="text-sm text-slate-600 leading-relaxed mb-5">
+                    You're about to connect a new Facebook page. During the process, Facebook will show all your pages — <strong>make sure your currently connected pages stay checked:</strong>
+                  </p>
+
+                  {pages && pages.length > 0 ? (
+                    <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 mb-5 space-y-2">
+                      {pages.map((page, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <div className="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                            <span className="material-symbols-outlined text-emerald-500 text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                          </div>
+                          <span className="text-sm font-bold text-slate-800">{page.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 mb-5 text-sm text-slate-500 italic">No currently connected pages.</div>
+                  )}
+
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
+                    <span className="material-symbols-outlined text-amber-500 text-[18px] mt-0.5 shrink-0">warning</span>
+                    <p className="text-xs text-amber-800 font-semibold leading-relaxed">
+                      Unchecking them will disconnect them from LYFFLOW and stop their AI agents.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="px-6 pb-6 flex gap-3">
+                  <button
+                    onClick={() => setPreReauthModal(false)}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold border-2 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setPreReauthModal(false);
+                      window.location.href = '/api/auth/facebook/reauth';
+                    }}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm text-sm flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>open_in_new</span>
+                    Continue to Facebook
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Custom Logout Modal */}
           {isLogoutModalOpen && (
