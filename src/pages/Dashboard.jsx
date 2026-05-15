@@ -3437,7 +3437,7 @@ const SupportPanel = () => {
         </div>
         <h2 className="text-4xl font-headline font-black tracking-tighter text-slate-900">Support Center</h2>
         <article className="text-slate-500 font-medium text-lg leading-relaxed max-w-xl mx-auto">
-          If you need help or have any questions about LYFFLOW, our support team is here for you. 
+          If you need help, our support team is here for you. 
           Please reach out to us via email, and we will get back to you as soon as possible.
         </article>
         <div className="inline-flex items-center gap-3 bg-slate-50 px-6 py-4 rounded-2xl border border-slate-200 mt-4">
