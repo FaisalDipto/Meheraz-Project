@@ -921,8 +921,12 @@ const ConversationList = ({ pages, user }) => {
                 </div>
               </div>
               <div className="flex items-center gap-4 md:gap-6 text-slate-400">
+                {/* Call button — no functionality yet
                 <button className="hover:text-slate-900 transition-colors hidden md:block"><span className="material-symbols-outlined">call</span></button>
+                */}
+                {/* Video call button — no functionality yet
                 <button className="hover:text-slate-900 transition-colors hidden md:block"><span className="material-symbols-outlined">videocam</span></button>
+                */}
                 <button
                   onClick={() => setIsProfileVisible(!isProfileVisible)}
                   className={`hover:text-slate-900 transition-colors ${!isProfileVisible ? 'text-emerald-600' : ''}`}
@@ -930,7 +934,9 @@ const ConversationList = ({ pages, user }) => {
                 >
                   <span className="material-symbols-outlined">{isProfileVisible ? 'side_navigation' : 'person_search'}</span>
                 </button>
+                {/* More options button — no functionality yet
                 <button className="hover:text-slate-900 transition-colors"><span className="material-symbols-outlined">more_vert</span></button>
+                */}
               </div>
             </header>
 
@@ -964,9 +970,11 @@ const ConversationList = ({ pages, user }) => {
 
             <footer className="p-8 bg-white border-t border-slate-50">
               <div className="max-w-4xl mx-auto flex items-center gap-4 bg-slate-50 rounded-2xl p-2 pr-4 shadow-sm border border-slate-200 focus-within:border-slate-900 transition-colors">
+                {/* Attach file button — no functionality yet
                 <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
                   <span className="material-symbols-outlined">attach_file</span>
                 </button>
+                */}
                 <input
                   className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium py-3 text-slate-900 placeholder:text-slate-400 outline-none"
                   placeholder="Type your message..."
@@ -976,9 +984,11 @@ const ConversationList = ({ pages, user }) => {
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 />
                 <div className="flex items-center gap-2">
+                  {/* Emoji button — no functionality yet
                   <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
                     <span className="material-symbols-outlined">mood</span>
                   </button>
+                  */}
                   <button
                     className="bg-slate-900 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-md hover:scale-105 transition-transform"
                     onClick={handleSend}
@@ -1099,14 +1109,18 @@ const ConversationList = ({ pages, user }) => {
                 <div>
                   <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-4 border-b border-slate-200 pb-2">Shortcuts</h4>
                   <div className="space-y-2">
-                    <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-white rounded-xl flex items-center justify-between group shadow-sm bg-transparent border-none cursor-pointer">
-                      Block User
-                      <span className="material-symbols-outlined text-sm text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">block</span>
-                    </button>
-                    <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-white rounded-xl flex items-center justify-between group shadow-sm bg-transparent border-none cursor-pointer">
-                      Clear Conversation
-                      <span className="material-symbols-outlined text-sm text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">delete_sweep</span>
-                    </button>
+                  {/* Block User — no functionality yet
+                  <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-white rounded-xl flex items-center justify-between group shadow-sm bg-transparent border-none cursor-pointer">
+                    Block User
+                    <span className="material-symbols-outlined text-sm text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">block</span>
+                  </button>
+                  */}
+                  {/* Clear Conversation — no functionality yet
+                  <button className="w-full text-left p-3 text-xs font-bold text-slate-600 hover:bg-white rounded-xl flex items-center justify-between group shadow-sm bg-transparent border-none cursor-pointer">
+                    Clear Conversation
+                    <span className="material-symbols-outlined text-sm text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">delete_sweep</span>
+                  </button>
+                  */}
                   </div>
                 </div>
               </div>

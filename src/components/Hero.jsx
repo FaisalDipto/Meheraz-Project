@@ -134,9 +134,11 @@ export default function Hero() {
                 Start Free Trial
                 <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
               </Link>
+              {/* Watch Demo button — no functionality yet
               <button className="bg-white border border-slate-200 text-primary px-8 py-4 rounded-xl font-bold shadow-sm hover:bg-slate-50 transition-all">
                 Watch Demo
               </button>
+              */}
             </div>
           </div>
           {/* Detailed Chat Interface — hidden on small mobile, shown from sm+ */}
