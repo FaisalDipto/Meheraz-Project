@@ -190,35 +190,38 @@ export default function Hero() {
       <section className="py-20 sm:py-40 bg-surface-container-lowest">
         <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <div className="text-center mb-24 reveal">
-            <label className="font-label text-sm font-extrabold tracking-[0.25em] uppercase text-secondary mb-4 block">The Process</label>
-            <h2 className="font-headline text-4xl md:text-5xl font-black tracking-tight text-primary">Three steps to automation</h2>
+            <label className="font-label text-sm font-extrabold tracking-[0.25em] uppercase mb-4 block" style={{ color: '#00C896' }}>THE PROCESS</label>
+            <h2 className="font-headline text-4xl md:text-5xl font-black tracking-tight" style={{ color: '#0D1F3C' }}>From Setup to Automation in Minutes</h2>
           </div>
           <div className="flex flex-col md:grid md:grid-cols-3 gap-12 md:gap-8 lg:gap-12">
             <div className="reveal">
-              <div className="group h-full p-8 lg:p-10 bg-gradient-to-br from-tertiary/20 to-tertiary/5 rounded-[2rem] border border-tertiary/30 hover:shadow-2xl hover:shadow-tertiary/20 transition-all duration-500 hover:-translate-y-2">
-                <div className="w-16 h-16 bg-white text-tertiary rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">
-                  <span className="material-symbols-outlined text-3xl" data-icon="hub">hub</span>
+              <div className="group h-full p-8 lg:p-10 rounded-[2rem] border border-[#D8DBFF] hover:shadow-2xl hover:shadow-[#EEF0FF]/60 transition-all duration-500 hover:-translate-y-2" style={{ backgroundColor: '#EEF0FF' }}>
+                <div className="w-16 h-16 bg-white rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500" style={{ color: '#6366F1' }}>
+                  <span className="material-symbols-outlined text-3xl" data-icon="link">link</span>
                 </div>
-                <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Connect</h3>
-                <p className="text-on-surface-variant leading-relaxed">Seamlessly integrate your existing tech stack using our robust API or pre-built connectors to centralize your data stream.</p>
+                <p className="text-sm font-extrabold tracking-[0.2em] uppercase mb-2" style={{ color: '#00C896' }}>Step 1</p>
+                <h3 className="font-headline text-2xl font-bold mb-4" style={{ color: '#0D1F3C' }}>Connect Your Page</h3>
+                <p className="leading-relaxed text-[17px]" style={{ color: '#4B5563' }}>Link your Facebook or Instagram Business page in seconds. Lyfflow instantly syncs with your Messenger channel — no complex configuration, no developer needed.</p>
               </div>
             </div>
             <div className="reveal [transition-delay:150ms]">
-              <div className="group h-full p-8 lg:p-10 bg-gradient-to-br from-secondary/20 to-secondary/5 rounded-[2rem] border border-secondary/30 hover:shadow-2xl hover:shadow-secondary/20 transition-all duration-500 hover:-translate-y-2">
-                <div className="w-16 h-16 bg-white text-secondary rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">
+              <div className="group h-full p-8 lg:p-10 rounded-[2rem] border border-[#C2EBE0] hover:shadow-2xl hover:shadow-[#E6F7F2]/60 transition-all duration-500 hover:-translate-y-2" style={{ backgroundColor: '#E6F7F2' }}>
+                <div className="w-16 h-16 bg-white rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500" style={{ color: '#00C896' }}>
                   <span className="material-symbols-outlined text-3xl" data-icon="auto_awesome">auto_awesome</span>
                 </div>
-                <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Create Agent & Upload Knowledge</h3>
-                <p className="text-on-surface-variant leading-relaxed">Configure custom logic and feed your model specialized datasets to ensure high-accuracy responses tailored to your specific use case.</p>
+                <p className="text-sm font-extrabold tracking-[0.2em] uppercase mb-2" style={{ color: '#00C896' }}>Step 2</p>
+                <h3 className="font-headline text-2xl font-bold mb-4" style={{ color: '#0D1F3C' }}>Build Your AI Agent</h3>
+                <p className="leading-relaxed text-[17px]" style={{ color: '#4B5563' }}>Define your agent's personality, upload your business knowledge, and configure response logic. Your AI learns your brand voice and handles queries with precision.</p>
               </div>
             </div>
             <div className="reveal [transition-delay:300ms]">
-              <div className="group h-full p-8 lg:p-10 bg-gradient-to-br from-primary/20 to-primary/5 rounded-[2rem] border border-primary/30 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2">
-                <div className="w-16 h-16 bg-white text-primary rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">
+              <div className="group h-full p-8 lg:p-10 rounded-[2rem] border border-[#D9DCE1] hover:shadow-2xl hover:shadow-[#F0F2F5]/60 transition-all duration-500 hover:-translate-y-2" style={{ backgroundColor: '#F0F2F5' }}>
+                <div className="w-16 h-16 bg-white rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500" style={{ color: '#6B7280' }}>
                   <span className="material-symbols-outlined text-3xl" data-icon="trending_up">trending_up</span>
                 </div>
-                <h3 className="font-headline text-2xl font-bold mb-4 text-primary">Assign Agent</h3>
-                <p className="text-on-surface-variant leading-relaxed">Deploy your finished agents across multiple channels with granular control over permissions and real-time performance monitoring.</p>
+                <p className="text-sm font-extrabold tracking-[0.2em] uppercase mb-2" style={{ color: '#00C896' }}>Step 3</p>
+                <h3 className="font-headline text-2xl font-bold mb-4" style={{ color: '#0D1F3C' }}>Deploy &amp; Monitor</h3>
+                <p className="leading-relaxed text-[17px]" style={{ color: '#4B5563' }}>Go live across your channels with full control over permissions. Track conversations, measure performance, and let your AI work 24/7 — while you focus on growth.</p>
               </div>
             </div>
           </div>
