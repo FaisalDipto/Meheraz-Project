@@ -2730,9 +2730,9 @@ const SettingsPanel = ({ user, onUpdate }) => {
 
   const settingsTabs = [
     { id: 'profile', icon: User, label: 'Profile' },
-    { id: 'themes', icon: Palette, label: 'Themes' },
-    { id: 'widget', icon: Monitor, label: 'Widget Appearance' },
-    { id: 'team', icon: Users, label: 'Team Members' },
+    // { id: 'themes', icon: Palette, label: 'Themes' },         // no functionality yet
+    // { id: 'widget', icon: Monitor, label: 'Widget Appearance' }, // no functionality yet
+    // { id: 'team', icon: Users, label: 'Team Members' },       // no functionality yet
   ];
 
   return (
@@ -2803,8 +2803,8 @@ const SettingsPanel = ({ user, onUpdate }) => {
           </form>
         )}
 
-        {/* ── THEMES ── */}
-        {activeSettings === 'themes' && (
+        {/* ── THEMES ── no functionality yet */}
+        {false && activeSettings === 'themes' && (
           <div>
             <h3 style={{ fontWeight: 700, fontSize: '17px', marginBottom: '6px' }}>Themes</h3>
             <p style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '24px' }}>Choose a color theme for your dashboard.</p>
@@ -2824,7 +2824,6 @@ const SettingsPanel = ({ user, onUpdate }) => {
                       boxShadow: isSelected ? `0 0 0 3px ${t.accent}22` : 'none',
                     }}
                   >
-                    {/* Swatch */}
                     <div style={{ height: '56px', background: `linear-gradient(135deg, ${t.primary}, ${t.accent})` }} />
                     <div style={{ padding: '8px 10px', backgroundColor: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#374151' }}>{t.label}</span>
@@ -2848,8 +2847,8 @@ const SettingsPanel = ({ user, onUpdate }) => {
           </div>
         )}
 
-        {/* ── WIDGET APPEARANCE ── */}
-        {activeSettings === 'widget' && (
+        {/* ── WIDGET APPEARANCE ── no functionality yet */}
+        {false && activeSettings === 'widget' && (
           <form onSubmit={handleWidgetSave}>
             <h3 style={{ fontWeight: 700, fontSize: '17px', marginBottom: '6px' }}>Widget Appearance</h3>
             <p style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '24px' }}>Customize how your chat widget looks to visitors.</p>
@@ -2995,13 +2994,11 @@ const SettingsPanel = ({ user, onUpdate }) => {
           </form>
         )}
 
-        {/* ── TEAM MEMBERS ── */}
-        {activeSettings === 'team' && (
+        {/* ── TEAM MEMBERS ── no functionality yet */}
+        {false && activeSettings === 'team' && (
           <div>
             <h3 style={{ fontWeight: 700, fontSize: '17px', marginBottom: '6px' }}>Team Members</h3>
             <p style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '24px' }}>Manage who has access to your workspace.</p>
-
-            {/* Member list */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px' }}>
               {team.map(member => (
                 <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '10px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>
@@ -3024,8 +3021,6 @@ const SettingsPanel = ({ user, onUpdate }) => {
                 </div>
               ))}
             </div>
-
-            {/* Invite form */}
             <div style={{ backgroundColor: '#f8fafc', borderRadius: '12px', padding: '20px', border: '1px solid #e2e8f0' }}>
               <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '7px' }}>
                 <Mail size={15} color="#0ea5e9" /> Invite a team member
